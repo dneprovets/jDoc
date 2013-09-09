@@ -1,7 +1,7 @@
 jDoc
 ===
 
-> Editing documents with JavaScript in browser
+> Edit documents with JavaScript in browser
 
 
 
@@ -18,6 +18,12 @@ or
 where v - library version
 
 You will be available to the global object jDoc
+
+# Supported formats
+* `docx`
+* `txt`
+* `fb2`
+* `odt`
 
 ## Methods
 
