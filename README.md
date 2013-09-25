@@ -3,7 +3,13 @@ jDoc
 
 > Edit documents with JavaScript in browser
 
-
+## Supported formats
+* `docx`
+* `txt`
+* `fb2`
+* `odt`
+* `csv`
+* `tsv`
 
 ## Getting Started
 Include script on your page:
@@ -18,14 +24,6 @@ or
 where `v` - library version
 
 You will be available to the global object jDoc
-
-# Supported formats
-* `docx`
-* `txt`
-* `fb2`
-* `odt`
-* `csv`
-* `tsv`
 
 ## Methods
 
