@@ -50,6 +50,14 @@ jDoc.read(file, {
   * `data` - return result as object {}
 * `error` - object, {message: ""}
 
+`error` can be:
+ * {message: 'Invalid file format'} - invalid file format
+ * {message: 'Can not read file'} - System error reading file
+ * {message: 'First argument must be type of File'} - argument 'file' must be instanceof File
+ * {message: 'Invalid file type'}
+ * {message: 'Can't load the file'}
+ * {message: 'Not have the required technology'} - unsupported browser
+
 ## Release History
 
  * 2013-09-10   v0.1.0   Work in progress, not yet officially released.
