@@ -96,7 +96,7 @@ module.exports = function (grunt) {
                     'js/engines/DSV/reader/private/*.js',
                     'js/engines/DSV/reader/public/*.js'
                 ],
-                dest: 'js/build/engines/oxml.js'
+                dest: 'js/build/engines/dsv.js'
             },
 
             /*
