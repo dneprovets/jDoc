@@ -62,7 +62,7 @@ module.exports = function (grunt) {
                     'js/engines/Simple/reader/private/*.js',
                     'js/engines/Simple/reader/public/*.js'
                 ],
-                dest: 'js/build/engines/simple.js'
+                dest: 'js/build/simple.js'
             },
 
             odf: {
@@ -73,7 +73,7 @@ module.exports = function (grunt) {
                 src: [
                     'js/engines/ODF/reader/private/*.js'
                 ],
-                dest: 'js/build/engines/odf.js'
+                dest: 'js/build/odf.js'
             },
 
             oxml: {
@@ -84,7 +84,7 @@ module.exports = function (grunt) {
                 src: [
                     'js/engines/OXML/reader/private/*.js'
                 ],
-                dest: 'js/build/engines/oxml.js'
+                dest: 'js/build/oxml.js'
             },
 
             dsv: {
@@ -96,7 +96,7 @@ module.exports = function (grunt) {
                     'js/engines/DSV/reader/private/*.js',
                     'js/engines/DSV/reader/public/*.js'
                 ],
-                dest: 'js/build/engines/dsv.js'
+                dest: 'js/build/dsv.js'
             },
 
             /*
@@ -109,7 +109,7 @@ module.exports = function (grunt) {
                     'js/engines/WCBFF/reader/private/*.js',
                     'js/engines/WCBFF/reader/public/*.js'
                 ],
-                dest: 'js/build/engines/wcbff.js'
+                dest: 'js/build/wcbff.js'
             },*/
 
             fictionBook: {
@@ -121,7 +121,7 @@ module.exports = function (grunt) {
                     'js/engines/FictionBook/reader/private/*.js',
                     'js/engines/FictionBook/reader/public/*.js'
                 ],
-                dest: 'js/build/engines/fb2.js'
+                dest: 'js/build/fb2.js'
             }
         },
 
@@ -132,7 +132,8 @@ module.exports = function (grunt) {
             ],
 
             engines: [
-                "js/build/engines/*.js"
+                "js/build/*.js",
+                "!js/build/jdoc.*"
             ]
         }
     };
