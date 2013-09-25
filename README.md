@@ -24,6 +24,8 @@ You will be available to the global object jDoc
 * `txt`
 * `fb2`
 * `odt`
+* `csv`
+* `tsv`
 
 ## Methods
 
