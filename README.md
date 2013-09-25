@@ -15,7 +15,7 @@ or
 ```html
 <script src="js/jDoc.v.min.js"></script>
 ```
-where v - library version
+where `v` - library version
 
 You will be available to the global object jDoc
 
