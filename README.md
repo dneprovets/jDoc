@@ -3,6 +3,12 @@ jDoc
 
 > Edit documents with JavaScript in browser
 
+## Overview
+This library depends on [zip.js](http://gildas-lormeau.github.io/zip.js/) library and these APIs optionally:
+* [Web workers](https://developer.mozilla.org/en-US/docs/Web/Guide/Performance/Using_web_workers)
+* [File API](https://developer.mozilla.org/en-US/docs/Trash/File_APIs)
+* [Blob](https://developer.mozilla.org/en-US/docs/Web/API/Blob)
+
 ## Supported formats
 * `docx`
 * `txt`
