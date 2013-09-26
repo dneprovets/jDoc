@@ -24,7 +24,8 @@ module.exports = function (grunt) {
                     'js/engines/Base/extend.js',
                     'js/engines/Base/reader/private/*.js',
 
-                    'js/build/engines/*',
+                    'js/build/*',
+                    '!js/build/jdoc.*',
 
                     'js/endBanner.js'
                 ],
