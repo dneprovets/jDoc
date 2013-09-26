@@ -6,7 +6,7 @@
 jDoc.Engines.Simple.prototype._fileTypeParsers = [
     {
         extension: ['txt'],
-        mime: 'text/plain',
+        mime: ['text/plain'],
         isTextDocument: true
     }
 ];

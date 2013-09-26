@@ -5,7 +5,7 @@
 jDoc.Engines.OXML.prototype._fileTypeParsers = [
     {
         extension: ['docx'],
-        mime: 'vnd.openxmlformats-officedocument.wordprocessingml.document',
+        mime: ['vnd.openxmlformats-officedocument.wordprocessingml.document'],
         isTextDocument: true
     }
 ];

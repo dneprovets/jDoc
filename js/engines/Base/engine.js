@@ -417,6 +417,7 @@ jDoc.Engine.prototype = {
     _getFileType: function (file) {
         var result = null,
             fileExtensions,
+            mimeTypes,
             extension = String(file.name).split('.'),
             fileTypesCount = this._fileTypeParsers.length,
             e,
@@ -426,7 +427,19 @@ jDoc.Engine.prototype = {
         extension = extension[extension.length - 1];
 
         for (i = 0; i < fileTypesCount; i++) {
-            found = !!(file.type && this._fileTypeParsers[i].mime && file.type.indexOf(this._fileTypeParsers[i].mime) >= 0);
+            if (file.type) {
+                mimeTypes = this._fileTypeParsers[i].mime;
+                if (!(mimeTypes instanceof Array)) {
+                    mimeTypes = [mimeTypes];
+                }
+
+                for (e = mimeTypes.length - 1; e >= 0; e--) {
+                    if (file.type.indexOf(mimeTypes[e]) >= 0) {
+                        found = true;
+                        break;
+                    }
+                }
+            }
 
             if (!found && !file.type && extension) {
                 fileExtensions = this._fileTypeParsers[i].extension;
@@ -435,7 +448,7 @@ jDoc.Engine.prototype = {
                 }
 
                 for (e = fileExtensions.length - 1; e >= 0; e--) {
-                    if (extension.indexOf(this._fileTypeParsers[i].extension[e]) >= 0) {
+                    if (extension.indexOf(fileExtensions[e]) >= 0) {
                         found = true;
                         break;
                     }

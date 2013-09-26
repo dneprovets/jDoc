@@ -6,7 +6,7 @@
 jDoc.Engines.WCBFF.prototype._fileTypeParsers = [
     {
         extension: ['doc'],
-        mime: 'application/msword',
+        mime: ['application/msword'],
         isTextDocument: true
     }
 ];

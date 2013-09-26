@@ -99,6 +99,18 @@ module.exports = function (grunt) {
                 ],
                 dest: 'js/build/dsv.js'
             },
+            /*
+            rtf: {
+                options: {
+                    namespace: 'jDoc.Engines.RTF.prototype',
+                    mainFilePath: 'js/engines/RTF/main.js'
+                },
+                src: [
+                    'js/engines/RTF/reader/private/*.js',
+                    'js/engines/RTF/reader/public/*.js'
+                ],
+                dest: 'js/build/rtf.js'
+            },*/
 
             /*
             wcbff: {
