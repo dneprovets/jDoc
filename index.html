@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Jdoc : jDoc" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Jdoc</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/webschik/jDoc">View on GitHub</a>
+
+          <h1 id="project_title">Jdoc</h1>
+          <h2 id="project_tagline">jDoc</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/webschik/jDoc/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/webschik/jDoc/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a name="jdoc" class="anchor" href="#jdoc"><span class="octicon octicon-link"></span></a>jDoc</h1>
+
+<blockquote>
+<p>Edit documents with JavaScript in browser</p>
+</blockquote>
+
+<h2>
+<a name="overview" class="anchor" href="#overview"><span class="octicon octicon-link"></span></a>Overview</h2>
+
+<p>This library depends on <a href="http://gildas-lormeau.github.io/zip.js/">zip.js</a> library and these APIs optionally:</p>
+
+<ul>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/Guide/Performance/Using_web_workers">Web workers</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Trash/File_APIs">File API</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Blob">Blob</a></li>
+</ul><h2>
+<a name="supported-formats" class="anchor" href="#supported-formats"><span class="octicon octicon-link"></span></a>Supported formats</h2>
+
+<ul>
+<li><code>docx</code></li>
+<li><code>txt</code></li>
+<li><code>fb2</code></li>
+<li><code>odt</code></li>
+<li><code>csv</code></li>
+<li><code>tsv</code></li>
+</ul><h2>
+<a name="getting-started" class="anchor" href="#getting-started"><span class="octicon octicon-link"></span></a>Getting Started</h2>
+
+<p>Include script on your page:</p>
+
+<div class="highlight highlight-html"><pre><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"js/jDoc.v.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+</pre></div>
+
+<p>or</p>
+
+<div class="highlight highlight-html"><pre><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"js/jDoc.v.min.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+</pre></div>
+
+<p>where <code>v</code> - library version</p>
+
+<p>You will be available to the global object jDoc</p>
+
+<h2>
+<a name="methods" class="anchor" href="#methods"><span class="octicon octicon-link"></span></a>Methods</h2>
+
+<h4>
+<a name="read" class="anchor" href="#read"><span class="octicon octicon-link"></span></a>read</h4>
+
+<p>Read the document.
+Example:</p>
+
+<div class="highlight highlight-js"><pre><span class="nx">jDoc</span><span class="p">.</span><span class="nx">read</span><span class="p">(</span><span class="nx">file</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">parsedFile</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="p">},</span>
+
+    <span class="nx">error</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="p">}</span>
+<span class="p">});</span>
+</pre></div>
+
+<ul>
+<li>
+<code>file</code> - <a href="https://developer.mozilla.org/en-US/docs/Web/API/File">File</a> object</li>
+<li>
+<code>parsedFile</code> - object with methods:
+
+<ul>
+<li>
+<code>html</code> - return result as documentFragment</li>
+<li>
+<code>data</code> - return result as object {}</li>
+</ul>
+</li>
+<li>
+<code>error</code> - object, {message: ""}</li>
+</ul><p><code>error</code> can be:</p>
+
+<ul>
+<li>{message: 'Invalid file format'} - invalid file format</li>
+<li>{message: 'Can not read file'} - System error reading file</li>
+<li>{message: 'First argument must be type of File'} - argument 'file' must be instanceof File</li>
+<li>{message: 'Invalid file type'}</li>
+<li>{message: 'Can't load the file'}</li>
+<li>{message: 'Not have the required technology'} - unsupported browser</li>
+</ul><h2>
+<a name="release-history" class="anchor" href="#release-history"><span class="octicon octicon-link"></span></a>Release History</h2>
+
+<ul>
+<li>2013-09-10   v0.1.0   Work in progress, not yet officially released.</li>
+</ul><hr><p>Library submitted by <a href="https://github.com/webschik">"webschik" Knyazevich Denis</a></p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Jdoc maintained by <a href="https://github.com/webschik">webschik</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
