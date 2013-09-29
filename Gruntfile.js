@@ -9,27 +9,27 @@ module.exports = function (grunt) {
         concat: {
             app: {
                 src: [
-                    'js/beginBanner.js',
+                    'src/beginBanner.js',
 
-                    '../cdn/js/browser.js',
+                    'src/browser.js',
 
-                    'js/main.js',
-                    'js/parsedFile.js',
+                    'src/main.js',
+                    'src/parsedFile.js',
 
-                    'js/utils/*.js',
+                    'src/utils/*.js',
 
-                    'js/utils/DOM/*.js',
+                    'src/utils/DOM/*.js',
 
-                    'js/engines/Base/engine.js',
-                    'js/engines/Base/extend.js',
-                    'js/engines/Base/reader/private/*.js',
+                    'src/engines/Base/engine.js',
+                    'src/engines/Base/extend.js',
+                    'src/engines/Base/reader/private/*.js',
 
-                    'js/build/*',
-                    '!js/build/jdoc.*',
+                    'src/build/*',
+                    '!src/build/jdoc.*',
 
-                    'js/endBanner.js'
+                    'src/endBanner.js'
                 ],
-                dest: 'js/build/jdoc.<%= version %>.js'
+                dest: 'src/build/jdoc.<%= version %>.js'
             }
         },
 
@@ -39,14 +39,14 @@ module.exports = function (grunt) {
                 report:   false
             },
             js:      {
-                'src':  'js/build/jdoc.<%= version %>.js',
-                'dest': 'js/build/jdoc.<%= version %>.min.js'
+                'src':  'src/build/jdoc.<%= version %>.js',
+                'dest': 'src/build/jdoc.<%= version %>.min.js'
             }
         },
 
         jsdoc : {
             dist : {
-                src: ['js/build/jdoc.<%= version %>.js'],
+                src: ['src/build/jdoc.<%= version %>.js'],
                 options: {
                     destination: 'doc'
                 }
@@ -57,96 +57,97 @@ module.exports = function (grunt) {
             simple: {
                 options: {
                     namespace: 'jDoc.Engines.Simple.prototype',
-                    mainFilePath: 'js/engines/Simple/main.js'
+                    mainFilePath: 'src/engines/Simple/main.js'
                 },
                 src: [
-                    'js/engines/Simple/reader/private/*.js',
-                    'js/engines/Simple/reader/public/*.js'
+                    'src/engines/Simple/reader/private/*.js',
+                    'src/engines/Simple/reader/public/*.js'
                 ],
-                dest: 'js/build/simple.js'
+                dest: 'src/build/simple.js'
             },
 
             odf: {
                 options: {
                     namespace: 'jDoc.Engines.ODF.prototype',
-                    mainFilePath: 'js/engines/ODF/main.js'
+                    mainFilePath: 'src/engines/ODF/main.js'
                 },
                 src: [
-                    'js/engines/ODF/reader/private/*.js'
+                    'src/engines/ODF/reader/private/*.js'
                 ],
-                dest: 'js/build/odf.js'
+                dest: 'src/build/odf.js'
             },
 
             oxml: {
                 options: {
                     namespace: 'jDoc.Engines.OXML.prototype',
-                    mainFilePath: 'js/engines/OXML/main.js'
+                    mainFilePath: 'src/engines/OXML/main.js'
                 },
                 src: [
-                    'js/engines/OXML/reader/private/*.js'
+                    'src/engines/OXML/reader/private/*.js'
                 ],
-                dest: 'js/build/oxml.js'
+                dest: 'src/build/oxml.js'
             },
 
             dsv: {
                 options: {
                     namespace: 'jDoc.Engines.DSV.prototype',
-                    mainFilePath: 'js/engines/DSV/main.js'
+                    mainFilePath: 'src/engines/DSV/main.js'
                 },
                 src: [
-                    'js/engines/DSV/reader/private/*.js',
-                    'js/engines/DSV/reader/public/*.js'
+                    'src/engines/DSV/reader/private/*.js',
+                    'src/engines/DSV/reader/public/*.js'
                 ],
-                dest: 'js/build/dsv.js'
+                dest: 'src/build/dsv.js'
             },
+
             /*
             rtf: {
                 options: {
                     namespace: 'jDoc.Engines.RTF.prototype',
-                    mainFilePath: 'js/engines/RTF/main.js'
+                    mainFilePath: 'src/engines/RTF/main.js'
                 },
                 src: [
-                    'js/engines/RTF/reader/private/*.js',
-                    'js/engines/RTF/reader/public/*.js'
+                    'src/engines/RTF/reader/private/*.js',
+                    'src/engines/RTF/reader/public/*.js'
                 ],
-                dest: 'js/build/rtf.js'
+                dest: 'src/build/rtf.js'
             },*/
 
             /*
             wcbff: {
                 options: {
                     namespace: 'jDoc.Engines.WCBFF.prototype',
-                    mainFilePath: 'js/engines/WCBFF/main.js'
+                    mainFilePath: 'src/engines/WCBFF/main.js'
                 },
                 src: [
-                    'js/engines/WCBFF/reader/private/*.js',
-                    'js/engines/WCBFF/reader/public/*.js'
+                    'src/engines/WCBFF/reader/private/*.js',
+                    'src/engines/WCBFF/reader/public/*.js'
                 ],
-                dest: 'js/build/wcbff.js'
+                dest: 'src/build/wcbff.js'
             },*/
 
             fictionBook: {
                 options: {
                     namespace: 'jDoc.Engines.FictionBook.prototype',
-                    mainFilePath: 'js/engines/FictionBook/main.js'
+                    mainFilePath: 'src/engines/FictionBook/main.js'
                 },
                 src: [
-                    'js/engines/FictionBook/reader/private/*.js',
-                    'js/engines/FictionBook/reader/public/*.js'
+                    'src/engines/FictionBook/reader/private/*.js',
+                    'src/engines/FictionBook/reader/public/*.js'
                 ],
-                dest: 'js/build/fb2.js'
+                dest: 'src/build/fb2.js'
             }
         },
 
         clean: {
             start: [
-                "js/build/*.js",
-                "js/build/*/*.js"
+                "src/build/*.js",
+                "src/build/*/*.js"
             ],
 
             engines: [
-                "js/build/*.js",
-                "!js/build/jdoc.*"
+                "src/build/*.js",
+                "!src/build/jdoc.*"
             ]
         }
     };

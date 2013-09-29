@@ -6,6 +6,7 @@ jDoc.ParsedFile = function (attrs) {
     attrs = attrs || {};
 
     this._data.pages = attrs.pages || this._data.pages;
+    this._clonedData = jDoc.clone(this._data);
 };
 
 jDoc.ParsedFile.prototype =
@@ -523,6 +524,15 @@ jDoc.ParsedFile.prototype =
          * @returns {*}
          */
         data: function () {
-            return jDoc.clone(this._data);
+            return this._clonedData;
+        },
+
+        /**
+         *
+         * @param index
+         * @returns {*}
+         */
+        getPage: function (index) {
+            return this._clonedData.pages[index];
         }
     };
