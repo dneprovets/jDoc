@@ -6,11 +6,35 @@
  */
 jDoc.Engines.RTF.prototype._createParsedFile = function (text, callback) {
     var i = 0,
+        parseParams = {
+            pageData: {
+                options: {},
+                css: {},
+                dimensionCSSRules: {},
+                elements: []
+            },
+            paragraphData: {
+                options: {
+                    isParagraph: true
+                },
+                css: {},
+                dimensionCSSRules: {},
+                elements: []
+            },
+            currentTextElement: null,
+            currentPageIndex: 0,
+            currentParagraphIndex: 0,
+            ignoreControlWords: [
+                "stylesheet", "fonttbl", "info"
+            ],
+            ignoreGroups: [],
+            braceCounter: 0
+        },
         parseResult = {
             pages: [{
                 options: {},
                 css: {},
-                dimensionCSSRules: {},
+                dimensionCSS: {},
                 elements: [{
                     options: {
                         isParagraph: true
@@ -20,16 +44,6 @@ jDoc.Engines.RTF.prototype._createParsedFile = function (text, callback) {
                     elements: []
                 }]
             }]
-        },
-        parseParams = {
-            currentTextElement: null,
-            currentPageIndex: 0,
-            currentParagraphIndex: 0,
-            ignoreControlWords: [
-                "stylesheet", "fonttbl", "info"
-            ],
-            ignoreGroups: [],
-            braceCounter: 0
         };
 
     while (text[i]) {
@@ -48,6 +62,8 @@ jDoc.Engines.RTF.prototype._createParsedFile = function (text, callback) {
                 if (!parseParams.currentTextElement) {
                     parseParams.currentTextElement = {
                         options: {},
+                        css: {},
+                        dimensionCSSRules: {},
                         properties: {
                             textContent: ""
                         }
@@ -75,6 +91,8 @@ jDoc.Engines.RTF.prototype._createParsedFile = function (text, callback) {
                 if (!parseParams.currentTextElement) {
                     parseParams.currentTextElement = {
                         options: {},
+                        css: {},
+                        dimensionCSSRules: {},
                         properties: {
                             textContent: ""
                         }

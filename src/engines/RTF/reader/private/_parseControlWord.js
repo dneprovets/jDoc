@@ -10,7 +10,8 @@
 jDoc.Engines.RTF.prototype._parseControlWord = function (text, index, parseParams, parseResult) {
     var controlWord = '',
         match,
-        len,
+        el,
+        i,
         page = parseResult.pages[parseParams.currentPageIndex],
         paragraph = page.elements[parseParams.currentParagraphIndex],
         param = -1;
@@ -36,76 +37,118 @@ jDoc.Engines.RTF.prototype._parseControlWord = function (text, index, parseParam
     if (parseParams.ignoreControlWords.indexOf(controlWord) >= 0) {
         parseParams.ignoreGroups.push(parseParams.braceCounter);
     } else {
-        switch (controlWord) {
-        case "page":
-            page = {
-                options: {},
-                css: {},
-                dimensionCSSRules: {},
-                elements: []
-            };
+        if (controlWord === "page") {
+            page = jDoc.clone(parseParams.pageData);
+            paragraph = jDoc.clone(parseParams.paragraphData);
+            parseParams.currentTextElement = null;
             parseParams.currentPageIndex++;
             parseParams.currentParagraphIndex = 0;
             parseResult.pages[parseParams.currentPageIndex] = page;
-            paragraph = {
-                options: {
-                    isParagraph: true
-                },
-                css: {},
-                dimensionCSSRules: {},
-                elements: []
-            };
-            parseParams.currentTextElement = {
-                options: {},
-                properties: {
-                    textContent: ""
-                }
-            };
-            paragraph.elements.push(parseParams.currentTextElement);
             page.elements[parseParams.currentParagraphIndex] = paragraph;
-            break;
-        case "par":
+        } else if (controlWord === "par") {
             parseParams.currentParagraphIndex++;
-            paragraph = {
-                options: {
-                    isParagraph: true
-                },
-                css: {},
-                dimensionCSSRules: {},
-                elements: []
-            };
-            parseParams.currentTextElement = {
-                options: {},
-                properties: {
-                    textContent: ""
-                }
-            };
-            paragraph.elements.push(parseParams.currentTextElement);
+            paragraph = jDoc.clone(parseParams.paragraphData);
             page.elements[parseParams.currentParagraphIndex] = paragraph;
-            break;
-        case "b":
-            paragraph.css.fontWeight = "bold";
-            break;
-        case "i":
-            paragraph.css.fontStyle = "italic";
-            break;
-        case "ul":
-            paragraph.css.textDecoration = "underline";
-            break;
-        case "strike":
-            paragraph.css.textDecoration = "line-through";
-            break;
-        case "scaps":
-            paragraph.css.fontVariant = "small-caps";
-            break;
-        case "fs":
-            paragraph.dimensionCSSRules.fontSize = {
-                value: param,
-                units: "px"
-            };
-            break;
-        default:
-            //console.log(controlWord);
+            parseParams.currentTextElement = null;
+        } else if (!parseParams.ignoreGroups.length) {
+            el = (parseParams.currentTextElement || paragraph);
+            switch (controlWord) {
+            case "paperw":
+                parseParams.pageData.dimensionCSSRules.width = {
+                    value: param / 20,
+                    units: "pt"
+                };
+                for (i = parseResult.pages.length - 1; i >= 0; i--) {
+                    parseResult.pages[i].dimensionCSSRules =
+                        jDoc.deepMerge({}, parseParams.pageData.dimensionCSSRules, parseResult.pages[i].dimensionCSSRules);
+                }
+                break;
+            case "paperh":
+                parseParams.pageData.dimensionCSSRules.height = {
+                    value: param / 20,
+                    units: "pt"
+                };
+                for (i = parseResult.pages.length - 1; i >= 0; i--) {
+                    parseResult.pages[i].dimensionCSSRules =
+                        jDoc.deepMerge({}, parseParams.pageData.dimensionCSSRules, parseResult.pages[i].dimensionCSSRules);
+                }
+                break;
+            case "margl":
+                parseParams.pageData.dimensionCSSRules.paddingLeft = {
+                    value: param / 20,
+                    units: "pt"
+                };
+                for (i = parseResult.pages.length - 1; i >= 0; i--) {
+                    parseResult.pages[i].dimensionCSSRules =
+                        jDoc.deepMerge({}, parseParams.pageData.dimensionCSSRules, parseResult.pages[i].dimensionCSSRules);
+                }
+                break;
+            case "margr":
+                parseParams.pageData.dimensionCSSRules.paddingRight = {
+                    value: param / 20,
+                    units: "pt"
+                };
+                for (i = parseResult.pages.length - 1; i >= 0; i--) {
+                    parseResult.pages[i].dimensionCSSRules =
+                        jDoc.deepMerge({}, parseParams.pageData.dimensionCSSRules, parseResult.pages[i].dimensionCSSRules);
+                }
+                break;
+            case "margt":
+                parseParams.pageData.dimensionCSSRules.paddingTop = {
+                    value: param / 20,
+                    units: "pt"
+                };
+                for (i = parseResult.pages.length - 1; i >= 0; i--) {
+                    parseResult.pages[i].dimensionCSSRules =
+                        jDoc.deepMerge({}, parseParams.pageData.dimensionCSSRules, parseResult.pages[i].dimensionCSSRules);
+                }
+                break;
+            case "margb":
+                parseParams.pageData.dimensionCSSRules.paddingBottom = {
+                    value: param / 20,
+                    units: "pt"
+                };
+                for (i = parseResult.pages.length - 1; i >= 0; i--) {
+                    parseResult.pages[i].dimensionCSSRules =
+                        jDoc.deepMerge({}, parseParams.pageData.dimensionCSSRules, parseResult.pages[i].dimensionCSSRules);
+                }
+                break;
+            case "gutter":
+                parseParams.pageData.dimensionCSSRules.marginTop = {
+                    value: param / 20,
+                    units: "pt"
+                };
+                for (i = parseResult.pages.length - 1; i > 0; i--) {
+                    parseResult.pages[i].dimensionCSSRules =
+                        jDoc.deepMerge({}, parseParams.pageData.dimensionCSSRules, parseResult.pages[i].dimensionCSSRules);
+                }
+                break;
+            case "fs":
+                el.dimensionCSSRules.fontSize = {
+                    value: param,
+                    units: "px"
+                };
+                break;
+            case "b":
+                if (param === -1) {
+                    el.css.fontWeight = "bold";
+                }
+                break;
+            case "scaps":
+                el.css.fontVariant = "small-caps";
+                break;
+            case "ul":
+                el.css.textDecoration = "underline";
+                break;
+            case "strike":
+                el.css.textDecoration = "line-through";
+                break;
+            case "i":
+                if (param === -1) {
+                    el.css.textDecoration = "line-through";
+                }
+                break;
+            }
         }
     }
 

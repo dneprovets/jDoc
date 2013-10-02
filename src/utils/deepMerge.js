@@ -17,7 +17,9 @@ jDoc.deepMerge = function (obj) {
             if (data[i].hasOwnProperty(prop)) {
                 dataObj = data[i][prop];
 
-                if (dataObj != null && typeof dataObj === 'object' && !(dataObj instanceof Array)) {
+                if (dataObj instanceof Array) {
+                    obj[prop] = dataObj.slice(0);
+                } else if (dataObj != null && typeof dataObj === 'object') {
                     obj[prop] = this.deepMerge({}, obj[prop], dataObj);
                 } else {
                     obj[prop] = dataObj;

@@ -1195,7 +1195,9 @@ jDoc.deepMerge = function (obj) {
             if (data[i].hasOwnProperty(prop)) {
                 dataObj = data[i][prop];
 
-                if (dataObj != null && typeof dataObj === 'object' && !(dataObj instanceof Array)) {
+                if (dataObj instanceof Array) {
+                    obj[prop] = dataObj.slice(0);
+                } else if (dataObj != null && typeof dataObj === 'object') {
                     obj[prop] = this.deepMerge({}, obj[prop], dataObj);
                 } else {
                     obj[prop] = dataObj;
@@ -13298,130 +13300,130 @@ jDoc.Engines.OXML = jDoc.Engine.extend(
         
                     for (c = len - 1; c >= 0; c--) {
                         switch (children[c].localName) {
-                            case "pgSz":
-                                if (children[c].attributes['w:w'] && !isNaN(children[c].attributes['w:w'].value)) {
-                                    pageOptions.dimensionCSSRules.width = {
-                                        value: children[c].attributes['w:w'].value / 20,
-                                        units: "pt"
-                                    };
-        
-                                    params.documentData.styles.defaults.options.pageContentWidth.value +=
-                                        pageOptions.dimensionCSSRules.width.value;
-                                }
-        
-                                if (children[c].attributes['w:h'] && !isNaN(children[c].attributes['w:h'].value)) {
-                                    pageOptions.dimensionCSSRules.height = {
-                                        value: (+children[c].attributes['w:h'].value / 20),
-                                        units: "pt"
-                                    };
-        
-                                    pageHeight += pageOptions.dimensionCSSRules.height.value;
-                                }
-        
-                                break;
-                            case "pgMar":
-                                if (children[c].attributes['w:top'] && !isNaN(children[c].attributes['w:top'].value)) {
-                                    pageOptions.dimensionCSSRules.paddingTop = {
-                                        value: children[c].attributes['w:top'].value / 20,
-                                        units: "pt"
-                                    };
-        
-                                    pageHeight -= pageOptions.dimensionCSSRules.paddingTop.value;
-                                }
-        
-                                if (children[c].attributes['w:left'] && !isNaN(children[c].attributes['w:left'].value)) {
-                                    pageOptions.dimensionCSSRules.paddingLeft = {
-                                        value: children[c].attributes['w:left'].value / 20,
-                                        units: "pt"
-                                    };
-        
-                                    params.documentData.styles.defaults.options.pageContentWidth.value -=
-                                        pageOptions.dimensionCSSRules.paddingLeft.value;
-                                }
-        
-                                if (children[c].attributes['w:right'] && !isNaN(children[c].attributes['w:right'].value)) {
-                                    pageOptions.dimensionCSSRules.paddingRight = {
-                                        value: children[c].attributes['w:right'].value / 20,
-                                        units: "pt"
-                                    };
-        
-                                    params.documentData.styles.defaults.options.pageContentWidth.value -=
-                                        pageOptions.dimensionCSSRules.paddingRight.value;
-                                }
-        
-                                if (children[c].attributes['w:bottom'] && !isNaN(children[c].attributes['w:bottom'].value)) {
-                                    pageOptions.dimensionCSSRules.paddingBottom = {
-                                        value: children[c].attributes['w:bottom'].value / 20,
-                                        units: "pt"
-                                    };
-        
-                                    pageHeight -= pageOptions.dimensionCSSRules.paddingBottom.value;
-                                }
-        
-                                if (
-                                    pageOptions.options.pageNumber &&
-                                        children[c].attributes['w:header'] &&
-                                        !isNaN(children[c].attributes['w:header'].value)
-                                ) {
-                                    pageOptions.options.header.dimensionCSSRules.height = {
-                                        value: children[c].attributes['w:header'].value / 20,
-                                        units: "pt"
-                                    };
-                                }
-                                if (
-                                    children[c].attributes['w:footer'] && !isNaN(children[c].attributes['w:footer'].value)
-                                ) {
-                                    pageOptions.options.footer.dimensionCSSRules.height = {
-                                        value: children[c].attributes['w:footer'].value / 20,
-                                        units: "pt"
-                                    };
-                                }
-        
-                                if (
-                                    children[c].attributes['w:gutter'] &&
-                                        !isNaN(children[c].attributes['w:gutter'].value)
-                                    ) {
-                                    pageOptions.dimensionCSSRules.marginTop = {
-                                        value: children[c].attributes['w:gutter'].value / 20,
-                                        units: "pt"
-                                    };
-                                }
-        
-                                break;
-                            case "pgNumType":
-                                pageOptions.options.pageNumber = {
-                                    value: 0,
-                                    start: (
-                                        children[c].attributes['w:start'] && !isNaN(children[c].attributes['w:start'].value)
-                                    ) ? +children[c].attributes['w:start'].value : 1
-                                };
-                                break;
-                            case "cols":
-                                pageOptions.options.columns.equalWidth =
-                                    self._attributeToBoolean(children[c].attributes['w:equalWidth']);
-                                pageOptions.options.columns.separated =
-                                    self._attributeToBoolean(children[c].attributes['w:sep']);
-                                pageOptions.options.columns.number = (
-                                    children[c].attributes['w:num'] && !isNaN(children[c].attributes['w:num'])
-                                    ) ? +children[c].attributes['w:num'] : pageOptions.options.columns.number;
-                                pageOptions.options.columns.space = (
-                                    children[c].attributes['w:space'] && !isNaN(children[c].attributes['w:space'].value)
-                                    ) ? {
-                                    value: (+children[c].attributes['w:space'].value / 20),
+                        case "pgSz":
+                            if (children[c].attributes['w:w'] && !isNaN(children[c].attributes['w:w'].value)) {
+                                pageOptions.dimensionCSSRules.width = {
+                                    value: children[c].attributes['w:w'].value / 20,
                                     units: "pt"
-                                } : pageOptions.options.columns.space;
-                                break;
-                            case "docGrid":
-                                if (
-                                    children[c].attributes['w:linePitch'] &&
-                                        !isNaN(children[c].attributes['w:linePitch'].value)
-                                    ) {
-                                    params.documentData.styles.defaults.options.linePitch = {
-                                        value: children[c].attributes['w:linePitch'].value / 20,
-                                        units: "pt"
-                                    };
-                                }
-                                break;
+                                };
+        
+                                params.documentData.styles.defaults.options.pageContentWidth.value +=
+                                    pageOptions.dimensionCSSRules.width.value;
+                            }
+        
+                            if (children[c].attributes['w:h'] && !isNaN(children[c].attributes['w:h'].value)) {
+                                pageOptions.dimensionCSSRules.height = {
+                                    value: (+children[c].attributes['w:h'].value / 20),
+                                    units: "pt"
+                                };
+        
+                                pageHeight += pageOptions.dimensionCSSRules.height.value;
+                            }
+        
+                            break;
+                        case "pgMar":
+                            if (children[c].attributes['w:top'] && !isNaN(children[c].attributes['w:top'].value)) {
+                                pageOptions.dimensionCSSRules.paddingTop = {
+                                    value: children[c].attributes['w:top'].value / 20,
+                                    units: "pt"
+                                };
+        
+                                pageHeight -= pageOptions.dimensionCSSRules.paddingTop.value;
+                            }
+        
+                            if (children[c].attributes['w:left'] && !isNaN(children[c].attributes['w:left'].value)) {
+                                pageOptions.dimensionCSSRules.paddingLeft = {
+                                    value: children[c].attributes['w:left'].value / 20,
+                                    units: "pt"
+                                };
+        
+                                params.documentData.styles.defaults.options.pageContentWidth.value -=
+                                    pageOptions.dimensionCSSRules.paddingLeft.value;
+                            }
+        
+                            if (children[c].attributes['w:right'] && !isNaN(children[c].attributes['w:right'].value)) {
+                                pageOptions.dimensionCSSRules.paddingRight = {
+                                    value: children[c].attributes['w:right'].value / 20,
+                                    units: "pt"
+                                };
+        
+                                params.documentData.styles.defaults.options.pageContentWidth.value -=
+                                    pageOptions.dimensionCSSRules.paddingRight.value;
+                            }
+        
+                            if (children[c].attributes['w:bottom'] && !isNaN(children[c].attributes['w:bottom'].value)) {
+                                pageOptions.dimensionCSSRules.paddingBottom = {
+                                    value: children[c].attributes['w:bottom'].value / 20,
+                                    units: "pt"
+                                };
+        
+                                pageHeight -= pageOptions.dimensionCSSRules.paddingBottom.value;
+                            }
+        
+                            if (
+                                pageOptions.options.pageNumber &&
+                                    children[c].attributes['w:header'] &&
+                                    !isNaN(children[c].attributes['w:header'].value)
+                            ) {
+                                pageOptions.options.header.dimensionCSSRules.height = {
+                                    value: children[c].attributes['w:header'].value / 20,
+                                    units: "pt"
+                                };
+                            }
+                            if (
+                                children[c].attributes['w:footer'] && !isNaN(children[c].attributes['w:footer'].value)
+                            ) {
+                                pageOptions.options.footer.dimensionCSSRules.height = {
+                                    value: children[c].attributes['w:footer'].value / 20,
+                                    units: "pt"
+                                };
+                            }
+        
+                            if (
+                                children[c].attributes['w:gutter'] &&
+                                    !isNaN(children[c].attributes['w:gutter'].value)
+                                ) {
+                                pageOptions.dimensionCSSRules.marginTop = {
+                                    value: children[c].attributes['w:gutter'].value / 20,
+                                    units: "pt"
+                                };
+                            }
+        
+                            break;
+                        case "pgNumType":
+                            pageOptions.options.pageNumber = {
+                                value: 0,
+                                start: (
+                                    children[c].attributes['w:start'] && !isNaN(children[c].attributes['w:start'].value)
+                                ) ? +children[c].attributes['w:start'].value : 1
+                            };
+                            break;
+                        case "cols":
+                            pageOptions.options.columns.equalWidth =
+                                self._attributeToBoolean(children[c].attributes['w:equalWidth']);
+                            pageOptions.options.columns.separated =
+                                self._attributeToBoolean(children[c].attributes['w:sep']);
+                            pageOptions.options.columns.number = (
+                                children[c].attributes['w:num'] && !isNaN(children[c].attributes['w:num'])
+                                ) ? +children[c].attributes['w:num'] : pageOptions.options.columns.number;
+                            pageOptions.options.columns.space = (
+                                children[c].attributes['w:space'] && !isNaN(children[c].attributes['w:space'].value)
+                                ) ? {
+                                value: (+children[c].attributes['w:space'].value / 20),
+                                units: "pt"
+                            } : pageOptions.options.columns.space;
+                            break;
+                        case "docGrid":
+                            if (
+                                children[c].attributes['w:linePitch'] &&
+                                    !isNaN(children[c].attributes['w:linePitch'].value)
+                            ) {
+                                params.documentData.styles.defaults.options.linePitch = {
+                                    value: children[c].attributes['w:linePitch'].value / 20,
+                                    units: "pt"
+                                };
+                            }
+                            break;
                         }
                     }
         
