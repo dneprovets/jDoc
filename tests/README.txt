@@ -1,0 +1,1 @@
+export SELENIUM='/usr/bin/selenium-server-standalone-2.35.0.jar'

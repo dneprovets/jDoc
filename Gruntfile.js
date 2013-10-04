@@ -4,220 +4,29 @@ module.exports = function (grunt) {
             src: "function"
         },
 
-        version: JSON.parse(grunt.file.read("package.json")).version,
-
-        concat: {
-            app: {
-                src: [
-                    'src/beginBanner.js',
-
-                    'src/browser.js',
-
-                    'src/main.js',
-                    'src/parsedFile.js',
-
-                    'src/utils/*.js',
-
-                    'src/utils/DOM/*.js',
-
-                    'src/engines/Base/engine.js',
-                    'src/engines/Base/extend.js',
-                    'src/engines/Base/reader/private/*.js',
-
-                    'src/build/*',
-                    '!src/build/jdoc.*',
-
-                    'src/endBanner.js'
-                ],
-                dest: 'src/build/jdoc.<%= version %>.js'
-            }
-        },
-
-        uglify: {
-            options: {
-                compress: true,
-                report:   false
-            },
-            js:      {
-                'src':  'src/build/jdoc.<%= version %>.js',
-                'dest': 'src/build/jdoc.<%= version %>.min.js'
-            }
-        },
-
-        jsdoc : {
-            dist : {
-                src: ['src/build/jdoc.<%= version %>.js'],
-                options: {
-                    destination: 'doc'
-                }
-            }
-        },
-
-        engineConcat: {
-            simple: {
-                options: {
-                    namespace: 'jDoc.Engines.Simple.prototype',
-                    mainFilePath: 'src/engines/Simple/main.js'
-                },
-                src: [
-                    'src/engines/Simple/reader/private/*.js',
-                    'src/engines/Simple/reader/public/*.js'
-                ],
-                dest: 'src/build/simple.js'
-            },
-
-            odf: {
-                options: {
-                    namespace: 'jDoc.Engines.ODF.prototype',
-                    mainFilePath: 'src/engines/ODF/main.js'
-                },
-                src: [
-                    'src/engines/ODF/reader/private/*.js'
-                ],
-                dest: 'src/build/odf.js'
-            },
-
-            oxml: {
-                options: {
-                    namespace: 'jDoc.Engines.OXML.prototype',
-                    mainFilePath: 'src/engines/OXML/main.js'
-                },
-                src: [
-                    'src/engines/OXML/reader/private/*.js'
-                ],
-                dest: 'src/build/oxml.js'
-            },
-
-            dsv: {
-                options: {
-                    namespace: 'jDoc.Engines.DSV.prototype',
-                    mainFilePath: 'src/engines/DSV/main.js'
-                },
-                src: [
-                    'src/engines/DSV/reader/private/*.js',
-                    'src/engines/DSV/reader/public/*.js'
-                ],
-                dest: 'src/build/dsv.js'
-            },
-
-            /*
-            rtf: {
-                options: {
-                    namespace: 'jDoc.Engines.RTF.prototype',
-                    mainFilePath: 'src/engines/RTF/main.js'
-                },
-                src: [
-                    'src/engines/RTF/reader/private/*.js',
-                    'src/engines/RTF/reader/public/*.js'
-                ],
-                dest: 'src/build/rtf.js'
-            },*/
-
-            /*
-            wcbff: {
-                options: {
-                    namespace: 'jDoc.Engines.WCBFF.prototype',
-                    mainFilePath: 'src/engines/WCBFF/main.js'
-                },
-                src: [
-                    'src/engines/WCBFF/reader/private/*.js',
-                    'src/engines/WCBFF/reader/public/*.js'
-                ],
-                dest: 'src/build/wcbff.js'
-            },*/
-
-            fictionBook: {
-                options: {
-                    namespace: 'jDoc.Engines.FictionBook.prototype',
-                    mainFilePath: 'src/engines/FictionBook/main.js'
-                },
-                src: [
-                    'src/engines/FictionBook/reader/private/*.js',
-                    'src/engines/FictionBook/reader/public/*.js'
-                ],
-                dest: 'src/build/fb2.js'
-            }
-        },
-
-        clean: {
-            start: [
-                "src/build/*.js",
-                "src/build/*/*.js"
-            ],
-
-            engines: [
-                "src/build/*.js",
-                "!src/build/jdoc.*"
-            ]
-        }
+        version: JSON.parse(grunt.file.read("package.json")).version
     };
 
     grunt.initConfig(config);
 
+    /**
+     * include tasks
+     */
+    require('grunt-config-dir')(grunt, {
+        configDir: require('path').resolve(__dirname + '/grunt_tasks'),
+        fileExtensions: ['js']
+    }, function (err) {
+        grunt.log.error(err);
+    });
+
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-clean');
+    grunt.loadNpmTasks('grunt-jdoc-engines-concat');
     grunt.loadNpmTasks('grunt-jsdoc');
 
-    grunt.registerMultiTask('engineConcat', function () {
-        var options = this.options({
-            namespace: '',
-            mainFilePath: '',
-            separator: ',\n'
-        });
-
-        if (!options.namespace) {
-            grunt.log.warn('Namespace is required');
-            return false;
-        }
-
-        if (!grunt.file.exists(options.mainFilePath)) {
-            grunt.log.warn('mainFilePath "' + options.mainFilePath + '" not found.');
-            return false;
-        }
-
-        options.namespace = options.namespace.replace(/\.$/, '') + '.';
-
-        this.files.forEach(function(f) {
-
-            var mainFileSource,
-                tab = '        ',
-                src = f.src.filter(function(filepath) {
-                    if (!grunt.file.exists(filepath)) {
-                        grunt.log.warn('Source file "' + filepath + '" not found.');
-                        return false;
-                    } else {
-                        return true;
-                    }
-                }).map(function(filepath) {
-                    // Read file source.
-                    var src = grunt.file.read(filepath),
-                        name;
-
-                    name = new RegExp(options.namespace + '([_a-zA-Z0-9]+)\\s*=').exec(src);
-
-                    if (name && name[1]) {
-                        src = src.replace(new RegExp(options.namespace + name[1] + '\\s*='), name[1] + ':')
-                            .replace(/;\s*$/, '');
-                    }
-
-                    return tab + src.replace(/\n/g, '\n' + tab).replace(/^\s*/, '');
-                }).join(options.separator);
-
-            mainFileSource = grunt.file.read(options.mainFilePath);
-
-            mainFileSource = mainFileSource.replace('//[ENGINE]', src);
-
-            // Write the destination file.
-            grunt.file.write(f.dest, mainFileSource);
-
-            // Print a success message.
-            grunt.log.writeln('File "' + f.dest + '" beautifying');
-        });
-    });
-
     grunt.registerTask('default', [
-        'engineConcat',
+        'engines_concat',
         'concat:app',
         'clean:engines',
         'uglify'/*,

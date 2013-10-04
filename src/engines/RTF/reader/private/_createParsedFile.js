@@ -23,10 +23,7 @@ jDoc.Engines.RTF.prototype._createParsedFile = function (text, callback) {
             },
             currentTextElement: null,
             currentPageIndex: 0,
-            currentParagraphIndex: 0,
-            ignoreControlWords: [
-                "stylesheet", "fonttbl", "info"
-            ],
+            currentElementIndex: 0,
             ignoreGroups: [],
             braceCounter: 0
         },
@@ -34,7 +31,7 @@ jDoc.Engines.RTF.prototype._createParsedFile = function (text, callback) {
             pages: [{
                 options: {},
                 css: {},
-                dimensionCSS: {},
+                dimensionCSSRules: {},
                 elements: [{
                     options: {
                         isParagraph: true
@@ -59,19 +56,21 @@ jDoc.Engines.RTF.prototype._createParsedFile = function (text, callback) {
             if (text[i] !== '\\') {
                 i = this._parseControlWord(text, i, parseParams, parseResult);
             } else {
-                if (!parseParams.currentTextElement) {
-                    parseParams.currentTextElement = {
-                        options: {},
-                        css: {},
-                        dimensionCSSRules: {},
-                        properties: {
-                            textContent: ""
-                        }
-                    };
-                    parseResult.pages[parseParams.currentPageIndex]
-                        .elements[parseParams.currentParagraphIndex].elements.push(parseParams.currentTextElement);
+                if (!parseParams.ignoreGroups.length) {
+                    if (!parseParams.currentTextElement) {
+                        parseParams.currentTextElement = {
+                            options: {},
+                            css: {},
+                            dimensionCSSRules: {},
+                            properties: {
+                                textContent: ""
+                            }
+                        };
+                        parseResult.pages[parseParams.currentPageIndex]
+                            .elements[parseParams.currentElementIndex].elements.push(parseParams.currentTextElement);
+                    }
+                    parseParams.currentTextElement.properties.textContent += text[i];
                 }
-                parseParams.currentTextElement.properties.textContent += text[i];
                 i += 1;
             }
             break;
@@ -98,7 +97,7 @@ jDoc.Engines.RTF.prototype._createParsedFile = function (text, callback) {
                         }
                     };
                     parseResult.pages[parseParams.currentPageIndex]
-                        .elements[parseParams.currentParagraphIndex].elements.push(parseParams.currentTextElement);
+                        .elements[parseParams.currentElementIndex].elements.push(parseParams.currentTextElement);
                 }
                 parseParams.currentTextElement.properties.textContent += text[i];
             }
