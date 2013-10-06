@@ -64,6 +64,12 @@ jDoc.read(file, {
  * {message: 'Can't load the file'}
  * {message: 'Not have the required technology'} - unsupported browser
 
+## Grunt
+Build a library:
+* `grunt readers` - build all engines for supported formats
+* `grunt readers:include --rtf --oxml` - build only `rtf` and `oxml` engines
+* `grunt readers:exclude --rtf --oxml` - build all engines for supported formats except `rtf` and `oxml` engines
+
 ## Release History
 
  * 2013-09-10   v0.1.0   Work in progress, not yet officially released.
