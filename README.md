@@ -67,7 +67,9 @@ jDoc.read(file, {
 ## Grunt
 Build a library:
 * `grunt readers` - build all engines for supported formats
+* `grunt readers:include` - build all engines for supported formats
 * `grunt readers:include --rtf --oxml` - build only `rtf` and `oxml` engines
+* `grunt readers:exclude` - exclude all engines from build
 * `grunt readers:exclude --rtf --oxml` - build all engines for supported formats except `rtf` and `oxml` engines
 
 ## Release History
