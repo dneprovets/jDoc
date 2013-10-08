@@ -13,8 +13,12 @@ jDoc.Engines.RTF.prototype._parseControlWord = function (text, index, parseParam
         match,
         el,
         i,
+        currentRowIndex = 0,
+        currentCellIndex = 0,
+        count,
+        table = parseParams.table,
+        row = table ? table.body.rows[table.body.rows.length - 1] : null,
         page = parseResult.pages[parseParams.currentPageIndex],
-        element = page.elements[parseParams.currentElementIndex],
         param = -1;
 
     while (text[index] !== ' ' && text[index] !== '\\' && text[index] !== '{' && text[index] !== '}') {
@@ -40,17 +44,19 @@ jDoc.Engines.RTF.prototype._parseControlWord = function (text, index, parseParam
     if (this._ignoreControlWords.indexOf(clearedControlWord) >= 0) {
         parseParams.ignoreGroups.push(parseParams.braceCounter);
     } else if (!parseParams.ignoreGroups.length) {
-        el = (parseParams.currentTextElement || element);
+        el = (parseParams.currentTextElement || parseParams.currentTextElementParent);
 
         switch (clearedControlWord) {
         case "page":
+            table = null;
+            parseResult.table = table;
             page = jDoc.clone(parseParams.pageData);
-            element = jDoc.clone(parseParams.paragraphData);
+            parseParams.currentTextElementParent = jDoc.clone(parseParams.paragraphData);
             parseParams.currentTextElement = null;
             parseParams.currentPageIndex++;
             parseParams.currentElementIndex = 0;
             parseResult.pages[parseParams.currentPageIndex] = page;
-            page.elements[parseParams.currentElementIndex] = element;
+            page.elements[parseParams.currentElementIndex] = parseParams.currentTextElementParent;
             break;
         case "par":
             parseParams.currentElementIndex++;
@@ -58,23 +64,83 @@ jDoc.Engines.RTF.prototype._parseControlWord = function (text, index, parseParam
              * inherit previous paragraph
              * @type {*}
              */
-            element = jDoc.deepMerge({}, (element && element.options.isParagraph ? element : parseParams.paragraphData), {
+            parseParams.currentTextElementParent = jDoc.deepMerge({}, (
+                (
+                    parseParams.currentTextElementParent && parseParams.currentTextElementParent.options.isParagraph
+                ) ? parseParams.currentTextElementParent : parseParams.paragraphData
+            ), {
                 elements: []
             });
-            page.elements[parseParams.currentElementIndex] = element;
+            page.elements[parseParams.currentElementIndex] = parseParams.currentTextElementParent;
             parseParams.currentTextElement = null;
             break;
+        case "row":
+            row = row || this._initRow();
+            table = this._checkTable({
+                table: table,
+                row: row,
+                tableContainer: parseParams,
+                parentElementsList: page.elements,
+                parentElementsIndex: parseParams.currentElementIndex,
+                data: parseParams.currentTextElementParent
+            });
+
+            row = this._initRow();
+            table.body.rows.push(row);
+            break;
+        case "cellx":
+            row = row || this._initRow();
+
+            table = this._checkTable({
+                table: table,
+                row: row,
+                tableContainer: parseParams,
+                parentElementsList: page.elements,
+                parentElementsIndex: parseParams.currentElementIndex,
+                data: parseParams.currentTextElementParent
+            });
+
+            count = table.body.rows.length;
+            currentRowIndex = count ? count - 1 : 0;
+
+            table.options.cellsWidth[currentRowIndex] = table.options.cellsWidth[currentRowIndex] || [];
+            table.options.cellsWidth[currentRowIndex].push({
+                value: param / 20,
+                units: "pt"
+            });
+            break;
         case "cell":
-            parseParams.currentElementIndex++;
-            element = {
-                options: {
-                    isParagraph: true
-                },
+            row = row || this._initRow();
+            table = this._checkTable({
+                table: table,
+                row: row,
+                tableContainer: parseParams,
+                parentElementsList: page.elements,
+                parentElementsIndex: parseParams.currentElementIndex,
+                data: parseParams.currentTextElementParent
+            });
+
+            row.cells.push(parseParams.currentTextElementParent);
+
+            count = table.body.rows.length;
+            currentRowIndex = count ? count - 1 : 0;
+            count = row.cells.length;
+            currentCellIndex = count ? count - 1 : 0;
+
+            if (
+                table.options.cellsWidth[currentRowIndex] &&
+                    table.options.cellsWidth[currentRowIndex][currentCellIndex]
+            ) {
+                parseParams.currentTextElementParent.dimensionCSSRules.width =
+                    parseParams.currentTextElementParent.dimensionCSSRules.width ||
+                        table.options.cellsWidth[currentRowIndex][currentCellIndex];
+            }
+            parseParams.currentTextElementParent = {
+                options: {},
                 css: {},
                 dimensionCSSRules: {},
                 elements: []
             };
-            page.elements[parseParams.currentElementIndex] = element;
             parseParams.currentTextElement = null;
             break;
         case "paperw":
@@ -172,7 +238,13 @@ jDoc.Engines.RTF.prototype._parseControlWord = function (text, index, parseParam
             el.css.fontVariant = "small-caps";
             break;
         case "qj":
-            element.css.textAlign = "justify";
+            parseParams.currentTextElementParent.css.textAlign = "justify";
+            break;
+        case "qr":
+            parseParams.currentTextElementParent.css.textAlign = "right";
+            break;
+        case "ql":
+            parseParams.currentTextElementParent.css.textAlign = "left";
             break;
         case "ul":
             el.css.textDecoration = "underline";
@@ -187,7 +259,7 @@ jDoc.Engines.RTF.prototype._parseControlWord = function (text, index, parseParam
             break;
         case "li":
             if (param > 0) {
-                element.dimensionCSSRules.paddingLeft = {
+                parseParams.currentTextElementParent.dimensionCSSRules.paddingLeft = {
                     value: param / 20,
                     units: "pt"
                 };
@@ -195,7 +267,7 @@ jDoc.Engines.RTF.prototype._parseControlWord = function (text, index, parseParam
             break;
         case "fi":
             if (param > 0) {
-                element.dimensionCSSRules.textIndent = {
+                parseParams.currentTextElementParent.dimensionCSSRules.textIndent = {
                     value: param / 20,
                     units: "pt"
                 };
@@ -203,7 +275,7 @@ jDoc.Engines.RTF.prototype._parseControlWord = function (text, index, parseParam
             break;
         case "sa":
             if (param > 0) {
-                element.dimensionCSSRules.marginBottom = {
+                parseParams.currentTextElementParent.dimensionCSSRules.marginBottom = {
                     value: param / 20,
                     units: "pt"
                 };
@@ -211,7 +283,7 @@ jDoc.Engines.RTF.prototype._parseControlWord = function (text, index, parseParam
             break;
         case "sb":
             if (param > 0) {
-                element.dimensionCSSRules.marginTop = {
+                parseParams.currentTextElementParent.dimensionCSSRules.marginTop = {
                     value: param / 20,
                     units: "pt"
                 };
@@ -221,13 +293,15 @@ jDoc.Engines.RTF.prototype._parseControlWord = function (text, index, parseParam
             this._resetFontProperties(el);
             break;
         case "pard":
-            if (!element.options.isParagraph) {
+            if (parseResult.table) {
+                table = null;
+                parseResult.table = table;
                 parseParams.currentElementIndex++;
-                element = jDoc.clone(parseParams.paragraphData);
-                page.elements[parseParams.currentElementIndex] = element;
+                parseParams.currentTextElementParent = jDoc.clone(parseParams.paragraphData);
+                page.elements[parseParams.currentElementIndex] = parseParams.currentTextElementParent;
                 parseParams.currentTextElement = null;
             }
-            this._resetParagraphProperties(element);
+            this._resetParagraphProperties(parseParams.currentTextElementParent);
             break;
         case "tab":
             if (parseParams.currentTextElement) {

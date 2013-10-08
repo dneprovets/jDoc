@@ -82,8 +82,6 @@ module.exports = function (grunt) {
                 engines = [],
                 len = flags.length;
 
-            console.log(flags);
-
             for (i = len - 1; i >= 0; i--) {
                 flag = flags[i].replace(/^\-*/, '').toLowerCase();
 
@@ -121,7 +119,6 @@ module.exports = function (grunt) {
     });
     grunt.registerTask('default', [
         'readers',
-        'writers'/*,
-         'jsdoc'*/
+        'writers'
     ]);
 };

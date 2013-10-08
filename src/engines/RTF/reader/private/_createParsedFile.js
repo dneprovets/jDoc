@@ -21,6 +21,7 @@ jDoc.Engines.RTF.prototype._createParsedFile = function (text, callback) {
                 dimensionCSSRules: {},
                 elements: []
             },
+            currentTextElementParent: null,
             currentTextElement: null,
             currentPageIndex: 0,
             currentElementIndex: 0,
@@ -42,6 +43,8 @@ jDoc.Engines.RTF.prototype._createParsedFile = function (text, callback) {
                 }]
             }]
         };
+
+    parseParams.currentTextElementParent = parseResult.pages[0].elements[0];
 
     while (text[i]) {
         switch (text[i]) {
@@ -66,8 +69,7 @@ jDoc.Engines.RTF.prototype._createParsedFile = function (text, callback) {
                                 textContent: ""
                             }
                         };
-                        parseResult.pages[parseParams.currentPageIndex]
-                            .elements[parseParams.currentElementIndex].elements.push(parseParams.currentTextElement);
+                        parseParams.currentTextElementParent.elements.push(parseParams.currentTextElement);
                     }
                     parseParams.currentTextElement.properties.textContent += text[i];
                 }
@@ -96,8 +98,7 @@ jDoc.Engines.RTF.prototype._createParsedFile = function (text, callback) {
                             textContent: ""
                         }
                     };
-                    parseResult.pages[parseParams.currentPageIndex]
-                        .elements[parseParams.currentElementIndex].elements.push(parseParams.currentTextElement);
+                    parseParams.currentTextElementParent.elements.push(parseParams.currentTextElement);
                 }
                 parseParams.currentTextElement.properties.textContent += text[i];
             }
