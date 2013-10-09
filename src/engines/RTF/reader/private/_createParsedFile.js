@@ -7,6 +7,7 @@
 jDoc.Engines.RTF.prototype._createParsedFile = function (text, callback) {
     var i = 0,
         parseParams = {
+            unParsedControlWords: {},
             pageData: {
                 options: {},
                 css: {},
@@ -100,14 +101,19 @@ jDoc.Engines.RTF.prototype._createParsedFile = function (text, callback) {
                     };
                     parseParams.currentTextElementParent.elements.push(parseParams.currentTextElement);
                 }
-                parseParams.currentTextElement.properties.textContent += text[i];
+                if (text[i] === " " && text[i + 1] === " ") {
+                    i += 1;
+                    parseParams.currentTextElement.properties.textContent += this._getHalfTabAsSpaces();
+                } else {
+                    parseParams.currentTextElement.properties.textContent += text[i];
+                }
             }
             i += 1;
             break;
         }
     }
 
-    console.log(parseParams, parseResult);
+    console.log(Object.keys(parseParams.unParsedControlWords));
 
     if (typeof callback === 'function') {
         callback(new jDoc.ParsedFile(parseResult));

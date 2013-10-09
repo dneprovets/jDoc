@@ -4,5 +4,7 @@
  * @private
  */
 jDoc.Engine.prototype._getTabAsSpaces = function () {
-    return "\u2000\u2000\u2000\u2000";
+    var halfTab = this._getHalfTabAsSpaces();
+
+    return halfTab + halfTab;
 };

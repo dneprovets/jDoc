@@ -8950,11 +8950,47 @@ jDoc.Engine.extend = function (props) {
 };
 /**
  *
+ * @param hex
+ * @returns {string}
+ * @private
+ */
+jDoc.Engine.prototype._getCharFromHex = function (hex) {
+    var code = parseInt(hex, 16);
+    return !isNaN(code) ? String.fromCharCode(code) : "";
+};
+/**
+ *
+ * @returns {string}
+ * @private
+ */
+jDoc.Engine.prototype._getHalfTabAsSpaces = function () {
+    return "\u2000\u2000";
+};
+/**
+ *
+ * @returns {string}
+ * @private
+ */
+jDoc.Engine.prototype._getNonbreakingHyphen = function () {
+    return "&nbsp;";
+};
+/**
+ *
+ * @returns {string}
+ * @private
+ */
+jDoc.Engine.prototype._getOptionalHyphen = function () {
+    return "\u2000";
+};
+/**
+ *
  * @returns {string}
  * @private
  */
 jDoc.Engine.prototype._getTabAsSpaces = function () {
-    return "\u2000\u2000\u2000\u2000";
+    var halfTab = this._getHalfTabAsSpaces();
+
+    return halfTab + halfTab;
 };
 /**
  * @description Adjunct a color value to a single mind

@@ -32,18 +32,32 @@ jDoc.Engines.RTF.prototype._parseControlWord = function (text, index, parseParam
     }
     index += text[index] === ' ' ? 1 : 0;
 
-    match = controlWord.search(/-?\d+$/gi);
+    if (controlWord[0] === "'") {
+        /**
+         * +1 - exclude ' symbol
+         * @type {number}
+         */
+        match = controlWord.search(/'[a-z0-9]+$/gi) + 1;
 
-    if (match !== -1) {
-        param = parseInt(controlWord.substr(match), 10);
-        controlWord = controlWord.substr(0, match);
+        if (match) {
+            param = controlWord.substr(match);
+            controlWord = controlWord.substr(0, match);
+            clearedControlWord = controlWord;
+        }
+    } else {
+        match = controlWord.search(/-?\d+$/gi);
+
+        if (match !== -1) {
+            param = parseInt(controlWord.substr(match), 10);
+            controlWord = controlWord.substr(0, match);
+        }
+
+        clearedControlWord = controlWord.replace(/[;]/, '');
     }
-
-    clearedControlWord = controlWord.replace(/[;]/, '');
 
     if (this._ignoreControlWords.indexOf(clearedControlWord) >= 0) {
         parseParams.ignoreGroups.push(parseParams.braceCounter);
-    } else if (!parseParams.ignoreGroups.length) {
+    } else if (clearedControlWord && !parseParams.ignoreGroups.length) {
         el = (parseParams.currentTextElement || parseParams.currentTextElementParent);
 
         switch (clearedControlWord) {
@@ -221,14 +235,6 @@ jDoc.Engines.RTF.prototype._parseControlWord = function (text, index, parseParam
                 };
             }
             break;
-        case "f":
-            if (param !== -1) {
-                el.dimensionCSSRules.fontSize = {
-                    value: param / 2,
-                    units: "pt"
-                };
-            }
-            break;
         case "b":
             if (param === -1) {
                 el.css.fontWeight = "bold";
@@ -246,6 +252,9 @@ jDoc.Engines.RTF.prototype._parseControlWord = function (text, index, parseParam
         case "ql":
             parseParams.currentTextElementParent.css.textAlign = "left";
             break;
+        case "qc":
+            parseParams.currentTextElementParent.css.textAlign = "center";
+            break;
         case "ul":
             el.css.textDecoration = "underline";
             break;
@@ -260,6 +269,14 @@ jDoc.Engines.RTF.prototype._parseControlWord = function (text, index, parseParam
         case "li":
             if (param > 0) {
                 parseParams.currentTextElementParent.dimensionCSSRules.paddingLeft = {
+                    value: param / 20,
+                    units: "pt"
+                };
+            }
+            break;
+        case "ri":
+            if (param > 0) {
+                parseParams.currentTextElementParent.dimensionCSSRules.paddingRight = {
                     value: param / 20,
                     units: "pt"
                 };
@@ -308,6 +325,21 @@ jDoc.Engines.RTF.prototype._parseControlWord = function (text, index, parseParam
                 parseParams.currentTextElement.properties.textContent += this._getTabAsSpaces();
             }
             break;
+        case "_":
+            if (parseParams.currentTextElement) {
+                parseParams.currentTextElement.properties.textContent += this._getOptionalHyphen();
+            }
+            break;
+        case "-":
+            if (parseParams.currentTextElement) {
+                parseParams.currentTextElement.properties.textContent += this._getNonbreakingHyphen();
+            }
+            break;
+        case "'":
+            if (parseParams.currentTextElement && isNaN(param)) {
+                parseParams.currentTextElement.properties.textContent += this._getCharFromHex(param);
+            }
+            break;
         case "tx":
             if (param > 0 && parseParams.currentTextElement) {
                 parseParams.currentTextElement.dimensionCSSRules.paddingLeft = {
@@ -317,7 +349,7 @@ jDoc.Engines.RTF.prototype._parseControlWord = function (text, index, parseParam
             }
             break;
         default:
-            console.log(controlWord);
+            parseParams.unParsedControlWords[controlWord] = true;
         }
     }
 
