@@ -8971,16 +8971,8 @@ jDoc.Engine.prototype._getHalfTabAsSpaces = function () {
  * @returns {string}
  * @private
  */
-jDoc.Engine.prototype._getNonbreakingHyphen = function () {
-    return "&nbsp;";
-};
-/**
- *
- * @returns {string}
- * @private
- */
-jDoc.Engine.prototype._getOptionalHyphen = function () {
-    return "\u2000";
+jDoc.Engine.prototype._getNonbreakingSpace = function () {
+    return "\u00A0";
 };
 /**
  *

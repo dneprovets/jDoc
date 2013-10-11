@@ -8,6 +8,35 @@ jDoc.Engines.RTF.prototype._createParsedFile = function (text, callback) {
     var i = 0,
         parseParams = {
             unParsedControlWords: {},
+            styles: {
+                cells: {
+                    css: {},
+                    dimensionCSSRules: {}
+                },
+                table: {
+                    css: {},
+                    dimensionCSSRules: {}
+                },
+                rows: {
+                    css: {},
+                    dimensionCSSRules: {}
+                },
+                defaults: {
+                    css: {
+                        borderStyle: "solid",
+                        borderColor: "#000000"
+                    },
+                    dimensionCSSRules: {
+                        borderWidth: {
+                            value: 0.75,
+                            units: "pt"
+                        }
+                    }
+                }
+            },
+            options: {
+                table: {}
+            },
             pageData: {
                 options: {},
                 css: {},
