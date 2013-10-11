@@ -9,11 +9,7 @@ jDoc.Engines.RTF.prototype.controlWordsParsers.margt = function () {
         units: "pt"
     };
     for (i = parseResult.pages.length - 1; i >= 0; i--) {
-        parseResult.pages[i].dimensionCSSRules = jDoc.deepMerge(
-            {},
-            parseParams.pageData.dimensionCSSRules,
-            parseResult.pages[i].dimensionCSSRules
-        );
+        parseResult.pages[i].dimensionCSSRules.paddingTop = parseParams.pageData.dimensionCSSRules.paddingTop;
     }
 
     return {

@@ -4,16 +4,12 @@ jDoc.Engines.RTF.prototype.controlWordsParsers.margb = function () {
         param = options.param,
         i;
 
-    parseParams.pageData.dimensionCSSRules.paddingLeft = {
+    parseParams.pageData.dimensionCSSRules.paddingBottom = {
         value: param / 20,
         units: "pt"
     };
     for (i = parseResult.pages.length - 1; i >= 0; i--) {
-        parseResult.pages[i].dimensionCSSRules = jDoc.deepMerge(
-            {},
-            parseParams.pageData.dimensionCSSRules,
-            parseResult.pages[i].dimensionCSSRules
-        );
+        parseResult.pages[i].dimensionCSSRules.paddingBottom = parseParams.pageData.dimensionCSSRules.paddingBottom;
     }
 
     return {

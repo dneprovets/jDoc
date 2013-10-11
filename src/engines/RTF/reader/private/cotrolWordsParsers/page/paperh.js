@@ -9,11 +9,7 @@ jDoc.Engines.RTF.prototype.controlWordsParsers.paperh = function () {
         units: "pt"
     };
     for (i = parseResult.pages.length - 1; i >= 0; i--) {
-        parseResult.pages[i].dimensionCSSRules = jDoc.deepMerge(
-            {},
-            parseParams.pageData.dimensionCSSRules,
-            parseResult.pages[i].dimensionCSSRules
-        );
+        parseResult.pages[i].dimensionCSSRules.height = parseParams.pageData.dimensionCSSRules.height;
     }
     return {
         parseParams: parseParams,
