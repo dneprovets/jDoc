@@ -9286,235 +9286,38 @@
         });
     };
     /**
+     * @description Delimiter-separated values. Delimiters: comma, tab
      * @constructor
      * @type {Object}
      */
-    jDoc.Engines.RTF = jDoc.Engine.extend(
-        /** @lends jDoc.Engines.RTF.prototype */
+    jDoc.Engines.DSV = jDoc.Engine.extend(
+        /** @lends jDoc.Engines.DSV.prototype */
         {
             /**
              *
-             * @param text
-             * @param callback
+             * @param text {String}
+             * @param callback {function}
              * @private
              */
             _createParsedFile: function (text, callback) {
-                var i = 0,
-                    parseParams = {
-                        unParsedControlWords: {},
-                        styles: {
-                            cells: {
-                                css: {},
-                                dimensionCSSRules: {}
-                            },
-                            table: {
-                                css: {},
-                                dimensionCSSRules: {}
-                            },
-                            rows: {
-                                css: {},
-                                dimensionCSSRules: {}
-                            },
-                            defaults: {
-                                css: {
-                                    borderStyle: "solid",
-                                    borderColor: "#000000"
-                                },
-                                dimensionCSSRules: {
-                                    borderWidth: {
-                                        value: 0.75,
-                                        units: "pt"
-                                    }
-                                }
-                            }
-                        },
+                var delimiterType = this.options.fileType.delimiterType || "comma",
+                    delimiterMask,
+                    delimiter = "",
+                    escapedDelimiterKey = "DSV_DELIMITER_ESCAPED",
+                    escapedCommaMask = (/".*(,).*"/g),
+                    escapedCommaPart,
+                    escapedCommaPartModified,
+                    element = {
                         options: {
-                            table: {}
+                            isTable: true
                         },
-                        pageData: {
-                            options: {},
-                            css: {},
-                            dimensionCSSRules: {},
-                            elements: []
-                        },
-                        paragraphData: {
-                            options: {
-                                isParagraph: true
-                            },
-                            css: {},
-                            dimensionCSSRules: {},
-                            elements: []
-                        },
-                        currentTextElementParent: null,
-                        currentTextElement: null,
-                        currentPageIndex: 0,
-                        currentElementIndex: 0,
-                        ignoreGroups: [],
-                        braceCounter: 0
-                    },
-                    parseResult = {
-                        pages: [{
-                            options: {},
-                            css: {},
-                            dimensionCSSRules: {},
-                            elements: [{
-                                options: {
-                                    isParagraph: true
-                                },
-                                css: {},
-                                dimensionCSSRules: {},
-                                elements: []
-                            }]
-                        }]
-                    };
-
-                parseParams.currentTextElementParent = parseResult.pages[0].elements[0];
-
-                while (text[i]) {
-                    switch (text[i]) {
-                    case '\r':
-                        i += 1;
-                        break;
-                    case '\n':
-                        i += 1;
-                        break;
-                    case '\\':
-                        i += 1;
-                        if (text[i] !== '\\') {
-                            i = this._parseControlWord(text, i, parseParams, parseResult);
-                        } else {
-                            if (!parseParams.ignoreGroups.length) {
-                                if (!parseParams.currentTextElement) {
-                                    parseParams.currentTextElement = {
-                                        options: {},
-                                        css: {},
-                                        dimensionCSSRules: {},
-                                        properties: {
-                                            textContent: ""
-                                        }
-                                    };
-                                    parseParams.currentTextElementParent.elements.push(parseParams.currentTextElement);
-                                }
-                                parseParams.currentTextElement.properties.textContent += text[i];
-                            }
-                            i += 1;
-                        }
-                        break;
-                    case '{':
-                        parseParams.braceCounter += 1;
-                        i += 1;
-                        break;
-                    case '}':
-                        if (parseParams.braceCounter === parseParams.ignoreGroups[parseParams.ignoreGroups.length - 1]) {
-                            parseParams.ignoreGroups.pop();
-                        }
-                        parseParams.braceCounter -= 1;
-                        i += 1;
-                        break;
-                    default:
-                        if (!parseParams.ignoreGroups.length) {
-                            if (!parseParams.currentTextElement) {
-                                parseParams.currentTextElement = {
-                                    options: {},
-                                    css: {},
-                                    dimensionCSSRules: {},
-                                    properties: {
-                                        textContent: ""
-                                    }
-                                };
-                                parseParams.currentTextElementParent.elements.push(parseParams.currentTextElement);
-                            }
-                            if (text[i] === " " && text[i + 1] === " ") {
-                                i += 1;
-                                parseParams.currentTextElement.properties.textContent += this._getHalfTabAsSpaces();
-                            } else {
-                                parseParams.currentTextElement.properties.textContent += text[i];
-                            }
-                        }
-                        i += 1;
-                        break;
-                    }
-                }
-
-                console.log(Object.keys(parseParams.unParsedControlWords));
-
-                if (typeof callback === 'function') {
-                    callback(new jDoc.ParsedFile(parseResult));
-                }
-            },
-            /**
-             *
-             * @param parseParams
-             * @returns {null}
-             * @private
-             */
-            _destroyTable: function (parseParams) {
-                parseParams.styles.cells = {
-                    css: {},
-                    dimensionCSSRules: {}
-                };
-                parseParams.styles.rows = {
-                    css: {},
-                    dimensionCSSRules: {}
-                };
-                parseParams.styles.table = {
-                    css: {},
-                    dimensionCSSRules: {}
-                };
-                parseParams.options.table = {};
-
-                return null;
-            },
-            /**
-             * @description File types for parsing
-             * @private
-             */
-            _fileTypeParsers: [{
-                extension: ['rtf'],
-                mime: ['text/rtf', 'application/rtf']
-            }],
-            _ignoreControlWordGroups: {
-                "stylesheet": true,
-                "fonttbl": true,
-                "colortbl": true,
-                "info": true,
-                "fldrslt": true,
-                "field": true
-            },
-            /**
-             *
-             * @returns {*}
-             * @private
-             */
-            _initRow: function () {
-                return {
-                    cells: [],
-                    css: {},
-                    options: {},
-                    dimensionCSSRules: {}
-                };
-            },
-            /**
-             *
-             * @param params
-             * @returns {*}
-             * @private
-             */
-            _initTable: function (params) {
-                params = params || {};
-
-                var data = params.params || {},
-                    table = {
-                        options: jDoc.deepMerge(data.options, {
-                            isTable: true,
-                            elementHeight: {
-                                value: 0,
-                                units: "pt"
-                            },
-                            cellsWidth: []
-                        }),
                         header: {
-                            rows: []
+                            rows: [{
+                                cells: [],
+                                css: {},
+                                options: {},
+                                dimensionCSSRules: {}
+                            }]
                         },
                         body: {
                             rows: []
@@ -9522,159 +9325,106 @@
                         footer: {
                             rows: []
                         },
-                        attributes: jDoc.clone(data.attributes),
-                        dimensionCSSRules: jDoc.clone(data.dimensionCSSRules),
-                        css: jDoc.clone(data.css)
+                        attributes: {},
+                        dimensionCSSRules: {},
+                        css: {}
+                    },
+                    i,
+                    j,
+                    length,
+                    len,
+                    rows,
+                    cells;
+
+                if (delimiterType === "comma") {
+                    delimiterMask = /,/;
+                    delimiter = ",";
+
+                    escapedCommaPart = escapedCommaMask.exec(text);
+
+                    while (escapedCommaPart && escapedCommaPart[0] && escapedCommaPart[1]) {
+                        escapedCommaPartModified = escapedCommaPart[0].replace(/,/g, escapedDelimiterKey);
+                        text = text.replace(escapedCommaPart[0], escapedCommaPartModified);
+
+                        escapedCommaPart = escapedCommaMask.exec(text);
+                    }
+                } else if (delimiterType === 'tab') {
+                    delimiterMask = /\t/;
+                    delimiter = this._getTabAsSpaces();
+                }
+
+                rows = text.split(/\n+/);
+                cells = rows[0].split(delimiterMask);
+                len = cells.length;
+
+                for (i = 0; i < len; i++) {
+                    element.header.rows[0].cells[i] = {
+                        css: {},
+                        dimensionCSSRules: {},
+                        options: {},
+                        elements: [{
+                            options: {},
+                            properties: {
+                                textContent: cells[i].replace(/DSV_DELIMITER_ESCAPED/g, delimiter)
+                            }
+                        }]
+                    };
+                }
+
+                length = rows.length;
+
+                for (j = 1; j < length; j++) {
+                    cells = rows[j].split(delimiterMask);
+                    len = cells.length;
+                    element.body.rows[j - 1] = {
+                        cells: [],
+                        css: {},
+                        options: {},
+                        dimensionCSSRules: {}
                     };
 
-                delete table.options.isParagraph;
-
-                if (params.row) {
-                    table.body.rows.push(params.row);
-                }
-
-                if (params.parentElementsList) {
-                    params.parentElementsList[params.parentElementsIndex || 0] = table;
-                }
-
-                table.css = jDoc.deepMerge({},
-                    table.css,
-                    params.parseParams.styles.table.css
-                );
-
-                table.dimensionCSSRules = jDoc.deepMerge({},
-                    table.dimensionCSSRules,
-                    params.parseParams.styles.table.dimensionCSSRules
-                );
-
-                if (params.parseParams) {
-                    params.parseParams.table = table;
-                }
-
-                return table;
-            },
-            _paragraphPropertiesForDelete: {
-                css: [],
-                dimensionCSSRules: [
-                    "margin",
-                    "marginTop",
-                    "marginBottom",
-                    "marginRight",
-                    "marginLeft",
-                    "padding",
-                    "paddingTop",
-                    "paddingBottom",
-                    "paddingRight",
-                    "paddingLeft"
-                ]
-            },
-            /**
-             *
-             * @param text {String}
-             * @param index {Number}
-             * @param parseParams {*}
-             * @param parseResult {*}
-             * @returns {Number}
-             * @private
-             */
-            _parseControlWord: function (text, index, parseParams, parseResult) {
-                var match,
-                    clearedControlWord,
-                    controlWordParseResult,
-                    param,
-                    controlWord = "",
-                    controlWordParserData = "";
-
-                while (text[index] !== ' ' && text[index] !== '\\' && text[index] !== '{' && text[index] !== '}') {
-                    if (text[index] !== '\r' && text[index] !== '\n') {
-                        controlWord += text[index];
-                    }
-                    if (text[index] === '*') {
-                        parseParams.ignoreGroups.push(parseParams.braceCounter);
-                    }
-                    index += 1;
-                }
-                index += text[index] === ' ' ? 1 : 0;
-
-                if (controlWord[0] === "'") {
-                    /**
-                     * +1 - exclude ' symbol
-                     * @type {number}
-                     */
-                    match = controlWord.search(/'[a-z0-9]+$/gi) + 1;
-
-                    if (match) {
-                        param = controlWord.substr(match);
-                        controlWord = controlWord.substr(0, match);
-                        clearedControlWord = controlWord;
-                    }
-                } else {
-                    match = controlWord.search(/-?\d+$/gi);
-
-                    if (match !== -1) {
-                        param = parseInt(controlWord.substr(match), 10);
-                        controlWord = controlWord.substr(0, match);
-                    }
-
-                    clearedControlWord = controlWord.replace(/[;]/, '');
-                }
-
-                if (this._ignoreControlWordGroups[clearedControlWord]) {
-                    parseParams.ignoreGroups.push(parseParams.braceCounter);
-                } else if (clearedControlWord && !parseParams.ignoreGroups.length) {
-                    if (this.controlWordsParsers[clearedControlWord]) {
-                        controlWordParserData = {
-                            clearedControlWord: clearedControlWord,
-                            controlWord: controlWord,
-                            parseResult: parseResult,
-                            parseParams: parseParams,
-                            param: param
+                    for (i = 0; i < len; i++) {
+                        element.body.rows[j - 1].cells[i] = {
+                            css: {},
+                            dimensionCSSRules: {},
+                            options: {},
+                            elements: [{
+                                options: {},
+                                properties: {
+                                    textContent: cells[i].replace(/DSV_DELIMITER_ESCAPED/g, delimiter)
+                                }
+                            }]
                         };
-                        controlWordParseResult = this.controlWordsParsers[clearedControlWord].call(this, controlWordParserData);
-                        parseResult = controlWordParseResult.parseResult;
-                        parseParams = controlWordParseResult.parseParams;
-                        controlWordParserData = null;
-                        controlWordParseResult = null;
-                    } else {
-                        parseParams.unParsedControlWords[controlWord] = true;
                     }
                 }
 
-                return index;
-            },
-            /**
-             * @description Reset font properties to default
-             * @param el
-             * @private
-             */
-            _resetFontProperties: function (el) {
-                el.css.fontStyle = "none";
-                el.css.fontVariant = "none";
-                el.css.textDecoration = "none";
-                el.css.fontWeight = "normal";
-                el.dimensionCSSRules.fontSize = {
-                    value: 12,
-                    units: "pt"
-                };
-
-                return el;
-            },
-            /**
-             * @description Reset paragraph properties to default
-             * @param el
-             * @private
-             */
-            _resetParagraphProperties: function (el) {
-                var i,
-                    deletedRules = this._paragraphPropertiesForDelete.dimensionCSSRules,
-                    len = deletedRules ? deletedRules.length : 0;
-
-                for (i = len - 1; i >= 0; i--) {
-                    delete el.dimensionCSSRules[deletedRules[i]];
+                if (typeof callback === 'function') {
+                    callback(
+                        new jDoc.ParsedFile({
+                            pages: [{
+                                options: {},
+                                css: {},
+                                elements: [element]
+                            }]
+                        })
+                    );
                 }
-
-                return el;
             },
+            /**
+             * @description File types for parsing
+             * @private
+             */
+            _fileTypeParsers: [{
+                extension: ['csv'],
+                mime: ['text/csv'],
+                delimiterType: "comma",
+                isTextDocument: true
+            }, {
+                extension: ['tsv', 'tab'],
+                mime: ['text/tab-separated-values'],
+                delimiterType: "tab",
+                isTextDocument: true
+            }],
             /**
              *
              * @param options
@@ -9712,1162 +9462,5486 @@
                     reader.readAsText(this.file);
                 }
                 return null;
+            }
+        }
+    );
+    /**
+     * @constructor
+     * @type {Object}
+     */
+    jDoc.Engines.FictionBook = jDoc.Engine.extend(
+        /** @lends jDoc.Engines.FictionBook.prototype */
+        {
+            /**
+             *
+             * @param xml {Document}
+             * @param callback {function}
+             * @private
+             */
+            _createParsedFile: function (xml, callback) {
+                var nodes,
+                    i,
+                    len,
+                    documentData = {
+                        binaryItems: this._parseBinaryItems(xml.querySelectorAll('binary'))
+                    },
+                    result = {
+                        pages: [{
+                            options: {},
+                            css: {},
+                            dimensionCSSRules: {},
+                            elements: []
+                        }],
+                        options: {},
+                        css: {},
+                        dimensionCSSRules: {}
+                    };
+
+                nodes = jDoc.DOM.children(xml.querySelector('FictionBook'));
+                len = nodes.length;
+
+                for (i = 0; i < len; i++) {
+                    switch (nodes[i].localName) {
+                    case "description":
+                        var descriptionNode = xml.querySelector('description');
+
+                        documentData.publishInfo = this._parsePublishInfo(descriptionNode.querySelector('publish-info'));
+                        documentData.fileInfo = this._parseFileInfo(descriptionNode.querySelector('title-info'), documentData);
+                        documentData.documentInfo = this._parseDocumentInfo(descriptionNode.querySelector('document-info'), documentData);
+
+                        if (documentData.fileInfo.annotation) {
+                            result.pages[0].elements.push(documentData.fileInfo.annotation);
+                        }
+
+                        if (
+                            documentData.fileInfo.coverpage &&
+                            documentData.binaryItems[documentData.fileInfo.coverpage.image]
+                        ) {
+                            result.pages[0].elements.push({
+                                options: {},
+                                elements: [
+                                    this._prepareImage({
+                                        documentData: documentData,
+                                        imageName: documentData.fileInfo.coverpage.image
+                                    })
+                                ]
+                            });
+                        }
+                        break;
+                    case "body":
+                        this._parsePages(nodes[i], documentData, result.pages[0].elements);
+                        break;
+                    }
+                }
+
+                if (typeof callback === 'function') {
+                    callback(new jDoc.ParsedFile(result));
+                }
             },
+            /**
+             *
+             * @type {Array}
+             * @private
+             */
+            _fileTypeParsers: [{
+                extension: ['fb2'],
+                mime: ["application/x-fictionbook+xml"],
+                isTextDocument: true
+            }],
+            /**
+             *
+             * @param xml
+             * @return {Object}
+             * @private
+             */
+            _getPersonInfo: function (xml) {
+                var i,
+                    nodes = jDoc.DOM.children(xml),
+                    len = nodes.length,
+                    info = {};
 
-            controlWordsParsers: {
-                "'": function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param;
-
-                    if (parseParams.currentTextElement && isNaN(param)) {
-                        parseParams.currentTextElement.properties.textContent += this._getCharFromHex(param);
-                    }
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                b: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param,
-                        el = parseParams.currentTextElement || parseParams.currentTextElementParent;
-
-                    if (param !== -1) {
-                        el.css.fontWeight = "bold";
-                    }
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                fi: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param;
-
-                    if (param > 0) {
-                        parseParams.currentTextElementParent.dimensionCSSRules.textIndent = {
-                            value: param / 20,
-                            units: "pt"
-                        };
-                    }
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                fs: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param,
-                        el = parseParams.currentTextElement || parseParams.currentTextElementParent;
-
-                    if (param !== -1) {
-                        el.dimensionCSSRules.fontSize = {
-                            value: param / 2,
-                            units: "pt"
-                        };
-                    }
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                i: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param,
-                        el = parseParams.currentTextElement || parseParams.currentTextElementParent;
-
-                    if (param !== -1) {
-                        el.css.textDecoration = "line-through";
-                    }
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                li: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param;
-
-                    if (param > 0) {
-                        parseParams.currentTextElementParent.dimensionCSSRules.paddingLeft = {
-                            value: param / 20,
-                            units: "pt"
-                        };
-                    }
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                pard: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        page = parseResult.pages[parseParams.currentPageIndex];
-
-                    if (parseResult.table) {
-                        parseResult.table = this._destroyTable(parseParams);
-                        parseParams.currentElementIndex++;
-                        parseParams.currentTextElementParent = jDoc.clone(parseParams.paragraphData);
-                        page.elements[parseParams.currentElementIndex] = parseParams.currentTextElementParent;
-                        parseParams.currentTextElement = null;
-                    }
-                    this._resetParagraphProperties(parseParams.currentTextElementParent);
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                b: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        el = parseParams.currentTextElement || parseParams.currentTextElementParent;
-
-                    this._resetFontProperties(el);
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                qc: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param;
-
-                    if (param !== -1) {
-                        parseParams.currentTextElementParent.css.textAlign = "center";
-                    }
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                qj: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param;
-
-                    if (param !== -1) {
-                        parseParams.currentTextElementParent.css.textAlign = "justify";
-                    }
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                ql: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param;
-
-                    if (param !== -1) {
-                        parseParams.currentTextElementParent.css.textAlign = "left";
-                    }
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                qr: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param;
-
-                    if (param !== -1) {
-                        parseParams.currentTextElementParent.css.textAlign = "right";
-                    }
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                ri: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param;
-
-                    if (param > 0) {
-                        parseParams.currentTextElementParent.dimensionCSSRules.paddingRight = {
-                            value: param / 20,
-                            units: "pt"
-                        };
-                    }
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                sa: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param;
-
-                    if (param > 0) {
-                        parseParams.currentTextElementParent.dimensionCSSRules.marginBottom = {
-                            value: param / 20,
-                            units: "pt"
-                        };
-                    }
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                sb: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param;
-
-                    if (param > 0) {
-                        parseParams.currentTextElementParent.dimensionCSSRules.marginTop = {
-                            value: param / 20,
-                            units: "pt"
-                        };
-                    }
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                scaps: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param,
-                        el = parseParams.currentTextElement || parseParams.currentTextElementParent;
-
-                    if (param !== -1) {
-                        el.css.fontVariant = "small-caps";
-                    }
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                strike: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param,
-                        el = parseParams.currentTextElement || parseParams.currentTextElementParent;
-
-                    if (param !== -1) {
-                        el.css.textDecoration = "line-through";
-                    }
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                tab: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult;
-
-                    if (parseParams.currentTextElement) {
-                        parseParams.currentTextElement.properties.textContent += this._getTabAsSpaces();
-                    }
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                tx: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param;
-
-                    if (param > 0 && parseParams.currentTextElement) {
-                        parseParams.currentTextElement.dimensionCSSRules.paddingLeft = {
-                            value: param / 20,
-                            units: "pt"
-                        };
-                    }
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                ul: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param,
-                        el = parseParams.currentTextElement || parseParams.currentTextElementParent;
-
-                    if (param !== -1) {
-                        el.css.textDecoration = "underline";
-                    }
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                "~": function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult;
-
-                    if (parseParams.currentTextElement) {
-                        parseParams.currentTextElement.properties.textContent += this._getNonbreakingSpace();
-                    }
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                gutter: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param,
-                        i;
-
-                    parseParams.pageData.dimensionCSSRules.marginTop = {
-                        value: param / 20,
-                        units: "pt"
-                    };
-                    for (i = parseResult.pages.length - 1; i > 0; i--) {
-                        parseResult.pages[i].dimensionCSSRules.marginTop = parseParams.pageData.dimensionCSSRules.marginTop;
-                    }
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                margb: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param,
-                        i;
-
-                    parseParams.pageData.dimensionCSSRules.paddingBottom = {
-                        value: param / 20,
-                        units: "pt"
-                    };
-                    for (i = parseResult.pages.length - 1; i >= 0; i--) {
-                        parseResult.pages[i].dimensionCSSRules.paddingBottom = parseParams.pageData.dimensionCSSRules.paddingBottom;
-                    }
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                margl: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param,
-                        i;
-
-                    parseParams.pageData.dimensionCSSRules.paddingLeft = {
-                        value: param / 20,
-                        units: "pt"
-                    };
-                    for (i = parseResult.pages.length - 1; i >= 0; i--) {
-                        parseResult.pages[i].dimensionCSSRules.paddingLeft = parseParams.pageData.dimensionCSSRules.paddingLeft;
-                    }
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                margr: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param,
-                        i;
-
-                    parseParams.pageData.dimensionCSSRules.paddingRight = {
-                        value: param / 20,
-                        units: "pt"
-                    };
-                    for (i = parseResult.pages.length - 1; i >= 0; i--) {
-                        parseResult.pages[i].dimensionCSSRules.paddingRight = parseParams.pageData.dimensionCSSRules.paddingRight;
-                    }
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                margt: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param,
-                        i;
-
-                    parseParams.pageData.dimensionCSSRules.paddingTop = {
-                        value: param / 20,
-                        units: "pt"
-                    };
-                    for (i = parseResult.pages.length - 1; i >= 0; i--) {
-                        parseResult.pages[i].dimensionCSSRules.paddingTop = parseParams.pageData.dimensionCSSRules.paddingTop;
-                    }
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                page: function (options) {
-                    var parseParams = options.parseParams,
-                        page,
-                        parseResult = options.parseResult;
-
-                    parseResult.table = this._destroyTable(parseParams);
-                    parseParams.currentTextElementParent = jDoc.clone(parseParams.paragraphData);
-                    parseParams.currentTextElement = null;
-                    parseParams.currentPageIndex++;
-                    parseParams.currentElementIndex = 0;
-
-                    page = jDoc.clone(parseParams.pageData);
-                    parseResult.pages[parseParams.currentPageIndex] = page;
-                    page.elements[parseParams.currentElementIndex] = parseParams.currentTextElementParent;
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                paperh: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param,
-                        i;
-
-                    parseParams.pageData.dimensionCSSRules.height = {
-                        value: param / 20,
-                        units: "pt"
-                    };
-                    for (i = parseResult.pages.length - 1; i >= 0; i--) {
-                        parseResult.pages[i].dimensionCSSRules.height = parseParams.pageData.dimensionCSSRules.height;
-                    }
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                paperw: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param,
-                        i;
-
-                    parseParams.pageData.dimensionCSSRules.width = {
-                        value: param / 20,
-                        units: "pt"
-                    };
-                    for (i = parseResult.pages.length - 1; i >= 0; i--) {
-                        parseResult.pages[i].dimensionCSSRules.width = parseParams.pageData.dimensionCSSRules.width;
-                    }
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                par: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult;
-
-                    parseParams.currentElementIndex++;
-
+                for (i = len - 1; i >= 0; i--) {
                     /**
-                     * inherit previous paragraph
-                     * @type {*}
+                     * firstName, middleName, lastName
+                     * @type {string}
                      */
-                    parseParams.currentTextElementParent = jDoc.deepMerge({}, (
-                        (
-                            parseParams.currentTextElementParent && parseParams.currentTextElementParent.options.isParagraph
-                        ) ? parseParams.currentTextElementParent : parseParams.paragraphData
-                    ), {
-                        elements: []
-                    });
-
-                    parseResult.pages[parseParams.currentPageIndex].elements[parseParams.currentElementIndex] =
-                        parseParams.currentTextElementParent;
-
-                    parseParams.currentTextElement = null;
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                cell: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        count,
-                        currentRowIndex,
-                        currentCellIndex,
-                        table = parseParams.table,
-                        page = parseResult.pages[parseParams.currentPageIndex],
-                        row = table ? table.body.rows[table.body.rows.length - 1] : null;
-
-                    row = row || this._initRow();
-
-                    table = this._initTable({
-                        table: table,
-                        row: row,
-                        parseParams: parseParams,
-                        parentElementsList: page.elements,
-                        parentElementsIndex: parseParams.currentElementIndex,
-                        data: parseParams.currentTextElementParent
-                    });
-
-                    parseParams.currentTextElementParent.css = jDoc.deepMerge({},
-                        parseParams.currentTextElementParent.css,
-                        parseParams.styles.cells.css
-                    );
-
-                    parseParams.currentTextElementParent.dimensionCSSRules = jDoc.deepMerge({},
-                        parseParams.currentTextElementParent.dimensionCSSRules,
-                        parseParams.styles.cells.dimensionCSSRules
-                    );
-
-                    row.cells.push(parseParams.currentTextElementParent);
-
-                    count = table.body.rows.length;
-                    currentRowIndex = count ? count - 1 : 0;
-                    count = row.cells.length;
-                    currentCellIndex = count ? count - 1 : 0;
-
-                    if (
-                        table.options.cellsWidth[currentRowIndex] &&
-                        table.options.cellsWidth[currentRowIndex][currentCellIndex]
-                    ) {
-                        parseParams.currentTextElementParent.dimensionCSSRules.width =
-                            parseParams.currentTextElementParent.dimensionCSSRules.width ||
-                            table.options.cellsWidth[currentRowIndex][currentCellIndex];
+                    if (nodes[i].localName) {
+                        info[nodes[i].localName.replace(/-\w+$/, '') + "Name"] = nodes[i].textContent || "";
                     }
-                    parseParams.currentTextElementParent = {
+                }
+
+                return info;
+            },
+            /**
+             *
+             * @param value
+             * @return {String}
+             * @private
+             */
+            _normalizeEncodingValue: function (value) {
+                var result = "utf-8";
+
+                if (value) {
+                    result = value.replace(/^windows-/i, 'cp');
+                }
+
+                return result;
+            },
+            /**
+             *
+             * @param nodes
+             * @private
+             * @returns {*}
+             */
+            _parseBinaryItems: function (nodes) {
+                var result = {},
+                    i;
+
+                for (i = nodes.length - 1; i >= 0; i--) {
+                    if (
+                        nodes[i].attributes.id &&
+                        nodes[i].attributes.id.value &&
+                        nodes[i].attributes["content-type"] &&
+                        nodes[i].attributes["content-type"].value &&
+                        nodes[i].textContent
+                    ) {
+                        result[nodes[i].attributes.id.value] =
+                            "data:" + nodes[i].attributes["content-type"].value + ";base64," + nodes[i].textContent;
+                    }
+                }
+
+                return result;
+            },
+            /**
+             *
+             * @param options
+             * @private
+             */
+            _parseBlockElement: function (options) {
+                var result;
+
+                switch (options.node.localName) {
+                case "p":
+                    result = this._parseParagraph({
+                        node: options.node,
+                        documentData: options.documentData
+                    });
+                    break;
+                case "empty-line":
+                    result = {
+                        options: {
+                            isEmptyLine: true
+                        }
+                    };
+                    break;
+                case "subtitle":
+                    result = this._parseParagraph({
+                        node: options.node,
+                        documentData: options.documentData
+                    });
+                    result.css.textAlign = "center";
+                    break;
+                case "image":
+                    result = this._prepareImage({
+                        node: options.node,
+                        documentData: options.documentData
+                    });
+                    break;
+                default:
+                    result = this._prepareBlock(options.node, options.documentData);
+                }
+
+                return result;
+            },
+            /**
+             * @param xml
+             * @param documentData
+             * @return {Object}
+             * @private
+             */
+            _parseDocumentInfo: function (xml, documentData) {
+                var nodes = jDoc.DOM.children(xml),
+                    len = nodes.length,
+                    i,
+                    j,
+                    length,
+                    arr,
+                    tmp,
+                    info = {
+                        isTextDocument: true,
+                        programs: []
+                    };
+
+                for (i = len - 1; i >= 0; i--) {
+                    switch (nodes[i].localName) {
+                    case "author":
+                        info.author = this._getPersonInfo(nodes[i]);
+                        break;
+                    case "src-url":
+                        info.sourceURL = nodes[i].textContent || "";
+                        break;
+                    case "id":
+                        info.id = nodes[i].textContent || "";
+                        break;
+                    case "version":
+                        info.version = nodes[i].textContent || "";
+                        break;
+                    case "history":
+                        info.history = this._prepareBlock(nodes[i], documentData);
+                        break;
+                    case "date":
+                        arr = (nodes[i].textContent || "").split("-");
+                        tmp = arr[0];
+                        arr[0] = arr[2];
+                        arr[2] = tmp;
+                        info.date = arr.join('.');
+                        break;
+                    case "program-used":
+                        arr = (nodes[i].textContent || "").split(",");
+                        length = arr.length;
+
+                        for (j = length - 1; j >= 0; j--) {
+                            info.programs[j] = arr[j].replace(/^\s+/, '');
+                        }
+                        break;
+                    }
+                }
+
+                return info;
+            },
+            /**
+             *
+             * @param text
+             * @param options
+             * @private
+             */
+            _parseFileHelper: function (text, options) {
+                var domParser = new DOMParser();
+
+                this._createParsedFile(domParser.parseFromString(text, "application/xml"), function (parsedFile) {
+                    if (typeof options.success === 'function') {
+                        options.success(parsedFile);
+                    }
+                    if (typeof options.complete === 'function') {
+                        options.complete();
+                    }
+                });
+            },
+            /**
+             * @param xml
+             * @param documentData
+             * @return {Object}
+             * @private
+             */
+            _parseFileInfo: function (xml, documentData) {
+                var info = {},
+                    nodes = jDoc.DOM.children(xml);
+                var len = nodes.length;
+                var i;
+
+                for (i = len - 1; i >= 0; i--) {
+                    switch (nodes[i].localName) {
+                    case "genre":
+                        info.genre = nodes[i].textContent || "";
+                        break;
+                    case "book-title":
+                        info.title = nodes[i].textContent || "";
+                        break;
+                    case "lang":
+                        info.language = nodes[i].textContent || "";
+                        break;
+                    case "src-lang":
+                        info.sourceLanguage = nodes[i].textContent || "";
+                        break;
+                    case "author":
+                        info.author = this._getPersonInfo(nodes[i]);
+                        break;
+                    case "translator":
+                        info.translator = this._getPersonInfo(nodes[i]);
+                        break;
+                    case "annotation":
+                        info.annotation = this._prepareBlock(nodes[i], documentData);
+                        break;
+                    case "date":
+                        info.date = nodes[i].textContent || "";
+                        break;
+                    case "coverpage":
+                        var imageNode = nodes[i].querySelector('image');
+                        info.coverpage = {
+                            image: imageNode.attributes['l:href'] ? (imageNode.attributes['l:href'].value || "").replace("#", '') : ""
+                        };
+                        break;
+                    case "sequence":
+                        info.sequence = {
+                            name: nodes[i].attributes.name ? nodes[i].attributes.name.value || "" : "",
+                            number: nodes[i].attributes.number ? (
+                                isNaN(nodes[i].attributes.number.value) ? 0 : +nodes[i].attributes.number.value
+                            ) : 0
+                        };
+                        break;
+                    }
+                }
+
+                return info;
+            },
+            /**
+             *
+             * @param node
+             * @returns {{options: {isLink: boolean}, attributes: {}, css: {}, dimensionCSSRules: {}, textContent: string}}
+             * @private
+             */
+            _parseLinkElement: function (node) {
+                var result = {
+                    options: {
+                        isLink: true
+                    },
+                    attributes: {},
+                    properties: {
+                        textContent: ""
+                    },
+                    css: {},
+                    dimensionCSSRules: {}
+                },
+                    link = (
+                        node.attributes['l:href'] && node.attributes['l:href'].value
+                    ) ? node.attributes['l:href'].value : "";
+
+                result.attributes.href = link;
+
+                if (!(/^#/).test(link)) {
+                    result.attributes.target = '_blank';
+                }
+
+                result.properties.textContent = node.textContent;
+
+                return result;
+            },
+            /**
+             *
+             * @param xml
+             * @param documentData
+             * @param list
+             * @private
+             */
+            _parsePages: function (xml, documentData, list) {
+                var i,
+                    nodes = jDoc.DOM.children(xml),
+                    len = nodes.length,
+                    childElement;
+
+                for (i = 0; i < len; i++) {
+                    if (nodes[i].localName === "title") {
+                        list.push(this._prepareBlock(nodes[i], documentData));
+                    } else if (nodes[i].localName === "section") {
+                        this._parsePages(nodes[i], documentData, list);
+                    } else if (nodes[i].localName) {
+                        list.push(
+                            this._parseBlockElement({
+                                node: nodes[i],
+                                documentData: documentData
+                            })
+                        );
+                    }
+                }
+
+                if (xml.attributes.id && xml.attributes.id.value) {
+                    childElement = document.createElement('a');
+                    childElement.setAttribute("name", xml.attributes.id.value);
+                    list[list.length - 1].appendChild(childElement);
+                }
+            },
+            /**
+             *
+             * @param options
+             * @returns {{options: {isParagraph: boolean}, css: {}, dimensionCSSRules: {}, elements: Array}}
+             * @private
+             */
+            _parseParagraph: function (options) {
+                var children = jDoc.DOM.children(options.node),
+                    len = children.length,
+                    i,
+                    element,
+                    result = {
+                        options: {
+                            isParagraph: true
+                        },
+                        css: {},
+                        dimensionCSSRules: {
+                            margin: {
+                                value: 0,
+                                units: "px"
+                            },
+                            padding: {
+                                value: 0,
+                                units: "px"
+                            }
+                        },
+                        elements: []
+                    };
+
+                for (i = 0; i < len; i++) {
+                    if (children[i].localName === "a") {
+                        result.elements.push(this._parseLinkElement(children[i]));
+                    } else {
+                        element = {
+                            options: {},
+                            css: {},
+                            attributes: {},
+                            properties: {
+                                textContent: children[i].textContent
+                            }
+                        };
+
+                        if (children[i].localName === "strong") {
+                            element.css.fontWeight = "bold";
+                        } else if (children[i].localName === "emphasis") {
+                            element.css.fontStyle = "italic";
+                        }
+
+                        result.elements.push(element);
+                    }
+                }
+
+                return result;
+            },
+            /**
+             * @param xml
+             * @return {Object}
+             * @private
+             */
+            _parsePublishInfo: function (xml) {
+                var nodes = jDoc.DOM.children(xml),
+                    i,
+                    len = nodes.length,
+                    info = {};
+
+                for (i = len - 1; i >= 0; i--) {
+                    info[nodes[i].localName] = nodes[i].textContent || "";
+                }
+
+                return info;
+            },
+            /**
+             * @param xml
+             * @param documentData
+             * @private
+             */
+            _prepareBlock: function (xml, documentData) {
+                var i,
+                    nodes = jDoc.DOM.children(xml),
+                    len = nodes.length,
+                    result = {
                         options: {},
                         css: {},
                         dimensionCSSRules: {},
                         elements: []
                     };
-                    parseParams.currentTextElement = null;
 
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                cellx: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        count,
-                        param = options.param,
-                        currentRowIndex,
-                        table = parseParams.table,
-                        page = parseResult.pages[parseParams.currentPageIndex],
-                        row = table ? table.body.rows[table.body.rows.length - 1] : null;
-
-                    row = row || this._initRow();
-
-                    table = this._initTable({
-                        table: table,
-                        row: row,
-                        parseParams: parseParams,
-                        parentElementsList: page.elements,
-                        parentElementsIndex: parseParams.currentElementIndex,
-                        data: parseParams.currentTextElementParent
-                    });
-
-                    count = table.body.rows.length;
-                    currentRowIndex = count ? count - 1 : 0;
-
-                    table.options.cellsWidth[currentRowIndex] = table.options.cellsWidth[currentRowIndex] || [];
-                    table.options.cellsWidth[currentRowIndex].push({
-                        value: param / 20,
-                        units: "pt"
-                    });
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                clbrdrb: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult;
-
-                    parseParams.styles.cells.dimensionCSSRules.borderBottomWidth =
-                        parseParams.styles.defaults.dimensionCSSRules.borderWidth;
-                    parseParams.styles.cells.css.borderBottomStyle = parseParams.styles.defaults.css.borderStyle;
-                    parseParams.styles.cells.css.borderBottomColor = parseParams.styles.defaults.css.borderColor;
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                clbrdrl: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult;
-
-                    parseParams.styles.cells.dimensionCSSRules.borderLeftWidth =
-                        parseParams.styles.defaults.dimensionCSSRules.borderWidth;
-                    parseParams.styles.cells.css.borderLeftStyle = parseParams.styles.defaults.css.borderStyle;
-                    parseParams.styles.cells.css.borderLeftColor = parseParams.styles.defaults.css.borderColor;
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                clbrdrr: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult;
-
-                    parseParams.styles.cells.dimensionCSSRules.borderRightWidth =
-                        parseParams.styles.defaults.dimensionCSSRules.borderWidth;
-                    parseParams.styles.cells.css.borderRightStyle = parseParams.styles.defaults.css.borderStyle;
-                    parseParams.styles.cells.css.borderRightColor = parseParams.styles.defaults.css.borderColor;
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                clbrdrt: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult;
-
-                    parseParams.styles.cells.dimensionCSSRules.borderTopWidth =
-                        parseParams.styles.defaults.dimensionCSSRules.borderWidth;
-                    parseParams.styles.cells.css.borderTopStyle = parseParams.styles.defaults.css.borderStyle;
-                    parseParams.styles.cells.css.borderTopColor = parseParams.styles.defaults.css.borderColor;
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                clpadb: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param;
-
-                    parseParams.styles.cells.dimensionCSSRules.paddingBottom = {
-                        value: param / 20,
-                        units: "pt"
-                    };
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                clpadfb: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param;
-
-                    if (param == 0) {
-                        delete parseParams.styles.cells.dimensionCSSRules.paddingBottom;
+                for (i = 0; i < len; i++) {
+                    if (nodes[i].localName) {
+                        result.elements.push(this._parseBlockElement({
+                            node: nodes[i],
+                            documentData: documentData
+                        }));
                     }
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                clpadfl: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param;
-
-                    if (param == 0) {
-                        delete parseParams.styles.cells.dimensionCSSRules.paddingLeft;
-                    }
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                clpadfr: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param;
-
-                    if (param == 0) {
-                        delete parseParams.styles.cells.dimensionCSSRules.paddingRight;
-                    }
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                clpadft: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param;
-
-                    if (param == 0) {
-                        delete parseParams.styles.cells.dimensionCSSRules.paddingTop;
-                    }
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                clpadl: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param;
-
-                    parseParams.styles.cells.dimensionCSSRules.paddingLeft = {
-                        value: param / 20,
-                        units: "pt"
-                    };
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                clpadr: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param;
-
-                    parseParams.styles.cells.dimensionCSSRules.paddingRight = {
-                        value: param / 20,
-                        units: "pt"
-                    };
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                clpadt: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param;
-
-                    parseParams.styles.cells.dimensionCSSRules.paddingTop = {
-                        value: param / 20,
-                        units: "pt"
-                    };
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                clvertalb: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param;
-
-                    parseParams.styles.cells.css.verticalAlign = "bottom";
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                clvertalc: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param;
-
-                    parseParams.styles.cells.css.verticalAlign = "middle";
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                clvertalt: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param;
-
-                    parseParams.styles.cells.css.verticalAlign = "top";
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                trbrdrb: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult;
-
-                    parseParams.styles.table.dimensionCSSRules.borderBottomWidth =
-                        parseParams.styles.defaults.dimensionCSSRules.borderWidth;
-                    parseParams.styles.table.css.borderBottomStyle = parseParams.styles.defaults.css.borderStyle;
-                    parseParams.styles.table.css.borderBottomColor = parseParams.styles.defaults.css.borderColor;
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                trbrdrl: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult;
-
-                    parseParams.styles.table.dimensionCSSRules.borderLeftWidth =
-                        parseParams.styles.defaults.dimensionCSSRules.borderWidth;
-                    parseParams.styles.table.css.borderLeftStyle = parseParams.styles.defaults.css.borderStyle;
-                    parseParams.styles.table.css.borderLeftColor = parseParams.styles.defaults.css.borderColor;
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                trbrdrr: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult;
-
-                    parseParams.styles.table.dimensionCSSRules.borderRightWidth =
-                        parseParams.styles.defaults.dimensionCSSRules.borderWidth;
-                    parseParams.styles.table.css.borderRightStyle = parseParams.styles.defaults.css.borderStyle;
-                    parseParams.styles.table.css.borderRightColor = parseParams.styles.defaults.css.borderColor;
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                trbrdrb: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult;
-
-                    parseParams.styles.table.dimensionCSSRules.borderTopWidth =
-                        parseParams.styles.defaults.dimensionCSSRules.borderWidth;
-                    parseParams.styles.table.css.borderTopStyle = parseParams.styles.defaults.css.borderStyle;
-                    parseParams.styles.table.css.borderTopColor = parseParams.styles.defaults.css.borderColor;
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                trgaph: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param;
-
-                    parseParams.styles.cells.dimensionCSSRules.padding = {
-                        value: param / 20,
-                        units: "pt"
-                    };
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                trspdb: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param;
-
-                    parseParams.options.table.cellMarginBottom = param / 20;
-                    parseParams.styles.cells.dimensionCSSRules.paddingBottom =
-                        parseParams.styles.cells.dimensionCSSRules.paddingBottom || {
-                            value: 0,
-                            units: "pt"
-                    };
-                    parseParams.styles.cells.dimensionCSSRules.paddingBottom.value += parseParams.options.table.cellMarginBottom;
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                trspdfb: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param;
-
-                    if (param === 0 && parseParams.options.table.cellMarginBottom && parseParams.styles.cells.dimensionCSSRules.paddingBottom) {
-                        parseParams.styles.cells.dimensionCSSRules.paddingBottom.value -= parseParams.options.table.cellMarginBottom;
-                    }
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                trspdfl: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param;
-
-                    if (param === 0 && parseParams.options.table.cellMarginLeft && parseParams.styles.cells.dimensionCSSRules.paddingLeft) {
-                        parseParams.styles.cells.dimensionCSSRules.paddingLeft.value -= parseParams.options.table.cellMarginLeft;
-                    }
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                trspdfr: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param;
-
-                    if (param === 0 && parseParams.options.table.cellMarginRight && parseParams.styles.cells.dimensionCSSRules.paddingRight) {
-                        parseParams.styles.cells.dimensionCSSRules.paddingRight.value -= parseParams.options.table.cellMarginRight;
-                    }
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                trspdft: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param;
-
-                    if (param === 0 && parseParams.options.table.cellMarginTop && parseParams.styles.cells.dimensionCSSRules.paddingTop) {
-                        parseParams.styles.cells.dimensionCSSRules.paddingTop.value -= parseParams.options.table.cellMarginTop;
-                    }
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                trspdl: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param;
-
-                    parseParams.options.table.cellMarginLeft = param / 20;
-                    parseParams.styles.cells.dimensionCSSRules.paddingLeft =
-                        parseParams.styles.cells.dimensionCSSRules.paddingLeft || {
-                            value: 0,
-                            units: "pt"
-                    };
-
-                    parseParams.styles.cells.dimensionCSSRules.paddingLeft.value += parseParams.options.table.cellMarginLeft;
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                trspdr: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param;
-
-                    parseParams.options.table.cellMarginRight = param / 20;
-                    parseParams.styles.cells.dimensionCSSRules.paddingRight =
-                        parseParams.styles.cells.dimensionCSSRules.paddingRight || {
-                            value: 0,
-                            units: "pt"
-                    };
-                    parseParams.styles.cells.dimensionCSSRules.paddingRight.value += parseParams.options.table.cellMarginRight;
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                trspdt: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param;
-
-                    parseParams.options.table.cellMarginTop = param / 20;
-                    parseParams.styles.cells.dimensionCSSRules.paddingTop =
-                        parseParams.styles.cells.dimensionCSSRules.paddingTop || {
-                            value: 0,
-                            units: "pt"
-                    };
-                    parseParams.styles.cells.dimensionCSSRules.paddingTop.value += parseParams.options.table.cellMarginTop;
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                row: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        table = parseParams.table,
-                        page = parseResult.pages[parseParams.currentPageIndex],
-                        row = table ? table.body.rows[table.body.rows.length - 1] : null;
-
-                    row = row || this._initRow();
-
-                    table = table || this._initTable({
-                        table: table,
-                        row: row,
-                        parseParams: parseParams,
-                        parentElementsList: page.elements,
-                        parentElementsIndex: parseParams.currentElementIndex,
-                        data: parseParams.currentTextElementParent
-                    });
-
-                    row = this._initRow();
-                    table.body.rows.push(row);
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                trpaddb: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param;
-
-                    if (param > 0) {
-                        parseParams.styles.rows.dimensionCSSRules.paddingBottom = {
-                            value: param / 20,
-                            units: "pt"
-                        };
-                    }
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                trpaddfb: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param;
-
-                    if (param == 0) {
-                        delete parseParams.styles.rows.dimensionCSSRules.paddingBottom;
-                    }
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                trpaddfl: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param;
-
-                    if (param == 0) {
-                        delete parseParams.styles.rows.dimensionCSSRules.paddingLeft;
-                    }
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                trpaddfr: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param;
-
-                    if (param == 0) {
-                        delete parseParams.styles.rows.dimensionCSSRules.paddingRight;
-                    }
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                trpaddft: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param;
-
-                    if (param == 0) {
-                        delete parseParams.styles.rows.dimensionCSSRules.paddingTop;
-                    }
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                trpaddl: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param;
-
-                    if (param > 0) {
-                        parseParams.styles.rows.dimensionCSSRules.paddingLeft = {
-                            value: param / 20,
-                            units: "pt"
-                        };
-                    }
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                trpaddr: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param;
-
-                    if (param > 0) {
-                        parseParams.styles.rows.dimensionCSSRules.paddingRight = {
-                            value: param / 20,
-                            units: "pt"
-                        };
-                    }
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
-                },
-                trpaddt: function (options) {
-                    var parseParams = options.parseParams,
-                        parseResult = options.parseResult,
-                        param = options.param;
-
-                    if (param > 0) {
-                        parseParams.styles.rows.dimensionCSSRules.paddingTop = {
-                            value: param / 20,
-                            units: "pt"
-                        };
-                    }
-
-                    return {
-                        parseParams: parseParams,
-                        parseResult: parseResult
-                    };
                 }
+
+                return result;
+            },
+            /**
+             *
+             * @param options
+             * @returns {{options: {isImage: boolean}, attributes: {}}}
+             * @private
+             */
+            _prepareImage: function (options) {
+                var result = {
+                    options: {
+                        isImage: true
+                    },
+                    css: {},
+                    dimensionCSSRules: {},
+                    attributes: {
+                        src: "",
+                        alt: ""
+                    }
+                };
+
+                if (!options.imageName &&
+                    options.node &&
+                    options.node.attributes['l:href'] &&
+                    options.node.attributes['l:href'].value
+                ) {
+                    result.attributes.src = options.documentData.binaryItems[
+                        options.node.attributes['l:href'].value.replace("#", '')
+                    ] || result.attributes.src;
+                } else {
+                    result.attributes.src = options.documentData.binaryItems[options.imageName] || result.attributes.src;
+                }
+
+                return result;
+            },
+            /**
+             * Read files in Fiction Book Formal
+             * @param options
+             * @public
+             */
+            parse: function (options) {
+                if (typeof options.start === 'function') {
+                    options.start();
+                }
+                if (!this.validate()) {
+                    if (typeof options.error === 'function') {
+                        options.error({
+                            message: 'Invalid file format'
+                        });
+                    }
+                    if (typeof options.complete === 'function') {
+                        options.complete();
+                    }
+                    return null;
+                }
+
+                var self = this,
+                    reader = new FileReader(),
+                    defaultEncoding = "utf-8";
+                reader.onload = function (event) {
+                    var encoding = (/encoding="(.+)"/).exec(event.target.result);
+                    encoding = encoding ? self._normalizeEncodingValue(encoding[1]) : defaultEncoding;
+
+                    if (encoding != defaultEncoding) {
+                        reader.onload = function (event) {
+                            self._parseFileHelper(event.target.result, options);
+                        };
+
+                        reader.readAsText(self.file, encoding);
+                    } else {
+                        self._parseFileHelper(event.target.result, options);
+                    }
+                };
+
+                reader.readAsText(this.file);
+
+                return null;
+            }
+        }
+    );
+    jDoc.Engines.ODF = jDoc.Engine.extend(
+        /** @lends jDoc.Engines.ODF.prototype */
+        {
+            /**
+             *
+             * @param params
+             * @returns {{options: {}, css: {}, dimensionCSSRules: {}, elements: Array}}
+             * @private
+             */
+            _createPage: function (params) {
+                var data = {
+                    options: {},
+                    css: {},
+                    dimensionCSSRules: {},
+                    elements: []
+                };
+
+                params = params || {};
+
+                if (params.layout) {
+                    data = jDoc.deepMerge({}, data, params.layout.page);
+                }
+
+                return data;
+            },
+            /**
+             * @param fileEntries {Array}
+             * @param callback {function}
+             * @returns {null}
+             * @private
+             */
+            _createParsedFile: function (fileEntries, callback) {
+                if (this.isTextDocument()) {
+                    this._createParsedFileFromTextDocument.apply(this, arguments);
+                }
+
+                return null;
+            },
+            /**
+             *
+             * @param filesEntry {Array}
+             * @param callback {function}
+             * @private
+             */
+            _createParsedFileFromTextDocument: function (filesEntry, callback) {
+                var filesCount = filesEntry.length,
+                    i,
+                    counter = 0,
+                    domParser = new DOMParser(),
+                    self = this,
+                    document,
+                    info,
+                    interval,
+                    reader,
+                    time = 100,
+                    documentData = {
+                        documentInfo: {},
+                        applicationInfo: {},
+                        styles: {},
+                        media: {}
+                    };
+
+                /**
+                 * Reading files
+                 */
+                for (i = filesCount - 1; i != -1; i--) {
+                    reader = new FileReader();
+                    reader.onload = (function (fileData) {
+                        return function (event) {
+                            if (fileData.entry.filename.indexOf('styles.') != -1) {
+                                self._parseTextDocumentStyles(
+                                    domParser.parseFromString(event.target.result, "application/xml"),
+                                    function (styles) {
+                                        documentData.styles = styles;
+                                        counter++;
+                                    }
+                                );
+                            } else if (fileData.entry.filename.indexOf('meta.') != -1) {
+                                info = self._parseTextDocumentMetaInformation(
+                                    domParser.parseFromString(event.target.result, "application/xml")
+                                );
+                                documentData.documentInfo = info.documentInfo;
+                                documentData.applicationInfo = info.applicationInfo;
+                                counter++;
+                            } else if (fileData.entry.filename.indexOf('content.') != -1) {
+                                document = domParser.parseFromString(event.target.result, "application/xml");
+                                counter++;
+                            } else if (fileData.entry.filename.indexOf('Pictures') != -1) {
+                                documentData.media[fileData.entry.filename] =
+                                    self._normalizeDataURI(event.target.result, fileData.entry.filename);
+                                counter++;
+                            } else {
+                                counter++;
+                            }
+
+                            return null;
+                        };
+                    }(filesEntry[i]));
+
+                    reader[
+                        (filesEntry[i].entry.filename.indexOf('Pictures') != -1) ? "readAsDataURL" : "readAsText"
+                    ](filesEntry[i].file);
+                }
+
+                interval = setInterval(function () {
+                    if (counter == filesCount) {
+                        clearInterval(interval);
+                        self._parseTextDocumentContent({
+                            xml: document,
+                            documentData: documentData
+                        }, function (result) {
+                            callback(new jDoc.ParsedFile(result));
+                        });
+                    }
+                }, time);
+            },
+            /**
+             * @type {Array}
+             * @private
+             */
+            _fileTypeParsers: [{
+                extension: 'odt',
+                mime: 'vnd.oasis.opendocument.text',
+                isTextDocument: true
+            }, {
+                extension: 'ott',
+                mime: 'vnd.oasis.opendocument.text-template',
+                isTextDocument: true,
+                isTemplate: true
+            }, {
+                extension: 'odg',
+                mime: 'vnd.oasis.opendocument.graphics',
+                isGraphicDocument: true
+            }, {
+                extension: 'otg',
+                mime: 'vnd.oasis.opendocument.graphics-template',
+                isGraphicDocument: true,
+                isTemplate: true
+            }, {
+                extension: 'odp',
+                mime: 'vnd.oasis.opendocument.presentation',
+                isPresentation: true,
+                isTemplate: true
+            }, {
+                extension: 'otp',
+                mime: 'vnd.oasis.opendocument.presentation-template',
+                isPresentationDocument: true,
+                isTemplate: true
+            }, {
+                extension: 'ods',
+                mime: 'vnd.oasis.opendocument.spreadsheet',
+                isSpreadsheetDocument: true
+            }, {
+                extension: 'ots',
+                mime: 'vnd.oasis.opendocument.spreadsheet-template',
+                isSpreadsheetDocument: true,
+                isTemplate: true
+            }, {
+                extension: 'odc',
+                mime: 'vnd.oasis.opendocument.chart',
+                isChartDocument: true
+            }, {
+                extension: 'otc',
+                mime: 'vnd.oasis.opendocument.chart-template',
+                isChartDocument: true,
+                isTemplate: true
+            }, {
+                extension: 'odi',
+                mime: 'vnd.oasis.opendocument.image',
+                isImageDocument: true
+            }, {
+                extension: 'oti',
+                mime: 'vnd.oasis.opendocument.image-template',
+                isImageDocument: true,
+                isTemplate: true
+            }, {
+                extension: 'odf',
+                mime: 'vnd.oasis.opendocument.formula',
+                isFormulaDocument: true
+            }, {
+                extension: 'otf',
+                mime: 'vnd.oasis.opendocument.formula-template',
+                isFormulaDocument: true,
+                isTemplate: true
+            }, {
+                extension: 'odm',
+                mime: 'vnd.oasis.opendocument.text-master',
+                isTextDocumentMaster: true
+            }, {
+                extension: 'oth',
+                mime: 'vnd.oasis.opendocument.text-web',
+                isTextDocumentMasterWeb: true
+            }],
+            /**
+             *
+             * @param value
+             * @returns {*}
+             * @private
+             */
+            _getListStyleType: function (value) {
+                var result;
+
+                switch (value) {
+                case "1":
+                    result = "decimal";
+                    break;
+                case "i":
+                    result = "lower-roman";
+                    break;
+                case "I":
+                    result = "upper-roman";
+                    break;
+                case "a":
+                    result = "lower-alpha";
+                    break;
+                case "A":
+                    result = "upper-alpha";
+                    break;
+                default:
+                    result = "auto";
+                }
+
+                return result;
+            },
+            /**
+             *
+             * @param val
+             * @returns {{value: number, units: string}}
+             * @private
+             */
+            _getSize: function (val) {
+                var result = {
+                    value: 0,
+                    units: ""
+                },
+                    data = (/^([0-9]*[0-9][0-9]*(?:\.[0-9]*)?|0+\.[0-9]*[1-9][0-9]*|\.[0-9]*[1-9][0-9]*)((cm)|(mm)|(in)|(pt)|(pc)|(px))$/).exec(val);
+
+                if (data) {
+                    if (data[1] && data[2]) {
+                        result.value = isNaN(data[1]) ? 0 : +data[1];
+                        result.units = data[2] ? String(data[2]).toLowerCase() : "";
+                    }
+                } else {
+                    data = (/^-?([0-9]+(?:\.[0-9]*)?|\.[0-9]+)(%)$/).exec(val);
+                    if (data && data[1] && data[2]) {
+                        result.value = isNaN(data[1]) ? 0 : +data[1];
+                        result.units = data[2] ? String(data[2] || "").toLowerCase() : "";
+                    }
+                }
+
+                return result;
+            },
+            /**
+             *
+             * @param params
+             * @returns {*}
+             * @private
+             */
+            _getStyleRules: function (params) {
+                var result = {},
+                    i;
+
+                for (i = params.elements.length - 1; i >= 0; i--) {
+                    if (params.elements[i]) {
+                        result[params.elements[i]] = {
+                            css: {},
+                            dimensionCSSRules: {}
+                        };
+
+                        if (params.documentData.styles && params.documentData.styles.defaults) {
+
+                            if (params.documentData.styles.defaults[params.elements[i]]) {
+                                result[params.elements[i]].css =
+                                    jDoc.clone(params.documentData.styles.defaults[params.elements[i]].css);
+                                result[params.elements[i]].dimensionCSSRules =
+                                    jDoc.clone(params.documentData.styles.defaults[params.elements[i]].dimensionCSSRules);
+                            }
+
+                            if (
+                                params.documentData.styles.defaults.named &&
+                                params.documentData.styles.defaults.named[params.styleName]
+                            ) {
+                                if (params.documentData.styles.defaults.named[params.styleName][params.elements[i]]) {
+                                    jDoc.deepMerge(
+                                        result[params.elements[i]].css,
+                                        params.documentData.styles.defaults.named[params.styleName][params.elements[i]].css
+                                    );
+                                    jDoc.deepMerge(
+                                        result[params.elements[i]].dimensionCSSRules,
+                                        params.documentData.styles.defaults.named[params.styleName][params.elements[i]].dimensionCSSRules
+                                    );
+                                }
+                            }
+                        }
+
+                        if (params.styles) {
+                            if (params.styles[params.elements[i]]) {
+                                jDoc.deepMerge(result[params.elements[i]].css, params.styles[params.elements[i]].css);
+                                jDoc.deepMerge(
+                                    result[params.elements[i]].dimensionCSSRules,
+                                    params.styles[params.elements[i]].dimensionCSSRules
+                                );
+                            }
+
+                            if (params.styles.named && params.styles.named[params.styleName]) {
+                                if (params.styles.named[params.styleName][params.elements[i]]) {
+                                    jDoc.deepMerge(
+                                        result[params.elements[i]].css,
+                                        params.styles.named[params.styleName][params.elements[i]].css
+                                    );
+                                    jDoc.deepMerge(
+                                        result[params.elements[i]].dimensionCSSRules,
+                                        params.styles.named[params.styleName][params.elements[i]].dimensionCSSRules
+                                    );
+                                }
+                            }
+                        }
+                    }
+                }
+
+                return result;
+            },
+            /**
+             *
+             * @param str
+             * @return {Object}
+             * @private
+             */
+            _parseBorderStyle: function (str) {
+                var result = {
+                    width: {},
+                    style: "none",
+                    color: "none"
+                },
+                    data,
+                    size;
+
+                if (str && str !== "none") {
+                    data = str.split(' ');
+
+                    if (data[0] && data[1] && data[2]) {
+                        size = this._getSize(data[0]);
+
+                        if (size.units) {
+                            result.width = size;
+                        }
+
+                        result.style = data[1];
+                        result.color = this._normalizeColorValue(data[2]);
+                    }
+                }
+
+                return result;
+            },
+            /**
+             *
+             * @param node
+             * @return {Object}
+             * @private
+             */
+            _parsePageLayoutStyles: function (node) {
+                var result = {
+                    page: {
+                        css: {},
+                        dimensionCSSRules: {},
+                        options: {
+                            isLandscapeOrientation: false
+                        }
+                    },
+                    footnote: {
+                        css: {},
+                        dimensionCSSRules: {},
+                        options: {}
+                    },
+                    footer: {
+                        css: {},
+                        dimensionCSSRules: {},
+                        options: {}
+                    },
+                    header: {
+                        css: {},
+                        dimensionCSSRules: {},
+                        options: {}
+                    }
+                },
+                    i,
+                    nodes = jDoc.DOM.children(node),
+                    length = nodes.length,
+                    size = {},
+                    childNodes,
+                    len,
+                    j;
+
+                for (i = 0; i < length; i++) {
+                    if (nodes[i].localName === "page-layout-properties") {
+
+                        if (nodes[i].attributes['fo:page-width'] && nodes[i].attributes['fo:page-width'].value) {
+                            size = this._getSize(nodes[i].attributes['fo:page-width'].value);
+                            if (size.units) {
+                                result.page.dimensionCSSRules.width = size;
+                            }
+                        }
+                        if (nodes[i].attributes['fo:page-height'] && nodes[i].attributes['fo:page-height'].value) {
+                            size = this._getSize(nodes[i].attributes['fo:page-height'].value);
+                            if (size.units) {
+                                result.page.dimensionCSSRules.height = size;
+                            }
+                        }
+                        if (nodes[i].attributes['fo:margin'] && nodes[i].attributes['fo:margin'].value) {
+                            size = this._getSize(nodes[i].attributes['fo:margin'].value);
+                            if (size.units) {
+                                result.page.dimensionCSSRules.padding = size;
+                            }
+                        }
+                        if (nodes[i].attributes['fo:margin-top'] && nodes[i].attributes['fo:margin-top'].value) {
+                            size = this._getSize(nodes[i].attributes['fo:margin-top'].value);
+                            if (size.units) {
+                                result.page.dimensionCSSRules.paddingTop = size;
+                            }
+                        }
+                        if (nodes[i].attributes['fo:margin-left'] && nodes[i].attributes['fo:margin-left'].value) {
+                            size = this._getSize(nodes[i].attributes['fo:margin-left'].value);
+                            if (size.units) {
+                                result.page.dimensionCSSRules.paddingLeft = size;
+                            }
+                        }
+                        if (nodes[i].attributes['fo:margin-right'] && nodes[i].attributes['fo:margin-right'].value) {
+                            size = this._getSize(nodes[i].attributes['fo:margin-right'].value);
+                            if (size.units) {
+                                result.page.dimensionCSSRules.paddingRight = size;
+                            }
+                        }
+                        if (nodes[i].attributes['fo:margin-bottom'] && nodes[i].attributes['fo:margin-bottom'].value) {
+                            size = this._getSize(nodes[i].attributes['fo:margin-bottom'].value);
+                            if (size.units) {
+                                result.page.dimensionCSSRules.paddingBottom = size;
+                            }
+                        }
+                        if (nodes[i].attributes['fo:padding'] && nodes[i].attributes['fo:padding'].value) {
+                            size = this._getSize(nodes[i].attributes['fo:padding'].value);
+                            if (size.units) {
+                                result.page.dimensionCSSRules.padding = size;
+                            }
+                        }
+                        if (nodes[i].attributes['fo:padding-top'] && nodes[i].attributes['fo:padding-top'].value) {
+                            size = this._getSize(nodes[i].attributes['fo:padding-top'].value);
+                            if (size.units) {
+                                result.page.dimensionCSSRules.paddingTop = size;
+                            }
+                        }
+                        if (nodes[i].attributes['fo:padding-left'] && nodes[i].attributes['fo:padding-left'].value) {
+                            size = this._getSize(nodes[i].attributes['fo:padding-left'].value);
+                            if (size.units) {
+                                result.page.dimensionCSSRules.paddingLeft = size;
+                            }
+                        }
+                        if (nodes[i].attributes['fo:padding-right'] && nodes[i].attributes['fo:padding-right'].value) {
+                            size = this._getSize(nodes[i].attributes['fo:padding-right'].value);
+                            if (size.units) {
+                                result.page.dimensionCSSRules.paddingRight = size;
+                            }
+                        }
+                        if (nodes[i].attributes['fo:padding-bottom'] && nodes[i].attributes['fo:padding-bottom'].value) {
+                            size = this._getSize(nodes[i].attributes['fo:padding-bottom'].value);
+                            if (size.units) {
+                                result.page.dimensionCSSRules.paddingBottom = size;
+                            }
+                        }
+                        if (
+                            nodes[i].attributes['style:footnote-max-height'] &&
+                            nodes[i].attributes['style:footnote-max-height'].value
+                        ) {
+                            size = this._getSize(nodes[i].attributes['style:footnote-max-height'].value);
+                            if (size.units) {
+                                result.footnote.dimensionCSSRules.maxHeight = size;
+                            }
+                        }
+                        if (nodes[i].attributes['style:num-format'] && nodes[i].attributes['style:num-format'].value) {
+                            result.page.options.numberingFormat = nodes[i].attributes['style:num-format'].value;
+                        }
+                        if (nodes[i].attributes['style:print-orientation'] && nodes[i].attributes['style:print-orientation'].value) {
+                            result.page.options.isLandscapeOrientation =
+                                nodes[i].attributes['style:print-orientation'].value == 'landscape';
+                        }
+                        if (nodes[i].attributes['style:writing-mode'] && nodes[i].attributes['style:writing-mode'].value) {
+                            result.page.css.direction =
+                                (/rl/ig).test(nodes[i].attributes['style:writing-mode'].value) ? "rtl" : "ltr";
+                        }
+
+
+                        childNodes = jDoc.DOM.children(nodes[i]);
+                        len = childNodes.length;
+
+                        for (j = 0; len < childNodes; j++) {
+                            switch (childNodes[j].localName) {
+                            case "footnote-sep":
+                                if (childNodes[j].attributes['style:width'] && childNodes[j].attributes['style:width'].value) {
+                                    size = this._getSize(childNodes[j].attributes['style:width'].value);
+                                    if (size.units) {
+                                        result.footnote.dimensionCSSRules.width = size;
+                                    }
+                                }
+                                if (
+                                    childNodes[j].attributes['style:distance-before-sep'] &&
+                                    childNodes[j].attributes['style:distance-before-sep'].value
+                                ) {
+                                    size = this._getSize(childNodes[j].attributes['style:distance-before-sep'].value);
+                                    if (size.units) {
+                                        result.footnote.dimensionCSSRules.marginTop = size;
+                                    }
+                                }
+                                if (
+                                    childNodes[j].attributes['style:distance-after-sep'] &&
+                                    childNodes[j].attributes['style:distance-after-sep'].value
+                                ) {
+                                    size = this._getSize(childNodes[j].attributes['style:distance-after-sep'].value);
+                                    if (size.units) {
+                                        result.footnote.dimensionCSSRules.marginBottom = size;
+                                    }
+                                }
+                                if (
+                                    childNodes[j].attributes['style:adjustment'] &&
+                                    childNodes[j].attributes['style:adjustment'].value
+                                ) {
+                                    result.footnote.css['float'] = "none";
+
+                                    if (childNodes[j].attributes['style:adjustment'].value == "left") {
+                                        result.footnote.css['float'] = "left";
+                                    } else if (childNodes[j].attributes['style:adjustment'].value == "right") {
+                                        result.footnote.css['float'] = "right";
+                                    }
+                                }
+                                if (
+                                    childNodes[j].attributes['style:color'] &&
+                                    childNodes[j].attributes['style:color'].value
+                                ) {
+                                    result.footnote.css.color =
+                                        this._normalizeColorValue(childNodes[j].attributes['style:color'].value);
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                return result;
+            },
+            /**
+             *
+             * @param params
+             * @param callback
+             * @private
+             */
+            _parseTextDocumentContent: function (params, callback) {
+                var result = {
+                    pages: []
+                },
+                    lazyLoopOptions = {
+                        chunk: 20,
+                        time: 0,
+                        index: 0
+                    },
+                    interval,
+                    time = 100,
+                    self = this,
+                    callbacks = 0,
+                    lazyMethods = 0,
+                    iteration,
+                    completedLazyMethods = 0,
+                    node = params.xml.querySelector('body'),
+                    parsedLine,
+                    pageParams = {
+                        layout: params.documentData.styles.automatic.layouts[params.documentData.styles.pageLayout]
+                    },
+                    page;
+
+                page = this._createPage(pageParams);
+
+                this._parseTextDocumentStylesNode(params.xml.querySelector('automatic-styles'), function (styles) {
+                    node = node ? node.querySelector('text') : null;
+                    params.documentData._heading = [];
+
+                    if (node) {
+                        lazyMethods++;
+                        lazyLoopOptions.data = jDoc.DOM.children(node);
+                        lazyLoopOptions.len = lazyLoopOptions.data.length;
+                        lazyLoopOptions.all = lazyLoopOptions.len;
+
+                        iteration = function (options) {
+                            options.end = options.index + (options.all > options.chunk ? options.chunk : options.all);
+                            setTimeout(function () {
+                                for (options.index; options.index < options.end; options.index++) {
+                                    switch (options.data[options.index].localName) {
+                                    case "p":
+                                        parsedLine = self._parseTextDocumentParagraphNode({
+                                            node: options.data[options.index],
+                                            styles: styles,
+                                            documentData: params.documentData
+                                        });
+                                        if (parsedLine.options.pageBreak) {
+                                            result.pages.push(page);
+                                            page = self._createPage(pageParams);
+                                        }
+                                        page.elements.push(parsedLine);
+                                        break;
+                                    case "list":
+                                        parsedLine = self._parseTextDocumentListNode({
+                                            node: options.data[options.index],
+                                            styles: styles,
+                                            documentData: params.documentData
+                                        });
+                                        if (parsedLine.options.pageBreak) {
+                                            result.pages.push(page);
+                                            page = self._createPage(pageParams);
+                                        }
+                                        page.elements.push(parsedLine);
+                                        break;
+                                    case "table":
+                                        parsedLine = self._parseTextDocumentTableNode({
+                                            node: options.data[options.index],
+                                            styles: styles,
+                                            documentData: params.documentData
+                                        });
+                                        if (parsedLine.options.pageBreak) {
+                                            result.pages.push(page);
+                                            page = self._createPage(pageParams);
+                                        }
+                                        page.elements.push(parsedLine);
+                                        break;
+                                    }
+
+                                    callbacks++;
+
+                                    if (callbacks >= options.len) {
+                                        completedLazyMethods++;
+                                        if (completedLazyMethods === lazyMethods) {
+                                            result.pages.push(page);
+                                        }
+                                    }
+                                }
+                                options.all = options.len - options.end;
+                                if (options.index < options.len) {
+                                    iteration.call(self, options);
+                                }
+                                return true;
+                            }, options.time);
+                        };
+                        iteration.call(self, lazyLoopOptions);
+                    }
+
+                    interval = setInterval(function () {
+                        if (completedLazyMethods === lazyMethods) {
+                            clearInterval(interval);
+
+                            if (typeof callback === 'function') {
+                                callback(result);
+                            }
+                        }
+                    }, time);
+                });
+            },
+            /**
+             *
+             * @param options
+             * @return {Object}
+             * @private
+             */
+            _parseTextDocumentParagraphNodeDrawFrame: function (options) {
+                var data = {
+                    attributes: {},
+                    properties: {},
+                    css: {},
+                    dimensionCSSRules: {},
+                    isImage: true
+                },
+                    size,
+                    i,
+                    children = jDoc.DOM.children(options.node),
+                    len = children.length;
+
+                if (options.node.attributes['svg:x'] && options.node.attributes['svg:x'].value) {
+                    size = this._getSize(options.node.attributes['svg:x'].value);
+
+                    if (size.units) {
+                        data.dimensionCSSRules.left = size;
+                        data.css.position = "absolute";
+                    }
+                }
+
+                if (options.node.attributes['svg:y'] && options.node.attributes['svg:y'].value) {
+                    size = this._getSize(options.node.attributes['svg:y'].value);
+
+                    if (size.units) {
+                        data.dimensionCSSRules.top = size;
+                        data.css.position = "absolute";
+                    }
+                }
+
+                if (options.node.attributes['svg:width'] && options.node.attributes['svg:width'].value) {
+                    size = this._getSize(options.node.attributes['svg:width'].value);
+
+                    if (size.units) {
+                        data.dimensionCSSRules.width = size;
+                    }
+                }
+
+                if (options.node.attributes['svg:height'] && options.node.attributes['svg:height'].value) {
+                    size = this._getSize(options.node.attributes['svg:height'].value);
+
+                    if (size.units) {
+                        data.dimensionCSSRules.height = size;
+                    }
+                }
+
+                if (options.node.attributes['draw:z-index'] && !isNaN(options.node.attributes['draw:z-index'].value)) {
+                    data.css.zIndex = +options.node.attributes['draw:z-index'].value;
+                }
+
+                if (options.node.attributes['draw:style-name'] && options.node.attributes['draw:style-name'].value) {
+                    data.properties.styleName = options.node.attributes['draw:style-name'].value;
+                }
+
+                for (i = 0; i < len; i++) {
+                    if (children[i].localName === "image") {
+                        if (
+                            children[i].attributes['xlink:href'] &&
+                            options.documentData &&
+                            options.documentData.media
+                        ) {
+                            data.attributes.src = options.documentData.media[children[i].attributes['xlink:href'].value];
+                        }
+                    }
+                }
+
+                return data;
+            },
+            /**
+             *
+             * @param params
+             * @returns {*}
+             * @private
+             */
+            _parseTextDocumentParagraphNodeTextSection: function (params) {
+                var children = jDoc.DOM.children(params.node),
+                    i,
+                    len = children.length,
+                    styleRules,
+                    result = {
+                        css: {},
+                        dimensionCSSRules: {},
+                        attributes: {},
+                        properties: {
+                            textContent: ""
+                        },
+                        options: {}
+                    };
+
+                if (params.node.attributes['text:style-name'] && params.node.attributes['text:style-name'].value) {
+                    styleRules = this._getStyleRules({
+                        documentData: params.documentData,
+                        styles: params.styles,
+                        styleName: params.node.attributes['text:style-name'].value,
+                        elements: ['paragraphContent']
+                    });
+
+                    jDoc.deepMerge(result, styleRules.paragraph);
+                }
+
+                for (i = 0; i < len; i++) {
+                    params.properties.textContent += children[i].textContent;
+                }
+
+                return data;
+            },
+            /**
+             *
+             * @param params
+             * @return {Object}
+             * @private
+             */
+            _parseTextDocumentListNode: function (params) {
+                var result = {
+                    options: {
+                        isList: true,
+                        pageBreak: false
+                    },
+                    attributes: {},
+                    css: {},
+                    dimensionCSSRules: {},
+                    items: []
+                },
+                    styleRules,
+                    i,
+                    j,
+                    nodes = jDoc.DOM.children(params.node),
+                    childNodes = [],
+                    length,
+                    len = nodes.length,
+                    item;
+
+                if (params.node.attributes['xml:id'] && params.node.attributes['xml:id'].value) {
+                    result.attributes.id = params.node.attributes['xml:id'].value;
+                }
+                if (params.node.attributes['text:style-name'] && params.node.attributes['text:style-name'].value) {
+                    styleRules = this._getStyleRules({
+                        documentData: params.documentData,
+                        styles: params.styles,
+                        styleName: params.node.attributes['text:style-name'].value,
+                        elements: ['list']
+                    });
+
+                    jDoc.deepMerge(result, styleRules.list);
+                }
+
+                for (i = 0; i < len; i++) {
+                    item = {
+                        options: {},
+                        attributes: {},
+                        css: {},
+                        dimensionCSSRules: {},
+                        elements: []
+                    };
+
+                    if (nodes[i].localName === "list-item") {
+                        childNodes = jDoc.DOM.children(nodes[i]);
+                        length = childNodes.length;
+
+                        for (j = 0; j < length; j++) {
+                            if (childNodes[j].localName === "p") {
+                                item.elements.push(this._parseTextDocumentParagraphNode({
+                                    node: childNodes[j],
+                                    styles: params.styles,
+                                    documentData: params.documentData
+                                }));
+                            }
+                        }
+                    }
+                    result.items[i] = item;
+                }
+
+                return result;
+            },
+            _parseTextDocumentListStyles: function (xml) {
+                var result = {
+                    list: {
+                        css: {},
+                        dimensionCSSRules: {}
+                    }
+                },
+                    i,
+                    nodes = jDoc.DOM.children(xml),
+                    len = nodes.length;
+
+                for (i = 0; i < len; i++) {
+                    if (nodes[i].localName == "list-level-style-number") {
+                        if (nodes[i].attributes['style:num-format'] && nodes[i].attributes['style:num-format'].value) {
+                            result.list.css.listStyleType = this._getListStyleType(nodes[i].attributes['style:num-format'].value);
+                        }
+                    }
+                }
+
+                return result;
+            },
+            /**
+             *
+             * @param xml
+             * @return {Object}
+             * @private
+             */
+            _parseTextDocumentMetaInformation: function (xml) {
+                var result = {
+                    documentInfo: {},
+                    applicationInfo: {}
+                },
+                    infoNode = xml.querySelector('meta'),
+                    i,
+                    nodes = jDoc.DOM.children(infoNode),
+                    length = nodes.length;
+
+                if (infoNode) {
+                    for (i = 0; i < length; i++) {
+                        switch (nodes[i].localName) {
+                        case "initial-creator":
+                        case "creator":
+                            if (nodes[i].textContent) {
+                                result.documentInfo.creator = nodes[i].textContent;
+                            }
+                            break;
+                        case "creation-date":
+                            if (nodes[i].textContent) {
+                                result.documentInfo.dateCreated = new Date(nodes[i].textContent);
+                            }
+                            break;
+                        case "date":
+                            if (nodes[i].textContent) {
+                                result.documentInfo.dateModified = new Date(nodes[i].textContent);
+                            }
+                            break;
+                        case "generator":
+                            if (nodes[i].textContent) {
+                                result.applicationInfo.application = nodes[i].textContent;
+                            }
+                            break;
+                        case "document-statistic":
+                            result.documentInfo.tableCount = (
+                                nodes[i].attributes['meta:table-count'] && !isNaN(nodes[i].attributes['meta:table-count'].value)
+                            ) ? +nodes[i].attributes['meta:table-count'].value : 0;
+
+                            result.documentInfo.imageCount = (
+                                nodes[i].attributes['meta:image-count'] && !isNaN(nodes[i].attributes['meta:image-count'].value)
+                            ) ? +nodes[i].attributes['meta:image-count'].value : 0;
+
+                            result.documentInfo.objectCount = (
+                                nodes[i].attributes['meta:object-count'] && !isNaN(nodes[i].attributes['meta:object-count'].value)
+                            ) ? +nodes[i].attributes['meta:object-count'].value : 0;
+
+                            result.documentInfo.pageCount = (
+                                nodes[i].attributes['meta:page-count'] && !isNaN(nodes[i].attributes['meta:page-count'].value)
+                            ) ? +nodes[i].attributes['meta:page-count'].value : 0;
+
+                            result.documentInfo.paragraphCount = (
+                                nodes[i].attributes['meta:paragraph-count'] && !isNaN(nodes[i].attributes['meta:paragraph-count'].value)
+                            ) ? +nodes[i].attributes['meta:paragraph-count'].value : 0;
+
+                            result.documentInfo.wordsCount = (
+                                nodes[i].attributes['meta:word-count'] && !isNaN(nodes[i].attributes['meta:word-count'].value)
+                            ) ? +nodes[i].attributes['meta:word-count'].value : 0;
+
+                            result.documentInfo.characterCount = (
+                                nodes[i].attributes['meta:character-count'] && !isNaN(nodes[i].attributes['meta:character-count'].value)
+                            ) ? +nodes[i].attributes['meta:character-count'].value : 0;
+
+                            break;
+                        }
+                    }
+                }
+
+                return result;
+            },
+            /**
+             *
+             * @param params
+             * @return {Object}
+             * @private
+             */
+            _parseTextDocumentParagraphNode: function (params) {
+                var result = {
+                    options: {
+                        isParagraph: true,
+                        pageBreak: false
+                    },
+                    attributes: {},
+                    css: {},
+                    dimensionCSSRules: {
+                        margin: {
+                            value: 0,
+                            units: "px"
+                        },
+                        padding: {
+                            value: 0,
+                            units: "px"
+                        }
+                    },
+                    elements: []
+                },
+                    i,
+                    styleRules = {},
+                    element,
+                    len = params.node.childNodes.length;
+
+                if (params.node.attributes['text:style-name'] && params.node.attributes['text:style-name'].value) {
+                    styleRules = this._getStyleRules({
+                        documentData: params.documentData,
+                        styles: params.styles,
+                        styleName: params.node.attributes['text:style-name'].value,
+                        elements: ['paragraph', 'paragraphContent']
+                    });
+
+                    jDoc.deepMerge(result, styleRules.paragraph);
+                }
+
+                for (i = 0; i < len; i++) {
+                    element = jDoc.deepMerge({
+                        options: {},
+                        attributes: {},
+                        properties: {}
+                    }, styleRules.paragraphContent);
+
+                    switch (params.node.childNodes[i].localName) {
+                    case "tab":
+                        element.properties.textContent = this._getTabAsSpaces();
+                        result.elements.push(element);
+                        break;
+                    case "soft-page-break":
+                        result.options.pageBreak = true;
+                        break;
+                    case "span":
+                        element = jDoc.deepMerge({}, element, this._parseTextDocumentParagraphNodeTextSection({
+                            node: params.node.childNodes[i],
+                            styles: params.styles,
+                            documentData: params.documentData
+                        }));
+                        result.elements.push(element);
+                        break;
+                    case "frame":
+                        element = jDoc.deepMerge({}, element, this._parseTextDocumentParagraphNodeDrawFrame({
+                            node: params.node.childNodes[i],
+                            styles: params.styles,
+                            documentData: params.documentData
+                        }));
+                        result.elements.push(element);
+                        break;
+                    default:
+                        element.properties.textContent = params.node.childNodes[i].textContent;
+                        result.elements.push(element);
+                    }
+                }
+
+                return result;
+            },
+            /** @lends jDoc.Engines.ODF.prototype
+             *
+             * @param node
+             * @return {Object}
+             * @private
+             */
+            _parseTextDocumentParagraphStyles: function (node) {
+                var nodes = jDoc.DOM.children(node),
+                    length = nodes.length,
+                    j,
+                    result = {
+                        paragraph: {
+                            css: {},
+                            dimensionCSSRules: {},
+                            options: {}
+                        },
+                        paragraphContent: {
+                            css: {},
+                            dimensionCSSRules: {},
+                            options: {}
+                        }
+                    },
+                    align,
+                    localName,
+                    size = {};
+
+                for (j = 0; j < length; j++) {
+                    localName = nodes[j].localName;
+
+                    if (localName === "paragraph-properties") {
+                        if (nodes[j].attributes['fo:background-color'] && nodes[j].attributes['fo:background-color'].value) {
+                            result.paragraph.css.backgroundColor =
+                                this._normalizeColorValue(nodes[j].attributes['fo:background-color'].value);
+                        }
+                        if (nodes[j].attributes['style:writing-mode'] && nodes[j].attributes['style:writing-mode'].value) {
+                            result.paragraph.css.direction =
+                                (/rl/ig).test(nodes[j].attributes['style:writing-mode'].value) ? "rtl" : "ltr";
+                        }
+                        if (nodes[j].attributes['fo:text-align'] && nodes[j].attributes['fo:text-align'].value) {
+                            align = (/center|left|right/i).exec(nodes[j].attributes['fo:text-align'].value);
+
+                            if (align && align[0]) {
+                                result.paragraph.css.textAlign = align[0];
+                            }
+                        }
+                        if (nodes[j].attributes['fo:margin'] && nodes[j].attributes['fo:margin'].value) {
+                            size = this._getSize(nodes[j].attributes['fo:margin'].value);
+
+                            if (size.units) {
+                                result.paragraph.dimensionCSSRules.margin = size;
+                            }
+                        }
+                        if (nodes[j].attributes['fo:margin-top'] && nodes[j].attributes['fo:margin-top'].value) {
+                            size = this._getSize(nodes[j].attributes['fo:margin-top'].value);
+
+                            if (size.units) {
+                                result.paragraph.dimensionCSSRules.marginTop = size;
+                            }
+                        }
+                        if (nodes[j].attributes['fo:margin-bottom'] && nodes[j].attributes['fo:margin-bottom'].value) {
+                            size = this._getSize(nodes[j].attributes['fo:margin-bottom'].value);
+                            if (size.units) {
+                                result.paragraph.dimensionCSSRules.marginBottom = size;
+                            }
+                        }
+                        if (nodes[j].attributes['fo:margin-left'] && nodes[j].attributes['fo:margin-left'].value) {
+                            size = this._getSize(nodes[j].attributes['fo:margin-left'].value);
+                            if (size.units) {
+                                result.paragraph.dimensionCSSRules.marginLeft = size;
+                            }
+                        }
+                        if (nodes[j].attributes['fo:margin-right'] && nodes[j].attributes['fo:margin-right'].value) {
+                            size = this._getSize(nodes[j].attributes['fo:margin-right'].value);
+                            if (size.units) {
+                                result.paragraph.dimensionCSSRules.marginLeft = size;
+                            }
+                        }
+                        if (nodes[j].attributes['fo:margin'] && nodes[j].attributes['fo:margin'].value) {
+                            size = this._getSize(nodes[j].attributes['fo:margin'].value);
+                            if (size.units) {
+                                result.paragraph.dimensionCSSRules.margin = size;
+                            }
+                        }
+                        if (nodes[j].attributes['fo:margin-top'] && nodes[j].attributes['fo:margin-top'].value) {
+                            size = this._getSize(nodes[j].attributes['fo:margin-top'].value);
+                            if (size.units) {
+                                result.paragraph.dimensionCSSRules.marginTop = size;
+                            }
+                        }
+                        if (nodes[j].attributes['fo:margin-bottom'] && nodes[j].attributes['fo:margin-bottom'].value) {
+                            size = this._getSize(nodes[j].attributes['fo:margin-bottom'].value);
+                            if (size.units) {
+                                result.paragraph.dimensionCSSRules.marginBottom = size;
+                            }
+                        }
+                        if (nodes[j].attributes['fo:margin-left'] && nodes[j].attributes['fo:margin-left'].value) {
+                            size = this._getSize(nodes[j].attributes['fo:margin-left'].value);
+                            if (size.units) {
+                                result.paragraph.dimensionCSSRules.marginLeft = size;
+                            }
+                        }
+                        if (nodes[j].attributes['fo:margin-right'] && nodes[j].attributes['fo:margin-right'].value) {
+                            size = this._getSize(nodes[j].attributes['fo:margin-right'].value);
+                            if (size.units) {
+                                result.paragraph.dimensionCSSRules.marginRight = size;
+                            }
+                        }
+                        if (nodes[j].attributes['fo:padding'] && nodes[j].attributes['fo:padding'].value) {
+                            size = this._getSize(nodes[j].attributes['fo:padding'].value);
+                            if (size.units) {
+                                result.paragraph.dimensionCSSRules.padding = size;
+                            }
+                        }
+                        if (nodes[j].attributes['fo:padding-top'] && nodes[j].attributes['fo:padding-top'].value) {
+                            size = this._getSize(nodes[j].attributes['fo:padding-top'].value);
+                            if (size.units) {
+                                result.paragraph.dimensionCSSRules.paddingTop = size;
+                            }
+                        }
+                        if (nodes[j].attributes['fo:padding-bottom'] && nodes[j].attributes['fo:padding-bottom'].value) {
+                            size = this._getSize(nodes[j].attributes['fo:padding-bottom'].value);
+                            if (size.units) {
+                                result.paragraph.dimensionCSSRules.paddingBottom = size;
+                            }
+                        }
+                        if (nodes[j].attributes['fo:padding-left'] && nodes[j].attributes['fo:padding-left'].value) {
+                            size = this._getSize(nodes[j].attributes['fo:padding-left'].value);
+                            if (size.units) {
+                                result.paragraph.dimensionCSSRules.paddingLeft = size;
+                            }
+                        }
+                        if (nodes[j].attributes['fo:padding-right'] && nodes[j].attributes['fo:padding-right'].value) {
+                            size = this._getSize(nodes[j].attributes['fo:padding-right'].value);
+                            if (size.units) {
+                                result.paragraph.dimensionCSSRules.paddingRight = size;
+                            }
+                        }
+                    } else if (localName === "text-properties") {
+                        if (nodes[j].attributes['fo:color'] && nodes[j].attributes['fo:color'].value) {
+                            result.paragraphContent.css.color =
+                                this._normalizeColorValue(nodes[j].attributes['fo:color'].value);
+                        }
+                        if (nodes[j].attributes['fo:font-style'] && nodes[j].attributes['fo:font-style'].value) {
+                            result.paragraphContent.css.fontStyle =
+                                (/italic/ig).test(nodes[j].attributes['fo:font-style'].value) ? "italic" : "normal";
+                        }
+                        if (nodes[j].attributes['fo:font-weight'] && nodes[j].attributes['fo:font-weight'].value) {
+                            result.paragraphContent.css.fontWeight =
+                                (/bold/ig).test(nodes[j].attributes['fo:font-weight'].value) ? "bold" : "normal";
+                        }
+                        if (
+                            nodes[j].attributes['style:text-underline-style'] &&
+                            nodes[j].attributes['style:text-underline-style'].value
+                        ) {
+                            result.paragraphContent.css.textDecoration =
+                                (/none/ig).test(nodes[j].attributes['style:text-underline-style'].value) ? "none" : "underline";
+                        }
+                        if (nodes[j].attributes['style:font-name'] && nodes[j].attributes['style:font-name'].value) {
+                            result.paragraphContent.css.fontFamily = nodes[j].attributes['style:font-name'].value;
+                        }
+                        if (nodes[j].attributes['fo:font-size'] && nodes[j].attributes['fo:font-size'].value) {
+                            size = this._getSize(nodes[j].attributes['fo:font-size'].value);
+                            if (size.units) {
+                                result.paragraphContent.dimensionCSSRules.fontSize = size;
+                            }
+                        }
+                        if (nodes[j].attributes['fo:margin'] && nodes[j].attributes['fo:margin'].value) {
+                            size = this._getSize(nodes[j].attributes['fo:margin'].value);
+                            if (size.units) {
+                                result.paragraphContent.dimensionCSSRules.margin = size;
+                            }
+                        }
+                        if (nodes[j].attributes['fo:margin-top'] && nodes[j].attributes['fo:margin-top'].value) {
+                            size = this._getSize(nodes[j].attributes['fo:margin-top'].value);
+                            if (size.units) {
+                                result.paragraphContent.dimensionCSSRules.marginTop = size;
+                            }
+                        }
+                        if (nodes[j].attributes['fo:margin-bottom'] && nodes[j].attributes['fo:margin-bottom'].value) {
+                            size = this._getSize(nodes[j].attributes['fo:margin-bottom'].value);
+                            if (size.units) {
+                                result.paragraphContent.dimensionCSSRules.marginBottom = size;
+                            }
+                        }
+                        if (nodes[j].attributes['fo:margin-left'] && nodes[j].attributes['fo:margin-left'].value) {
+                            size = this._getSize(nodes[j].attributes['fo:margin-left'].value);
+                            if (size.units) {
+                                result.paragraphContent.dimensionCSSRules.marginLeft = size;
+                            }
+                        }
+                        if (nodes[j].attributes['fo:margin-right'] && nodes[j].attributes['fo:margin-right'].value) {
+                            size = this._getSize(nodes[j].attributes['fo:margin-right'].value);
+                            if (size.units) {
+                                result.paragraphContent.dimensionCSSRules.marginLeft = size;
+                            }
+                        }
+                        if (nodes[j].attributes['fo:margin'] && nodes[j].attributes['fo:margin'].value) {
+                            size = this._getSize(nodes[j].attributes['fo:margin'].value);
+                            if (size.units) {
+                                result.paragraphContent.dimensionCSSRules.margin = size;
+                            }
+                        }
+                        if (nodes[j].attributes['fo:margin-top'] && nodes[j].attributes['fo:margin-top'].value) {
+                            size = this._getSize(nodes[j].attributes['fo:margin-top'].value);
+                            if (size.units) {
+                                result.paragraphContent.dimensionCSSRules.marginTop = size;
+                            }
+                        }
+                        if (nodes[j].attributes['fo:margin-bottom'] && nodes[j].attributes['fo:margin-bottom'].value) {
+                            size = this._getSize(nodes[j].attributes['fo:margin-bottom'].value);
+                            if (size.units) {
+                                result.paragraphContent.dimensionCSSRules.marginBottom = size;
+                            }
+                        }
+                        if (nodes[j].attributes['fo:margin-left'] && nodes[j].attributes['fo:margin-left'].value) {
+                            size = this._getSize(nodes[j].attributes['fo:margin-left'].value);
+                            if (size.units) {
+                                result.paragraphContent.dimensionCSSRules.marginLeft = size;
+                            }
+                        }
+                        if (nodes[j].attributes['fo:margin-right'] && nodes[j].attributes['fo:margin-right'].value) {
+                            size = this._getSize(nodes[j].attributes['fo:margin-right'].value);
+                            if (size.units) {
+                                result.paragraphContent.dimensionCSSRules.marginRight = size;
+                            }
+                        }
+                        if (nodes[j].attributes['fo:padding'] && nodes[j].attributes['fo:padding'].value) {
+                            size = this._getSize(nodes[j].attributes['fo:padding'].value);
+
+                            if (size.units) {
+                                result.paragraphContent.dimensionCSSRules.padding = size;
+                            }
+                        }
+                        if (nodes[j].attributes['fo:padding-top'] && nodes[j].attributes['fo:padding-top'].value) {
+                            size = this._getSize(nodes[j].attributes['fo:padding-top'].value);
+
+                            if (size.units) {
+                                result.paragraphContent.dimensionCSSRules.paddingTop = size;
+                            }
+                        }
+                        if (nodes[j].attributes['fo:padding-bottom'] && nodes[j].attributes['fo:padding-bottom'].value) {
+                            size = this._getSize(nodes[j].attributes['fo:padding-bottom'].value);
+                            if (size.units) {
+                                result.paragraphContent.dimensionCSSRules.paddingBottom = size;
+                            }
+                        }
+                        if (nodes[j].attributes['fo:padding-left'] && nodes[j].attributes['fo:padding-left'].value) {
+                            size = this._getSize(nodes[j].attributes['fo:padding-left'].value);
+
+                            if (size.units) {
+                                result.paragraphContent.dimensionCSSRules.paddingLeft = size;
+                            }
+                        }
+                        if (nodes[j].attributes['fo:padding-right'] && nodes[j].attributes['fo:padding-right'].value) {
+                            size = this._getSize(nodes[j].attributes['fo:padding-right'].value);
+
+                            if (size.units) {
+                                result.paragraphContent.dimensionCSSRules.paddingRight = size;
+                            }
+                        }
+                        if (nodes[j].attributes['fo:language'] && nodes[j].attributes['fo:language'].value) {
+                            result.paragraphContent.options.language = nodes[j].attributes['fo:language'].value;
+                        }
+                    }
+                }
+
+                return result;
+            },
+            /**
+             *
+             * @param xml
+             * @param callback
+             * @returns {*}
+             * @private
+             */
+            _parseTextDocumentStyles: function (xml, callback) {
+                var result = {
+                    automatic: {
+                        layouts: {}
+                    },
+                    pageLayout: "",
+                    defaults: {}
+                },
+                    i,
+                    len,
+                    stylesNode,
+                    nodes,
+                    firstPageLayout = "";
+
+                stylesNode = xml.querySelector('master-styles');
+                nodes = jDoc.DOM.children(stylesNode);
+                len = nodes.length;
+
+                for (i = len - 1; i >= 0; i--) {
+                    if (nodes[i].localName === "master-page") {
+                        if (nodes[i].attributes['style:page-layout-name'] && nodes[i].attributes['style:page-layout-name'].value) {
+                            result.pageLayout = nodes[i].attributes['style:page-layout-name'].value;
+                        }
+                    }
+                }
+
+                stylesNode = xml.querySelector('automatic-styles');
+                nodes = jDoc.DOM.children(stylesNode);
+                len = nodes.length;
+
+                for (i = len - 1; i >= 0; i--) {
+                    if (nodes[i].localName === "page-layout") {
+                        if (nodes[i].attributes['style:name'] && nodes[i].attributes['style:name'].value) {
+                            result.automatic.layouts[nodes[i].attributes['style:name'].value] =
+                                this._parsePageLayoutStyles(nodes[i]);
+
+                            if (!firstPageLayout) {
+                                firstPageLayout = nodes[i].attributes['style:name'].value;
+                            }
+                        }
+                    }
+                }
+
+                if (!result.automatic.layouts[result.pageLayout] && firstPageLayout) {
+                    result.pageLayout = firstPageLayout;
+                }
+
+                stylesNode = xml.querySelector('styles');
+                this._parseTextDocumentStylesNode(stylesNode, function (styles) {
+                    result.defaults = styles;
+                    callback(result);
+                });
+            },
+            /**
+             *
+             * @param stylesNode
+             * @param callback
+             * @private
+             */
+            _parseTextDocumentStylesNode: function (stylesNode, callback) {
+                var result = {
+                    named: {},
+                    paragraph: {},
+                    paragraphContent: {},
+                    table: {},
+                    list: {}
+                },
+                    self = this,
+                    data = {},
+                    loopCallbacksCount = 0,
+                    loopIteration,
+                    completedLazyMethods = 0,
+                    lazyLoopOptions = {
+                        chunk: 20,
+                        time: 10,
+                        index: 0
+                    },
+                    lazyMethods = 0,
+                    namedStyle,
+                    localName,
+                    node,
+                    styleLocalName = "style",
+                    listStyleLocalName = "list-style",
+                    defaultStyleLocalName = "default-style";
+
+                if (stylesNode) {
+                    lazyMethods++;
+
+                    lazyLoopOptions.data = jDoc.DOM.children(stylesNode);
+                    lazyLoopOptions.len = lazyLoopOptions.data.length;
+                    lazyLoopOptions.all = lazyLoopOptions.len;
+
+                    loopIteration = function (options) {
+                        options.end = options.index + (options.all > options.chunk ? options.chunk : options.all);
+                        setTimeout(function () {
+                            for (options.index; options.index < options.end; options.index++) {
+                                node = options.data[options.index];
+                                localName = node.localName;
+
+                                if (localName === styleLocalName || defaultStyleLocalName === localName) {
+
+                                    if (
+                                        localName !== "default-style" && node.attributes['style:name'] &&
+                                        node.attributes['style:name'].value
+                                    ) {
+                                        result.named[node.attributes['style:name'].value] =
+                                            result.named[node.attributes['style:name'].value] || {};
+                                        namedStyle = result.named[node.attributes['style:name'].value];
+                                    } else {
+                                        namedStyle = null;
+                                    }
+
+                                    switch (node.attributes['style:family'] && node.attributes['style:family'].value) {
+                                    case "table":
+                                        if (namedStyle) {
+                                            namedStyle.table = self._parseTextDocumentTableStyles(node);
+                                        } else {
+                                            result.table = self._parseTextDocumentTableStyles(node);
+                                        }
+                                        break;
+                                    case "table-column":
+                                        if (namedStyle) {
+                                            namedStyle.tableColumn = self._parseTextDocumentTableColumnStyles(node);
+                                        }
+                                        break;
+                                    case "table-cell":
+                                        if (namedStyle) {
+                                            namedStyle.tableCell = self._parseTextDocumentTableCellStyles(node);
+                                        }
+                                        break;
+                                    case "paragraph":
+                                        if (namedStyle) {
+                                            data = self._parseTextDocumentParagraphStyles(node);
+                                            namedStyle.paragraph = jDoc.deepMerge(data.paragraph, {
+                                                css: {
+                                                    wordWrap: "break-word",
+                                                    wordBreak: "break-all",
+                                                    width: "100%"
+                                                }
+                                            });
+                                            namedStyle.paragraphContent = data.paragraphContent;
+                                        } else {
+                                            data = self._parseTextDocumentParagraphStyles(node);
+                                            result.paragraph = data.paragraph;
+                                            result.paragraphContent = data.paragraphContent;
+                                        }
+                                        break;
+                                    case "text":
+                                        if (namedStyle) {
+                                            data = self._parseTextDocumentParagraphStyles(node);
+                                            namedStyle.paragraph = data.paragraph;
+                                            namedStyle.paragraphContent = data.paragraphContent;
+                                        } else {
+                                            data = self._parseTextDocumentParagraphStyles(node);
+                                            result.paragraph = data.paragraph;
+                                            result.paragraphContent = data.paragraphContent;
+                                        }
+                                        break;
+                                    }
+                                } else if (
+                                    localName === listStyleLocalName && node.attributes['style:name'] &&
+                                    node.attributes['style:name'].value
+                                ) {
+                                    result.named[node.attributes['style:name'].value] =
+                                        result.named[node.attributes['style:name'].value] || {};
+
+                                    jDoc.deepMerge(
+                                        result.named[node.attributes['style:name'].value],
+                                        self._parseTextDocumentListStyles(node)
+                                    );
+                                }
+
+                                loopCallbacksCount++;
+                                if (loopCallbacksCount >= options.len) {
+                                    completedLazyMethods++;
+                                    if (completedLazyMethods >= lazyMethods) {
+                                        if (typeof callback === "function") {
+                                            callback(result);
+                                        }
+                                    }
+                                }
+                            }
+                            options.all = options.len - options.end;
+                            if (options.index < options.len) {
+                                loopIteration.call(self, options);
+                            }
+                            return true;
+                        }, options.time);
+                    };
+                    loopIteration.call(self, lazyLoopOptions);
+                } else {
+                    callback(result);
+                }
+            },
+            /**
+             *
+             * @param node
+             * @return {Object}
+             * @private
+             */
+            _parseTextDocumentTableCellStyles: function (node) {
+                var nodes = jDoc.DOM.children(node),
+                    length = nodes.length,
+                    j,
+                    result = {
+                        css: {},
+                        dimensionCSSRules: {},
+                        options: {}
+                    },
+                    data;
+
+                for (j = 0; j < length; j++) {
+                    if (nodes[j].localName === "table-cell-properties") {
+                        if (
+                            nodes[j].attributes['fo:padding'] &&
+                            nodes[j].attributes['fo:padding'].value
+                        ) {
+                            data = this._getSize(nodes[j].attributes['fo:padding'].value);
+                            if (data.units) {
+                                result.dimensionCSSRules.padding = data;
+                            }
+                        }
+                        if (
+                            nodes[j].attributes['fo:border'] &&
+                            nodes[j].attributes['fo:border'].value
+                        ) {
+                            data = this._parseBorderStyle(nodes[j].attributes['fo:border'].value);
+                            result.css.borderStyle = data.style;
+                            result.dimensionCSSRules.borderWidth = data.width;
+                            result.css.borderColor = data.color;
+                        }
+                        if (
+                            nodes[j].attributes['fo:border-left'] &&
+                            nodes[j].attributes['fo:border-left'].value
+                        ) {
+                            data = this._parseBorderStyle(nodes[j].attributes['fo:border-left'].value);
+                            result.css.borderLeftStyle = data.style;
+                            result.dimensionCSSRules.borderLeftWidth = data.width;
+                            result.css.borderLeftColor = data.color;
+                        }
+                        if (
+                            nodes[j].attributes['fo:border-right'] &&
+                            nodes[j].attributes['fo:border-right'].value
+                        ) {
+                            data = this._parseBorderStyle(nodes[j].attributes['fo:border-right'].value);
+                            result.css.borderRightStyle = data.style;
+                            result.dimensionCSSRules.borderRightWidth = data.width;
+                            result.css.borderRightColor = data.color;
+                        }
+                        if (
+                            nodes[j].attributes['fo:border-top'] &&
+                            nodes[j].attributes['fo:border-top'].value
+                        ) {
+                            data = this._parseBorderStyle(nodes[j].attributes['fo:border-top'].value);
+                            result.css.borderTopStyle = data.style;
+                            result.dimensionCSSRules.borderTopWidth = data.width;
+                            result.css.borderTopColor = data.color;
+                        }
+                        if (
+                            nodes[j].attributes['fo:border-bottom'] &&
+                            nodes[j].attributes['fo:border-bottom'].value
+                        ) {
+                            data = this._parseBorderStyle(nodes[j].attributes['fo:border-bottom'].value);
+                            result.css.borderBottomStyle = data.style;
+                            result.dimensionCSSRules.borderBottomWidth = data.width;
+                            result.css.borderBottomColor = data.color;
+                        }
+                    }
+                }
+
+                return result;
+            },
+            /**
+             *
+             * @param node
+             * @return {Object}
+             * @private
+             */
+            _parseTextDocumentTableColumnStyles: function (node) {
+                var nodes = jDoc.DOM.children(node),
+                    length = nodes.length,
+                    j,
+                    result = {
+                        css: {},
+                        dimensionCSSRules: {},
+                        options: {}
+                    },
+                    size = {};
+
+                for (j = 0; j < length; j++) {
+                    if (nodes[j].localName === "table-column-properties") {
+                        if (
+                            nodes[j].attributes['style:column-width'] &&
+                            nodes[j].attributes['style:column-width'].value
+                        ) {
+                            size = this._getSize(nodes[j].attributes['style:column-width'].value);
+                            if (size.units) {
+                                result.dimensionCSSRules.width = size;
+                            }
+                        }
+                    }
+                }
+
+                return result;
+            },
+            /**
+             *
+             * @param params
+             * @return {Object}
+             * @private
+             */
+            _parseTextDocumentTableNode: function (params) {
+                var result = {
+                    options: {
+                        isTable: true,
+                        pageBreak: false
+                    },
+                    header: {
+                        rows: []
+                    },
+                    body: {
+                        rows: []
+                    },
+                    footer: {
+                        rows: []
+                    },
+                    attributes: {},
+                    dimensionCSSRules: {},
+                    css: {}
+                },
+                    i,
+                    nodes = jDoc.DOM.children(params.node),
+                    llength = nodes.length,
+                    cccNodes = [],
+                    cc = 0,
+                    llllength = 0,
+                    row = {},
+                    localName,
+                    styleRules = {};
+
+                if (params.node.attributes['table:name'] && params.node.attributes['table:name'].value) {
+                    result.attributes.name = params.node.attributes['table:name'].value;
+                }
+                if (params.node.attributes['table:style-name'] && params.node.attributes['table:style-name'].value) {
+                    styleRules = this._getStyleRules({
+                        documentData: params.documentData,
+                        styles: params.styles,
+                        styleName: params.node.attributes['table:style-name'].value,
+                        elements: ['table']
+                    });
+
+                    jDoc.deepMerge(result, styleRules.table);
+                }
+
+                for (i = 0; i < llength; i++) {
+                    localName = nodes[i].localName;
+                    if (localName === "table-row") {
+                        result.body.rows.push(jDoc.deepMerge(this._parseTextDocumentTableRowNode({
+                            node: nodes[i],
+                            documentData: params.documentData,
+                            styles: params.styles
+                        })));
+                    } else if (localName === "table-header-rows") {
+                        cccNodes = jDoc.DOM.children(nodes[i]);
+                        llllength = cccNodes.length;
+
+                        for (cc = 0; cc < llllength; cc++) {
+                            if (cccNodes[cc].localName === "table-row") {
+                                result.header.rows.push(this._parseTextDocumentTableRowNode({
+                                    node: cccNodes[cc],
+                                    documentData: params.documentData,
+                                    styles: params.styles
+                                }));
+                            }
+                        }
+                    }
+                }
+
+                return result;
+            },
+            /**
+             *
+             * @param params
+             * @returns {*}
+             * @private
+             */
+            _parseTextDocumentTableRowNode: function (params) {
+                var row = {
+                    cells: [],
+                    css: {},
+                    dimensionCSSRules: {}
+                },
+                    j,
+                    c,
+                    cell,
+                    ccNodes,
+                    lllength,
+                    styleRules = {},
+                    cNodes = jDoc.DOM.children(params.node),
+                    length = cNodes.length;
+
+                for (j = 0; j < length; j++) {
+                    if (cNodes[j].localName === "table-cell") {
+                        if (cNodes[j].attributes['table:style-name'] && cNodes[j].attributes['table:style-name'].value) {
+                            styleRules = this._getStyleRules({
+                                documentData: params.documentData,
+                                styles: params.styles,
+                                styleName: cNodes[j].attributes['table:style-name'].value,
+                                elements: ['tableCell']
+                            });
+                        }
+
+                        cell = jDoc.deepMerge({
+                            elements: [],
+                            options: {}
+                        }, params.styles, styleRules.tableCell);
+                        ccNodes = jDoc.DOM.children(cNodes[j]);
+                        lllength = ccNodes.length;
+
+                        for (c = 0; c < lllength; c++) {
+                            if (ccNodes[c].localName === "p") {
+                                cell.elements.push(this._parseTextDocumentParagraphNode({
+                                    node: ccNodes[c],
+                                    styles: params.styles,
+                                    documentData: params.documentData
+                                }));
+                            }
+                        }
+                        row.cells.push(cell);
+                    }
+                }
+
+                return row;
+            },
+            /** @lends jDoc.Engines.ODF.prototype
+             *
+             * @param node
+             * @return {Object}
+             * @private
+             */
+            _parseTextDocumentTableStyles: function (node) {
+                var nodes = jDoc.DOM.children(node),
+                    length = nodes.length,
+                    j,
+                    result = {
+                        css: {},
+                        dimensionCSSRules: {},
+                        options: {}
+                    },
+                    size = {};
+
+                for (j = length - 1; j >= 0; j--) {
+                    if (nodes[j].localName === "table-properties") {
+                        if (nodes[j].attributes['style:width'] && nodes[j].attributes['style:width'].value) {
+                            size = this._getSize(nodes[j].attributes['style:width'].value);
+                            if (size.units) {
+                                result.dimensionCSSRules.width = size;
+                            }
+                        }
+                        if (nodes[j].attributes['table:border-model'] && nodes[j].attributes['table:border-model'].value) {
+                            result.css.borderCollapse =
+                                (/coll/ig).test(nodes[j].attributes['table:border-model'].value) ? "collapse" : "separate";
+                        }
+                    }
+                }
+
+                return result;
+            }
+        }
+    );
+    /**
+     * @constructor
+     * @type {Object}
+     */
+    jDoc.Engines.OXML = jDoc.Engine.extend(
+        /** @lends jDoc.Engines.OXML.prototype */
+        {
+            /**
+             *
+             * @description Convert attribute value to boolean value
+             * @param attribute
+             * @return {Boolean}
+             * @private
+             */
+            _attributeToBoolean: function (attribute) {
+                return ( !! attribute && (attribute.value == 'true' || attribute.value == '1' || attribute.value == 'on'));
+            },
+            /**
+             *
+             * @param options
+             * @returns {number}
+             * @private
+             */
+            _checkPageLinesHeight: function (options) {
+                var page;
+
+                if (
+                    options.pageHeight && options.pageLinesHeight + options.lineHeight > options.pageHeight
+                ) {
+                    page = jDoc.clone(options.pageOptions);
+
+                    if (page.options.pageNumber) {
+                        page.options.pageNumber.value = page.options.pageNumber.start + options.pageOptions.options.pageIndex;
+                    }
+
+                    page.elements = options.pageElements;
+                    options.pageLinesHeight = 0;
+                    options.pages.push(page);
+                } else {
+                    options.pageLinesHeight += options.lineHeight;
+                }
+
+                return options.pageLinesHeight;
+            },
+            /**
+             * 635 - OXML coef.
+             * 20 - 20th of a Point
+             * @param val
+             * @return {*}
+             * @private
+             */
+            _convertEMU: function (val) {
+                return {
+                    value: val / (635 * 20),
+                    units: "pt"
+                };
+            },
+            /**
+             * @param fileEntries {Array}
+             * @param callback {function}
+             * @returns {null}
+             * @private
+             */
+            _createParsedFile: function (fileEntries, callback) {
+                if (this.isTextDocument()) {
+                    this._createParsedFileFromTextDocument.apply(this, arguments);
+                }
+
+                return null;
+            },
+            /**
+             *
+             * @param filesEntry {Array}
+             * @param callback {function}
+             * @private
+             */
+            _createParsedFileFromTextDocument: function (filesEntry, callback) {
+                var filesCount = filesEntry.length,
+                    i,
+                    reader,
+                    counter = 0,
+                    domParser = new DOMParser(),
+                    self = this,
+                    document,
+                    documentData = {
+                        mainRelations: {},
+                        documentRelations: {},
+                        appInfo: {},
+                        documentInfo: {},
+                        fonts: {},
+                        settings: {},
+                        styles: {},
+                        webSettings: {},
+                        media: {},
+                        themes: {}
+                    };
+
+                for (i = 0; i < filesCount; i++) {
+                    reader = new FileReader();
+                    reader.onload = (function (fileData) {
+                        return function (event) {
+                            if (fileData.entry.filename.indexOf('_rels/.rels') >= 0) {
+                                documentData.mainRelations =
+                                    self._parseRelations.call(self, domParser.parseFromString(event.target.result,
+                                        "application/xml"));
+                                counter++;
+                            } else if (fileData.entry.filename.indexOf('word/_rels/') >= 0) {
+                                counter++;
+                                documentData.documentRelations =
+                                    self._parseRelations.call(self, domParser.parseFromString(event.target.result,
+                                        "application/xml"));
+                            } else if (fileData.entry.filename.indexOf('/app.xml') >= 0) {
+                                counter++;
+                                documentData.applicationInfo =
+                                    self._parseApplicationInfo.call(self, domParser.parseFromString(event.target.result,
+                                        "application/xml"));
+                            } else if (fileData.entry.filename.indexOf('/core.xml') >= 0) {
+                                counter++;
+                                documentData.documentInfo =
+                                    self._parseDocumentInfo.call(self, domParser.parseFromString(event.target.result,
+                                        "application/xml"));
+                            } else if (fileData.entry.filename.indexOf('media/') >= 0) {
+                                counter++;
+                                documentData.media[fileData.entry.filename] = {
+                                    fileData: fileData,
+                                    data: self._normalizeDataURI(event.target.result, fileData.entry.filename)
+                                };
+                            } else if (fileData.entry.filename.indexOf('theme/') >= 0) {
+                                counter++;
+                                documentData.themes[fileData.entry.filename] =
+                                    self._parseDocumentTheme.call(
+                                        self, domParser.parseFromString(event.target.result, "application/xml")
+                                );
+                            } else if (fileData.entry.filename.indexOf('/fontTable.xml') >= 0) {
+                                counter++;
+                                documentData.fonts =
+                                    self._parseFontsInfo.call(self, domParser.parseFromString(event.target.result,
+                                        "application/xml"));
+                            } else if (fileData.entry.filename.indexOf('/settings.xml') >= 0) {
+                                counter++;
+                                documentData.settings =
+                                    self._parseTextDocumentSettings.call(self, domParser.parseFromString(event.target.result,
+                                        "application/xml"));
+                            } else if (fileData.entry.filename.indexOf('/webSettings.xml') >= 0) {
+                                counter++;
+                                documentData.webSettings =
+                                    self._parseWebSettings.call(self, domParser.parseFromString(event.target.result,
+                                        "application/xml"));
+                            } else if (fileData.entry.filename.indexOf('/styles.xml') >= 0) {
+                                counter++;
+                                documentData.styles =
+                                    self._parseTextDocumentStyles.call(self, domParser.parseFromString(event.target.result,
+                                        "application/xml"));
+                            } else if (fileData.entry.filename.indexOf('/document.xml') >= 0) {
+                                counter++;
+                                document = domParser.parseFromString(event.target.result, "application/xml");
+                            } else {
+                                counter++;
+                            }
+
+                            if (counter > filesCount - 1) {
+                                self._parseTextDocumentContent.call(self, {
+                                    xml: document,
+                                    documentData: documentData,
+                                    callback: function (result) {
+                                        callback(new jDoc.ParsedFile(result));
+                                    }
+                                });
+                                return false;
+                            }
+
+                            return true;
+                        }
+                    }(filesEntry[i]));
+
+                    reader[(filesEntry[i].entry.filename.indexOf('media/') >= 0) ? "readAsDataURL" : "readAsText"](filesEntry[i].file);
+                }
+            },
+            /**
+             * @description File types for parsing
+             * @private
+             */
+            _fileTypeParsers: [{
+                extension: ['docx'],
+                mime: ['vnd.openxmlformats-officedocument.wordprocessingml.document'],
+                isTextDocument: true
+            }],
+            /**
+             *
+             * @param style
+             * @returns {*}
+             * @private
+             */
+            _getCSSRulesFromPreferencedStyle: function (style) {
+                return {
+                    elementCSSRules: {
+                        css: style.lineStyle.css || {},
+                        dimensionCSSRules: style.lineStyle.dimensionCSSRules || {}
+                    },
+                    childrenCSSRules: {
+                        css: style.contentProperties.css || {},
+                        dimensionCSSRules: style.contentProperties.dimensionCSSRules || {}
+                    }
+                };
+            },
+            /**
+             * @description 240 => 1, 360 => 1.5
+             * @return {Number}
+             * @private
+             */
+            _getLineHeight: function (value) {
+                var result = Math.round(value / 240 * 100) / 100;
+
+                return (isNaN(result) || result < 1) ? 1 : result;
+            },
+            /**
+             *
+             * @param params
+             * @returns {*}
+             * @private
+             */
+            _getMediaFromRelation: function (params) {
+                var media,
+                    relation = this._getRelation(params);
+
+                if (relation && params.documentData.media && params.documentData.media["word/" + relation.target]) {
+                    media = params.documentData.media["word/" + relation.target];
+                }
+
+                return media;
+            },
+            /**
+             *
+             * @param params
+             * @returns {*}
+             * @private
+             */
+            _getRelation: function (params) {
+                var relation;
+
+                if (
+                    params.documentData.documentRelations &&
+                    params.documentData.documentRelations[params.relationId]
+                ) {
+                    relation = params.documentData.documentRelations[params.relationId];
+                } else if (
+                    params.documentData.mainRelations && params.documentData.mainRelations[params.relationId]
+                ) {
+                    relation = params.documentData.mainRelations[params.relationId];
+                }
+
+                return relation;
+            },
+            /**
+             *
+             * @param params
+             * @return {Object}
+             * @private
+             */
+            _getTextDocumentStyleProperties: function (params) {
+                var result = {
+                    options: {
+                        classList: []
+                    },
+                    css: {},
+                    dimensionCSSRules: {}
+                },
+                    headingInfo,
+                    numIdNode,
+                    preferencedStyle,
+                    levelNode,
+                    horizontalBorder,
+                    verticalBorder,
+                    cellBorderBottom,
+                    cellBorderRight,
+                    children = jDoc.DOM.children(params.node),
+                    textShadow = "0 0 1px 0 rgba(0,0,0,0.5)",
+                    i;
+
+                for (i = children.length - 1; i >= 0; i--) {
+                    switch (children[i].localName) {
+                    case "pStyle":
+                        if (
+                            children[i].attributes['w:val'] && children[i].attributes['w:val'].value
+                        ) {
+                            if (
+                                params.documentData &&
+                                params.documentData.styles.preferencedStyles[children[i].attributes['w:val'].value]
+                            ) {
+                                preferencedStyle = this._getCSSRulesFromPreferencedStyle(
+                                    params.documentData.styles.preferencedStyles[children[i].attributes['w:val'].value]
+                                );
+
+                                jDoc.deepMerge(result, preferencedStyle.elementCSSRules);
+
+                                result.options.childrenCSSRules = jDoc.deepMerge(
+                                    result.options.childrenCSSRules, preferencedStyle.childrenCSSRules
+                                );
+
+                                headingInfo = (/Heading\s*([0-9]+)/i).exec(
+                                    params.documentData.styles.preferencedStyles[children[i].attributes['w:val'].value].name
+                                );
+
+                                if (headingInfo) {
+                                    result.options.classList.push(children[i].attributes['w:val'].value);
+                                    result.options.heading = {
+                                        level: isNaN(headingInfo[1]) ? 0 : +headingInfo[1]
+                                    };
+                                } else if (
+                                    (/List\s*Paragraph/i).test(
+                                        params.documentData.styles.preferencedStyles[children[i].attributes['w:val'].value].name
+                                    )
+                                ) {
+                                    result.options.isListItem = true;
+                                }
+                            }
+                        }
+                        break;
+                    case "jc":
+                        if (children[i].attributes['w:val'] && children[i].attributes['w:val'].value) {
+                            if (children[i].attributes['w:val'].value == 'both') {
+                                result.css.textAlign = 'justify';
+                            } else if (children[i].attributes['w:val'].value == 'center') {
+                                result.css.textAlign = 'center';
+                            } else if (children[i].attributes['w:val'].value == 'left') {
+                                result.css.textAlign = 'left';
+                            } else if (children[i].attributes['w:val'].value == 'right') {
+                                result.css.textAlign = 'right';
+                            }
+                        }
+                        break;
+                    case "ind":
+                        if (children[i].attributes['w:left'] && !isNaN(children[i].attributes['w:left'].value)) {
+                            result.dimensionCSSRules.paddingLeft = {
+                                units: "pt",
+                                value: children[i].attributes['w:left'].value / 20
+                            };
+                        }
+                        if (children[i].attributes['w:right'] && !isNaN(children[i].attributes['w:right'].value)) {
+                            result.dimensionCSSRules.paddingRight = {
+                                units: "pt",
+                                value: children[i].attributes['w:right'].value / 20
+                            };
+                        }
+                        if (children[i].attributes['w:firstLine'] && !isNaN(children[i].attributes['w:firstLine'].value)) {
+                            result.dimensionCSSRules.textIndent = {
+                                units: "pt",
+                                value: children[i].attributes['w:firstLine'].value / 20
+                            };
+                        }
+                        break;
+                    case "b":
+                        result.css.fontWeight = (
+                            children[i].attributes['w:val'] && !this._attributeToBoolean(children[i].attributes['w:val'])
+                        ) ? "normal" : 'bold';
+                        break;
+                    case "bCs":
+                        if (
+                            children[i].attributes['w:val'] && !this._attributeToBoolean(children[i].attributes['w:val'])
+                        ) {
+                            result.options.complexFontWeight = 'bold';
+                        }
+                        break;
+                    case "shadow":
+                        result.css.textShadow =
+                            this._attributeToBoolean(children[i].attributes['w:val']) ? textShadow : "none";
+                        break;
+                    case "cs":
+                        result.options.useComplexScript = this._attributeToBoolean(children[i].attributes['w:val']);
+                        break;
+                    case "outline":
+                        result.options.outline = this._attributeToBoolean(children[i].attributes['w:val']);
+                        break;
+                    case "rtl":
+                        result.css.direction = this._attributeToBoolean(children[i].attributes['w:val']) ? "rtl" : "ltr";
+                        break;
+                    case "strike":
+                        result.options.strike = this._attributeToBoolean(children[i].attributes['w:val']);
+                        break;
+                    case "dstrike":
+                        result.options.doubleStrike = this._attributeToBoolean(children[i].attributes['w:val']);
+                        break;
+                    case "vanish":
+                        if (this._attributeToBoolean(children[i].attributes['w:val'])) {
+                            result.css.visibility = "hidden";
+                        }
+                        break;
+                    case "specVanish":
+                        if (this._attributeToBoolean(children[i].attributes['w:val'])) {
+                            result.css.visibility = "hidden";
+                        }
+                        break;
+                    case "i":
+                        result.css.fontStyle = (
+                            children[i].attributes['w:val'] && !this._attributeToBoolean(children[i].attributes['w:val'])
+                        ) ? "normal" : 'italic';
+                        break;
+                    case "iCs":
+                        if (
+                            children[i].attributes['w:val'] && !this._attributeToBoolean(children[i].attributes['w:val'])
+                        ) {
+                            result.options.complexFontStyle = 'italic';
+                        }
+                        break;
+                    case "color":
+                        if (children[i].attributes['w:val'] && children[i].attributes['w:val'].value) {
+                            result.css.color = this._normalizeColorValue(children[i].attributes['w:val'].value);
+                        }
+                        break;
+                    case "sz":
+                        if (children[i] && children[i].attributes['w:val'] && !isNaN(children[i].attributes['w:val'].value)) {
+                            result.dimensionCSSRules.fontSize = {
+                                units: "pt",
+                                value: children[i].attributes['w:val'].value / 2
+                            };
+                        }
+                        break;
+                    case "szCs":
+                        if (!result.dimensionCSSRules.fontSize && children[i] && children[i].attributes['w:val'] && !isNaN(children[i].attributes['w:val'].value)) {
+                            result.dimensionCSSRules.fontSize = {
+                                value: children[i].attributes['w:val'].value / 2,
+                                units: "pt"
+                            };
+                        }
+                        break;
+                    case "rFonts":
+                        if (children[i].attributes['w:ascii']) {
+                            result.css.fontFamily = children[i].attributes['w:ascii'].value || "";
+                        } else if (children[i].attributes['w:cs']) {
+                            result.css.fontFamily = children[i].attributes['w:cs'].value || "";
+                        } else if (children[i].attributes['w:asciiTheme']) {
+                            if ((/major/ig).test(children[i].attributes['w:asciiTheme'].value)) {
+                                result.options.majorFontFamily = true;
+                            } else if ((/minor/ig).test(children[i].attributes['w:asciiTheme'].value)) {
+                                result.options.minorFontFamily = true;
+                            }
+                        }
+                        break;
+                    case "u":
+                        if (children[i].attributes['w:val'] && children[i].attributes['w:val'].value) {
+                            result.css.textDecoration = (
+                                children[i].attributes['w:val'].value != "none"
+                            ) ? "underline" : result.css.textDecoration;
+                        }
+                        break;
+                    case "vertAlign":
+                        if (children[i].attributes['w:val']) {
+                            result.css.verticalAlign = this._normalizeVerticalAlign(children[i].attributes['w:val']);
+                        }
+                        break;
+                    case "oMath":
+                        result.options.math = (this._attributeToBoolean(children[i].attributes['w:val']));
+                        break;
+                    case "imprint":
+                        result.options.imprinting = (this._attributeToBoolean(children[i].attributes['w:val']));
+                        break;
+                    case "snapToGrid":
+                        result.options.useDocumentGrid = (this._attributeToBoolean(children[i].attributes['w:val']));
+                        break;
+                    case "webHidden":
+                        result.options.webHiddenText = (this._attributeToBoolean(children[i].attributes['w:val']));
+                        break;
+                    case "emboss":
+                        result.options.embossing = (this._attributeToBoolean(children[i].attributes['w:val']));
+                        break;
+                    case "smallCaps":
+                        result.options.smallCaps = (this._attributeToBoolean(children[i].attributes['w:val']));
+                        break;
+                    case "noProof":
+                        result.options.checkSpellingGrammar = !(this._attributeToBoolean(children[i].attributes['w:val']));
+                        break;
+                    case "fitText":
+                        result.options.fitText.id = (
+                            children[i] && children[i].attributes['w:id']
+                        ) ? children[i].attributes['w:id'].value : null;
+                        result.options.fitText.width = (
+                            children[i] && !isNaN(children[i].attributes['w:val'])
+                        ) ? {
+                            value: children[i].attributes['w:id'].value / 20,
+                            units: "pt"
+                        } : null;
+                        break;
+                    case "shd":
+                        if (children[i].attributes['w:val']) {
+                            result.css.boxShadow = this._parseShadowProperty(children[i]);
+                        }
+                        break;
+                    case "effect":
+                        result.options.effect = this._parseStyleEffectProperty(children[i]);
+                        break;
+                    case "eastAsianLayout":
+                        result.options.eastAsianSettings = {
+                            id: (
+                                children[i].attributes['w:id']
+                            ) ? children[i].attributes['w:id'].value : null,
+                            combines: (
+                                this._attributeToBoolean(( !! children[i].attributes['w:combine']))
+                            ),
+                            isVertical: ( !! children[i] &&
+                                this._attributeToBoolean(( !! children[i].attributes['w:vert']))),
+                            verticalCompress: ( !! children[i] &&
+                                this._attributeToBoolean(( !! children[i].attributes['w:vertCompress']))),
+                            combineBrackets: ( !! children[i] &&
+                                this._parseBrackets(children[i].attributes['w:combineBrackets']))
+                        };
+                        break;
+                    case "position":
+                        if (
+                            children[i].attributes['w:val'] && !isNaN(children[i].attributes['w:val'].value)
+                        ) {
+                            result.options.position = {
+                                value: children[i].attributes['w:val'].value / 2,
+                                units: "pt"
+                            };
+                        }
+                        break;
+                    case "spacing":
+                        if (children[i].attributes['w:line'] && !isNaN(children[i].attributes['w:line'].value)) {
+                            result.css.lineHeight = this._getLineHeight(children[i].attributes['w:line'].value);
+
+                            /**
+                             * @description Fix for empty container
+                             * @type {String}
+                             */
+                            result.dimensionCSSRules.minHeight = {
+                                value: children[i].attributes['w:line'].value / 20,
+                                units: "pt"
+                            };
+                        }
+                        if (children[i].attributes['w:before'] && !isNaN(children[i].attributes['w:before'].value)) {
+                            result.dimensionCSSRules.marginTop = {
+                                value: children[i].attributes['w:before'].value / 20,
+                                units: "pt"
+                            };
+                        }
+                        if (children[i].attributes['w:after'] && !isNaN(children[i].attributes['w:after'].value)) {
+                            result.dimensionCSSRules.marginBottom = {
+                                value: children[i].attributes['w:after'].value / 20,
+                                units: "pt"
+                            };
+                        }
+                        break;
+                    case "kern":
+                        if (children[i] && !isNaN(children[i].attributes['w:val'])) {
+                            result.dimensionCSSRules.letterSpacing = {
+                                value: children[i].attributes['w:val'].value / 20,
+                                units: "pt"
+                            };
+                        }
+                        break;
+                    case "rStyle":
+                        if (children[i].attributes['w:val']) {
+                            jDoc.deepMerge(result, this._parseTextDocumentReferenceStyle(children[i].attributes['w:val'].value));
+                        }
+                        break;
+                    case "w":
+                        result.options.textScale = ( !! children[i].attributes['w:val'] && !isNaN(children[i].attributes['w:val'].value)) ? +children[i].attributes['w:val'].value : result.options.textScale;
+                        break;
+                    case "em":
+                        result.options.emphasis = this._parseEmphasis(children[i].attributes['w:val']);
+                        break;
+                    case "highlight":
+                        result.options.highlight = (
+                            children[i].attributes['w:val']
+                        ) ? this._normalizeColorValue(children[i].attributes['w:val'].value) : result.options.highlight;
+                        break;
+                    case "bdr":
+                        result.options.textBorder = {
+                            color: (
+                                children[i].attributes['w:color'] &&
+                                this._normalizeColorValue(children[i].attributes['w:color'].value)
+                            ) || "",
+                            themeColor: (
+                                children[i].attributes['w:themeColor'] &&
+                                this._normalizeColorValue(children[i].attributes['w:themeColor'].value)
+                            ) || "",
+                            shadow: this._attributeToBoolean(children[i].attributes['w:shadow']),
+                            frame: this._attributeToBoolean(children[i].attributes['w:frame'])
+                        };
+
+                        if (children[i].attributes['w:sz'] && !isNaN(children[i].attributes['w:sz'].value)) {
+                            result.options.textBorder.width = {
+                                value: children[i].attributes['w:sz'].value / 8,
+                                units: "pt"
+                            };
+                        }
+
+                        break;
+                    case "keepNext":
+                        result.options.keepNext = children[i] ? this._attributeToBoolean(children[i].attributes['w:val']) : false;
+                        break;
+                    case "outlineLvl":
+                        result.options.outlineLevel = (
+                            children[i] && children[i].attributes['w:val'] && !isNaN(
+                                children[i].attributes['w:val'].value
+                            )
+                        ) ? +children[i].attributes['w:val'].value : 0;
+                        break;
+                    case "numPr":
+                        numIdNode = children[i].querySelector('numId');
+                        levelNode = children[i].querySelector('ilvl');
+                        result.options.numbering = {
+                            id: (
+                                numIdNode && numIdNode.attributes['w:val'] && !isNaN(numIdNode.attributes['w:val'].value)
+                            ) ? +numIdNode.attributes['w:val'].value : 0,
+                            level: (
+                                levelNode && levelNode.attributes['w:val'] && !isNaN(levelNode.attributes['w:val'].value)
+                            ) ? +levelNode.attributes['w:val'].value : 0
+                        };
+                        break;
+                    case "tblBorders":
+                        jDoc.deepMerge(result, this._parseTableBorderStyle({
+                            node: children[i]
+                        }));
+                        horizontalBorder = children[i].querySelector('insideH');
+                        verticalBorder = children[i].querySelector('insideV');
+                        cellBorderBottom = horizontalBorder ? this._parseTableBorderProperties(horizontalBorder) : null;
+                        cellBorderRight = verticalBorder ? this._parseTableBorderProperties(verticalBorder) : null;
+
+                        if (cellBorderBottom || cellBorderRight) {
+                            result.cellsStyleProperties = {
+                                css: {}
+                            };
+
+                            if (cellBorderRight) {
+                                result.cellsStyleProperties.css.borderRightWidth = cellBorderRight.width;
+                                result.cellsStyleProperties.css.borderRightColor = cellBorderRight.color;
+                                result.cellsStyleProperties.css.borderRightStyle = cellBorderRight.style;
+                            }
+
+                            if (cellBorderBottom) {
+                                result.cellsStyleProperties.css.borderBottomWidth = cellBorderBottom.width;
+                                result.cellsStyleProperties.css.borderBottomColor = cellBorderBottom.color;
+                                result.cellsStyleProperties.css.borderBottomStyle = cellBorderBottom.style;
+                            }
+                        }
+                        break;
+                    case "lang":
+                        result.options.language = this._parseLanguageNode(children[i]);
+                        break;
+                    }
+                }
+
+                return result;
+            },
+            /**
+             *
+             * Parsing information about application
+             * @param xml
+             * @private
+             * @return {Object}
+             */
+            _parseApplicationInfo: function (xml) {
+                var i,
+                    result = {
+                        template: "",
+                        totalTime: 0,
+                        pagesCount: 0,
+                        wordsCount: 0,
+                        characters: 0,
+                        charactersWithSpaces: 0,
+                        application: '',
+                        security: 0,
+                        linesCount: 0,
+                        scaleCrop: false,
+                        linksUpToDateCrop: false,
+                        hyperlinksChanged: false,
+                        company: '',
+                        version: '',
+                        isShared: false
+                    },
+                    children = jDoc.DOM.children(xml);
+
+                for (i = children.length - 1; i >= 0; i--) {
+                    switch (children[i].localName) {
+                    case "Template":
+                        result.template = children[i].textContent || '';
+                        break;
+                    case "TotalTime":
+                        result.totalTime = +(children[i].textContent || 0);
+                        break;
+                    case "Pages":
+                        result.pagesCount = +(children[i].textContent || 0);
+                        break;
+                    case "Words":
+                        result.wordsCount = +(children[i].textContent || 0);
+                        break;
+                    case "Characters":
+                        result.characters = +(children[i].textContent || 0);
+                        break;
+                    case "CharactersWithSpaces":
+                        result.charactersWithSpaces = +(children[i].textContent || 0);
+                        break;
+                    case "DocSecurity":
+                        result.security = +(children[i].textContent || 0);
+                        break;
+                    case "Lines":
+                        result.linesCount = +(children[i].textContent || 0);
+                        break;
+                    case "Application":
+                        result.application = children[i].textContent || "";
+                        break;
+                    case "Company":
+                        result.company = children[i].textContent || "";
+                        break;
+                    case "AppVersion":
+                        result.version = children[i].textContent || "";
+                        break;
+                    case "ScaleCrop":
+                        result.scaleCrop = children[i].textContent || "";
+                        break;
+                    case "LinksUpToDate":
+                        result.linksUpToDateCrop = children[i].textContent == 'true';
+                        break;
+                    case "HyperlinksChanged":
+                        result.hyperlinksChanged = children[i].textContent == 'true';
+                        break;
+                    case "SharedDoc":
+                        result.isShared = children[i].textContent == 'true';
+                        break;
+                    }
+                }
+
+                return result;
+            },
+            /**
+             *
+             * Parsing information about document
+             * @param xml
+             * @private
+             * @return {Object}
+             */
+            _parseDocumentInfo: function (xml) {
+                var i,
+                    children = jDoc.DOM.children(xml),
+                    result = {
+                        creator: "",
+                        lastModifiedBy: "",
+                        revision: 0,
+                        dateCreated: null,
+                        dateModified: null
+                    };
+
+                for (i = children.length - 1; i >= 0; i--) {
+                    switch (children[i].localName) {
+                    case "creator":
+                        result.creator = children[i].textContent || '';
+                        break;
+                    case "lastModifiedBy":
+                        result.lastModifiedBy = children[i].textContent || '';
+                        break;
+                    case "revision":
+                        result.revision = +(children[i].textContent || 0);
+                        break;
+                    case "created":
+                        result.dateCreated = children[i].textContent ? new Date(children[i].textContent) : null;
+                        break;
+                    case "modified":
+                        result.dateModified = children[i].textContent ? new Date(children[i].textContent) : null;
+                        break;
+                    }
+                }
+
+                return result;
+            },
+            /**
+             *
+             * @param xml
+             * @returns {*}
+             * @private
+             */
+            _parseDocumentTheme: function (xml) {
+                var themeElementsNode = xml.querySelector('themeElements'),
+                    themeElements,
+                    i,
+                    font,
+                    fontNode,
+                    result = {
+                        css: {}
+                    };
+
+                if (themeElementsNode) {
+                    themeElements = jDoc.DOM.children(themeElementsNode);
+
+                    for (i = themeElements.length - 1; i >= 0; i--) {
+                        if (themeElements[i].localName == "fontScheme") {
+                            fontNode = themeElements[i].querySelector('minorFont');
+                            font = fontNode.querySelector('latin');
+
+                            if (font && font.attributes.typeface && font.attributes.typeface.value) {
+                                result.css.fontFamily = font.attributes.typeface.value;
+                            }
+
+                            fontNode = themeElements[i].querySelector('majorFont');
+                            font = fontNode.querySelector('latin');
+
+                            if (font && font.attributes.typeface && font.attributes.typeface.value) {
+                                result.css.fontFamily = font.attributes.typeface.value;
+                            }
+
+                            break;
+                        }
+                    }
+                }
+
+                return result;
+            },
+            /** @lends jDoc.Engines.OXML.prototype */
+            _parseEmphasis: function (attribute) {
+                var result = "";
+
+                if (attribute) {
+                    switch (attribute.value) {
+                    case "dot":
+                        result = "dotted";
+                        break;
+                    case "comma":
+                        result = "comma";
+                        break;
+                    case "circle":
+                        result = "circle";
+                        break;
+                    case "underDot":
+                        result = "underDotted";
+                        break;
+                    }
+                }
+                return result;
+            },
+            /**
+             *
+             * @description Parsing information about fonts
+             * @param xml
+             * @return {Object}
+             * @private
+             */
+            _parseFontsInfo: function (xml) {
+                var fontInfoNodes = xml.childNodes[0] ? jDoc.DOM.children(xml.childNodes[0]) : [],
+                    result = {},
+                    self = this,
+                    attributesCount,
+                    k,
+                    i,
+                    j,
+                    len,
+                    nameAttribute,
+                    children;
+
+                for (i = fontInfoNodes.length - 1; i >= 0; i--) {
+                    nameAttribute = fontInfoNodes[i].attributes['w:name'];
+
+                    if (nameAttribute && nameAttribute.value) {
+                        result[nameAttribute.value] = {};
+                        children = jDoc.DOM.children(fontInfoNodes[i]);
+                        len = children.length;
+
+                        for (j = len - 1; j >= 0; j--) {
+                            switch (children[j].localName) {
+                            case "panose1":
+                                if (children[j].attributes['w:val'] && children[j].attributes['w:val'].value) {
+                                    result[nameAttribute.value].panose1 = children[j].attributes['w:val'].value;
+                                }
+                                break;
+                            case "charset":
+                                if (children[j].attributes['w:val'] && children[j].attributes['w:val'].value) {
+                                    result[nameAttribute.value].charset = children[j].attributes['w:val'].value;
+                                }
+                                break;
+                            case "family":
+                                if (children[j].attributes['w:val'] && children[j].attributes['w:val'].value) {
+                                    result[nameAttribute.value].family = children[j].attributes['w:val'].value;
+                                }
+                                break;
+                            case "pitch":
+                                if (children[j].attributes['w:val'] && children[j].attributes['w:val'].value) {
+                                    result[nameAttribute.value].pitch = children[j].attributes['w:val'].value;
+                                }
+                                break;
+                            case "sig":
+                                result[nameAttribute.value].signature = {};
+                                attributesCount = children[j].attributes.length;
+
+                                for (k = 0; k < attributesCount; k++) {
+                                    if (children[j].attributes[k] && children[j].attributes[k].value) {
+                                        result[nameAttribute.value].signature[
+                                            self._replaceAttributeNamespace(children[j].attributes[k].name)
+                                        ] = children[j].attributes[k].value;
+                                    }
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+                return result;
+            },
+            /**
+             *
+             * @description Parse info about relations between files
+             * @param xml
+             * @return {*}
+             * @private
+             */
+            _parseRelations: function (xml) {
+                var relationsNodes = xml.childNodes[0] ? jDoc.DOM.children(xml.childNodes[0]) : [],
+                    result = {},
+                    i,
+                    idAttribute,
+                    typeAttribute,
+                    targetAttribute;
+
+                for (i = relationsNodes.length - 1; i >= 0; i--) {
+                    if (relationsNodes[i].attributes) {
+                        idAttribute = relationsNodes[i].attributes.Id;
+                        typeAttribute = relationsNodes[i].attributes.Type;
+                        targetAttribute = relationsNodes[i].attributes.Target;
+
+                        if (idAttribute && typeAttribute && targetAttribute) {
+                            result[idAttribute.value] = {
+                                id: idAttribute.value || '',
+                                type: typeAttribute.value || '',
+                                target: targetAttribute.value || ''
+                            };
+                        }
+                    }
+                }
+
+                return result;
+            },
+            /**
+             *
+             * @param data {Object}
+             * @return {Object}
+             * @private
+             */
+            _parseRunNode: function (data) {
+                var result = jDoc.deepMerge({}, {
+                    css: jDoc.clone(data.documentData.styles.defaults.paragraphContent.css),
+                    dimensionCSSRules: jDoc.clone(data.documentData.styles.defaults.paragraphContent.dimensionCSSRules),
+                    options: {
+                        elementHeight: {
+                            value: 0,
+                            units: "pt"
+                        }
+                    },
+                    attributes: {},
+                    properties: {}
+                }, data.cssRules),
+                    paragraphContentProperties = data.node.querySelector('rPr'),
+                    paragraphContentText = null,
+                    paragraphContentImage = data.node.querySelector('drawing'),
+                    pictureNode = data.node.querySelector('pict'),
+                    len = data.node.attributes.length,
+                    pictureGroup,
+                    partInfo = {},
+                    textBoxContentChildren,
+                    textBoxContentChildrenCount,
+                    imageData = null,
+                    textBox,
+                    attrName,
+                    mediaData,
+                    inlineNode,
+                    extentNode,
+                    horizontalPositionNode,
+                    verticalPositionNode,
+                    effectExtentNode,
+                    optionsNode,
+                    blipNode,
+                    offsetNode,
+                    extentsNode,
+                    geometryNode,
+                    offset = 0,
+                    textBoxContent,
+                    styleProperties,
+                    pictureNodeChildren,
+                    k,
+                    j;
+
+                for (k = 0; k < len; k++) {
+                    if (data.node.attributes[k].value) {
+                        result[this._replaceAttributeNamespace(data.node.attributes[k].name)] =
+                            isNaN(data.node.attributes[k].value) ? data.node.attributes[k].value : +data.node.attributes[k].value;
+                    }
+                }
+
+                if (paragraphContentProperties) {
+                    styleProperties = this._getTextDocumentStyleProperties({
+                        node: paragraphContentProperties,
+                        documentData: data.documentData
+                    });
+                    jDoc.deepMerge(result.css, styleProperties.css);
+                    jDoc.deepMerge(result.dimensionCSSRules, styleProperties.dimensionCSSRules);
+                }
+
+                if (pictureNode) {
+                    pictureGroup = pictureNode.querySelector('group');
+
+                    if (pictureGroup) {
+                        jDoc.deepMerge(result, {
+                            css: {},
+                            dimensionCSSRules: {},
+                            parts: [],
+                            options: {
+                                isSchema: true
+                            }
+                        });
+
+                        if (pictureGroup.attributes.style && pictureGroup.attributes.style.value) {
+                            jDoc.deepMerge(result, this._parseStyleAttribute(pictureGroup.attributes.style.value));
+
+                            delete result.dimensionCSSRules.margin;
+                        }
+
+                        result.css.margin = "auto";
+                        result.css.position = "relative";
+                        result.css.overflow = "hidden";
+                        result.css.textIndent = 0;
+
+                        if (result.dimensionCSSRules.height) {
+                            result.options.elementHeight.value = result.dimensionCSSRules.height.value;
+                        }
+
+                        partInfo = {};
+                        imageData = null;
+                        pictureNodeChildren = jDoc.DOM.children(pictureGroup);
+                        len = pictureNodeChildren.length;
+
+                        for (k = 0; k < len; k++) {
+                            partInfo = {
+                                css: {},
+                                dimensionCSSRules: {},
+                                attributes: {},
+                                elements: [],
+                                options: {
+                                    backgroundRelationID: null
+                                }
+                            };
+                            switch (pictureNodeChildren[k].localName) {
+                            case "shape":
+                                if (
+                                    pictureNodeChildren[k].attributes.style &&
+                                    pictureNodeChildren[k].attributes.style.value
+                                ) {
+                                    jDoc.deepMerge(
+                                        partInfo,
+                                        this._parseStyleAttribute(
+                                            pictureNodeChildren[k].attributes.style.value, {
+                                                denominator: 20
+                                            }
+                                        )
+                                    );
+                                }
+                                if (pictureNodeChildren[k].attributes.strokeweight &&
+                                    pictureNodeChildren[k].attributes.strokeweight.value) {
+                                    partInfo.css.borderStyle = "solid";
+                                    partInfo.dimensionCSSRules.borderWidth = {
+                                        value: 1,
+                                        units: "px"
+                                    };
+                                    partInfo.css.borderColor = "#000000";
+                                    if (this._cropUnits(partInfo.css.height)) {
+                                        partInfo.css.height = (this._cropUnits(partInfo.css.height) - 2) + "px";
+                                    }
+                                    if (this._cropUnits(partInfo.css.width)) {
+                                        partInfo.css.width = (this._cropUnits(partInfo.css.width) - 2) + "px";
+                                    }
+                                }
+                                imageData = pictureNodeChildren[k].querySelector('imagedata');
+                                if (imageData) {
+                                    if (
+                                        imageData.attributes['o:title'] &&
+                                        imageData.attributes['o:title'].value
+                                    ) {
+                                        partInfo.attributes.title = imageData.attributes['o:title'].value;
+                                    }
+                                    if (
+                                        imageData.attributes['r:id'] && imageData.attributes['r:id'].value
+                                    ) {
+                                        mediaData = this._getMediaFromRelation({
+                                            relationId: imageData.attributes['r:id'].value,
+                                            documentData: data.documentData
+                                        });
+
+                                        if (mediaData) {
+                                            partInfo.css.backgroundImage = 'url("' + mediaData.data + '")';
+                                            partInfo.css.backgroundRepeat = "no-repeat";
+                                        }
+                                    }
+                                }
+                                partInfo.css.zIndex = k + 2;
+                                result.parts.push(partInfo);
+                                break;
+                            case "rect":
+                                if (
+                                    pictureNodeChildren[k].attributes.style &&
+                                    pictureNodeChildren[k].attributes.style.value
+                                ) {
+                                    jDoc.deepMerge(
+                                        partInfo,
+                                        this._parseStyleAttribute(
+                                            pictureNodeChildren[k].attributes.style.value, {
+                                                denominator: 20
+                                            }
+                                        )
+                                    );
+                                }
+
+                                if (pictureNodeChildren[k].attributes.strokeweight &&
+                                    pictureNodeChildren[k].attributes.strokeweight.value) {
+                                    partInfo.css.borderStyle = "solid";
+                                    partInfo.dimensionCSSRules.borderWidth = {
+                                        value: 1,
+                                        units: "px"
+                                    };
+                                    partInfo.css.borderColor = "#000000";
+                                    if (this._cropUnits(partInfo.css.height)) {
+                                        partInfo.dimensionCSSRules.height = {
+                                            value: (this._cropUnits(partInfo.css.height) - 2),
+                                            units: "px"
+                                        };
+                                    }
+                                    if (this._cropUnits(partInfo.css.width)) {
+                                        partInfo.dimensionCSSRules.width = {
+                                            value: (this._cropUnits(partInfo.css.width) - 2),
+                                            units: "px"
+                                        };
+                                    }
+                                }
+
+                                textBox = pictureNodeChildren[k].querySelector('textbox');
+
+                                if (textBox) {
+                                    textBoxContent = textBox.querySelector('txbxContent');
+
+                                    if (textBoxContent) {
+                                        textBoxContentChildren = jDoc.DOM.children(textBoxContent);
+                                        textBoxContentChildrenCount = textBoxContentChildren.length;
+
+                                        for (j = 0; j < textBoxContentChildrenCount; j++) {
+                                            if (textBoxContentChildren[j].localName === "p") {
+                                                partInfo.elements.push(
+                                                    this._parseTextDocumentParagraphNode({
+                                                        node: textBoxContentChildren[j],
+                                                        cssRules: {
+                                                            css: {
+                                                                wordWrap: "normal",
+                                                                wordBreak: "normal",
+                                                                width: "auto"
+                                                            }
+                                                        },
+                                                        documentData: data.documentData
+                                                    })
+                                                );
+                                            }
+                                        }
+                                    }
+                                }
+                                partInfo.css.zIndex = k + 2;
+                                result.parts.push(partInfo);
+                                break;
+                            }
+                        }
+                    }
+                } else if (paragraphContentImage) {
+                    inlineNode = paragraphContentImage.querySelector('inline');
+                    extentNode = paragraphContentImage.querySelector('extent');
+                    horizontalPositionNode = paragraphContentImage.querySelector('positionH');
+                    verticalPositionNode = paragraphContentImage.querySelector('positionV');
+                    effectExtentNode = paragraphContentImage.querySelector('effectExtent');
+                    optionsNode = paragraphContentImage.querySelector('docPr');
+                    blipNode = paragraphContentImage.querySelector('blip');
+                    offsetNode = paragraphContentImage.querySelector('off');
+                    extentsNode = paragraphContentImage.querySelector('ext');
+                    geometryNode = paragraphContentImage.querySelector('prstGeom');
+
+                    jDoc.deepMerge(result.options, {
+                        isImage: true,
+                        isHidden: false,
+                        relationID: "",
+                        offset: {},
+                        extents: {},
+                        shapeType: "",
+                        inline: {
+                            extent: {},
+                            effectExtent: {
+                                left: 0,
+                                top: 0,
+                                right: 0,
+                                bottom: 0
+                            }
+                        },
+                        nonVisualProperties: {}
+                    });
+
+                    if (geometryNode) {
+                        result.options.shapeType =
+                            geometryNode.attributes['prst'] ? this._prepareShapeType(geometryNode.attributes['prst']) : "";
+                    }
+                    if (blipNode && blipNode.attributes['r:embed'] && blipNode.attributes['r:embed'].value) {
+                        mediaData = this._getMediaFromRelation({
+                            relationId: blipNode.attributes['r:embed'].value,
+                            documentData: data.documentData
+                        });
+
+                        if (mediaData) {
+                            result.attributes.src = mediaData.data;
+                        }
+                    }
+                    if (offsetNode) {
+                        if (!isNaN(offsetNode.attributes['y'])) {
+                            result.options.offset.top = {
+                                value: +offsetNode.attributes['y'],
+                                units: "pt"
+                            };
+                        }
+
+                        if (!isNaN(offsetNode.attributes['x'])) {
+                            result.options.offset.left = {
+                                value: +offsetNode.attributes['x'],
+                                units: "pt"
+                            };
+                        }
+                    }
+                    if (horizontalPositionNode) {
+                        offset = horizontalPositionNode.querySelector('posOffset');
+                        result.css.position = "absolute";
+                        if (
+                            horizontalPositionNode.attributes['relativeFrom'] &&
+                            (
+                                horizontalPositionNode.attributes['relativeFrom'].value == 'column' ||
+                                horizontalPositionNode.attributes['relativeFrom'].value == 'character'
+                            )
+                        ) {
+                            result.options.relativeParentPosition = true;
+                        }
+                        if (offset && offset.textContent) {
+                            result.dimensionCSSRules.left = this._convertEMU(offset.textContent);
+                        }
+                    }
+                    if (verticalPositionNode) {
+                        offset = verticalPositionNode.querySelector('posOffset');
+                        result.css.position = "absolute";
+                        if (
+                            verticalPositionNode.attributes['relativeFrom'] &&
+                            (
+                                verticalPositionNode.attributes['relativeFrom'].value == 'column' ||
+                                verticalPositionNode.attributes['relativeFrom'].value == 'character'
+                            )
+                        ) {
+                            result.options.relativeParentPosition = true;
+                        }
+                        if (offset && offset.textContent) {
+                            result.dimensionCSSRules.top = this._convertEMU(offset.textContent);
+                        }
+                    }
+                    if (extentsNode) {
+                        if (!isNaN(extentsNode.attributes['y'])) {
+                            result.options.extents.top = {
+                                value: +extentsNode.attributes['y'],
+                                units: "pt"
+                            };
+                        }
+
+                        if (!isNaN(extentsNode.attributes['x'])) {
+                            result.options.extents.left = {
+                                value: +extentsNode.attributes['x'],
+                                units: "pt"
+                            };
+                        }
+                    }
+                    if (inlineNode) {
+                        len = inlineNode.attributes.length;
+                        for (k = 0; k < len; k++) {
+                            if (inlineNode.attributes[k].value) {
+                                result.options.inline[
+                                    this._replaceAttributeNamespace(inlineNode.attributes[k].name)
+                                ] = isNaN(inlineNode.attributes[k].value) ?
+                                    inlineNode.attributes[k].value : +inlineNode.attributes[k].value;
+                            }
+                        }
+                    }
+                    if (optionsNode) {
+                        result.attributes.id = (
+                            optionsNode.attributes['id'] && optionsNode.attributes['id'].value
+                        ) || result.attributes.id;
+                        result.attributes.name = (
+                            optionsNode.attributes['name'] && optionsNode.attributes['name'].value
+                        ) || result.attributes.name;
+                        result.options.isHidden = this._attributeToBoolean(optionsNode.attributes['descr']);
+                        result.attributes.alt = (
+                            optionsNode.attributes['descr'] && optionsNode.attributes['descr'].value
+                        ) || result.attributes.alt;
+                    }
+                    if (extentNode) {
+                        if (extentNode.attributes['cy'] && !isNaN(extentNode.attributes['cy'].value)) {
+                            result.dimensionCSSRules.height = this._convertEMU(extentNode.attributes['cy'].value);
+                        }
+                        if (extentNode.attributes['cx'] && !isNaN(extentNode.attributes['cx'].value)) {
+                            result.dimensionCSSRules.width = this._convertEMU(extentNode.attributes['cx'].value);
+                        }
+                    }
+                    if (effectExtentNode) {
+                        len = effectExtentNode.attributes.length;
+                        for (k = 0; k < len; k++) {
+                            if (effectExtentNode.attributes[k].value) {
+                                attrName = this._replaceAttributeNamespace(effectExtentNode.attributes[k].name);
+
+                                switch (attrName) {
+                                case "l":
+                                    if (!isNaN(effectExtentNode.attributes[k].value)) {
+                                        result.options.inline.effectExtent.left = {
+                                            value: +effectExtentNode.attributes[k].value,
+                                            units: "pt"
+                                        };
+                                    }
+                                    break;
+                                case "r":
+                                    if (!isNaN(effectExtentNode.attributes[k].value)) {
+                                        result.options.inline.effectExtent.right = {
+                                            value: +effectExtentNode.attributes[k].value,
+                                            units: "pt"
+                                        };
+                                    }
+                                    break;
+                                case "b":
+                                    if (!isNaN(effectExtentNode.attributes[k].value)) {
+                                        result.options.inline.effectExtent.bottom = {
+                                            value: +effectExtentNode.attributes[k].value,
+                                            units: "pt"
+                                        };
+                                    }
+                                    break;
+                                case "top":
+                                    if (!isNaN(effectExtentNode.attributes[k].value)) {
+                                        result.options.inline.effectExtent.bottom = {
+                                            value: +effectExtentNode.attributes[k].value,
+                                            units: "pt"
+                                        };
+                                    }
+                                    break;
+                                default:
+                                    result.options.inline.effectExtent[attrName] = effectExtentNode.attributes[k].value;
+                                }
+                            }
+                        }
+                    }
+
+                    if (result.dimensionCSSRules.height) {
+                        result.options.elementHeight.value = result.dimensionCSSRules.height.value;
+                    }
+                } else {
+                    paragraphContentText = data.node.querySelector('t');
+                    result.properties.textContent = paragraphContentText ? paragraphContentText.textContent || '' : '';
+
+                    if (/^\s+$/.test(result.properties.textContent)) {
+                        result.properties.textContent = result.properties.textContent.replace(/\s/g, '\u2000');
+                    }
+                }
+
+                return result;
+            },
+            /**
+             *
+             * @param value
+             * @return {Object}
+             * @private
+             */
+            _parseStyleAttribute: function (value, options) {
+                var result = {
+                    css: {},
+                    dimensionCSSRules: {}
+                },
+                    k = 0,
+                    stylePartitions = String(value).split(';'),
+                    len = stylePartitions.length,
+                    stylePartitionData,
+                    attr;
+
+                if (value) {
+                    stylePartitions = String(value).split(';');
+                    len = stylePartitions.length;
+                    stylePartitionData = null;
+
+                    if (typeof options !== "object") {
+                        options = {};
+                    }
+                    if (isNaN(options.denominator)) {
+                        options.denominator = 1;
+                    }
+
+                    for (k = 0; k < len; k++) {
+                        stylePartitionData = stylePartitions[k].split(":");
+                        attr = stylePartitionData[0];
+
+                        if (attr === "width" || attr === "height" || attr === "left" || attr === "top") {
+                            result.dimensionCSSRules[attr] = {
+                                value: this._cropUnits(stylePartitionData[1].trim()) / options.denominator,
+                                units: "pt"
+                            };
+                        } else if (attr === "visibility" || attr === "position") {
+                            result.css[attr] = stylePartitionData[1].trim();
+                        }
+                    }
+                }
+
+                return result;
+            },
+            /**
+             * @param node
+             * @return {Object}
+             * @private
+             */
+            _parseTableBorderProperties: function (node) {
+                var borderColor = (
+                    node.attributes['w:color'] && node.attributes['w:color'].value
+                ) ? node.attributes['w:color'].value : "";
+
+                return {
+                    width: (
+                        node.attributes['w:sz'] && !isNaN(node.attributes['w:sz'].value)
+                    ) ? {
+                        value: node.attributes['w:sz'].value / 8,
+                        units: "pt"
+                    } : 0,
+                    style: "solid",
+                    color: this._normalizeColorValue(borderColor)
+                };
+            },
+            /**
+             *
+             * @param options
+             * @private
+             */
+            _parseTableBorderStyle: function (options) {
+                var result = {
+                    css: {},
+                    dimensionCSSRules: {}
+                },
+                    i,
+                    borderInfo,
+                    rulePart,
+                    children = jDoc.DOM.children(options.node);
+
+                for (i = children.length - 1; i >= 0; i--) {
+                    if (["top", "left", "right", "bottom"].indexOf(children[i].localName) >= 0) {
+                        rulePart = children[i].localName.charAt(0).toUpperCase() + children[i].localName.slice(1);
+                        borderInfo = this._parseTableBorderProperties(children[i]);
+                        result.dimensionCSSRules['border' + rulePart + 'Width'] = borderInfo.width;
+                        result.css['border' + rulePart + 'Style'] = borderInfo.style;
+                        result.css['border' + rulePart + 'TopColor'] = borderInfo.color;
+                    }
+                }
+
+                return result;
+            },
+            /**
+             *
+             * @param widthPropertyNode
+             * @return {*}
+             * @private
+             */
+            _parseTableElementWidth: function (widthPropertyNode) {
+                var result = {
+                    value: 100,
+                    units: "%"
+                },
+                    type = (
+                        widthPropertyNode.attributes['w:type'] &&
+                        widthPropertyNode.attributes['w:type'].value &&
+                        widthPropertyNode.attributes['w:type'] != 'nil'
+                    ) ? widthPropertyNode.attributes['w:type'].value : null,
+                    width = (
+                        widthPropertyNode.attributes['w:w'] && !isNaN(widthPropertyNode.attributes['w:w'].value)
+                    ) ? +widthPropertyNode.attributes['w:w'].value : 0;
+
+                if (type && width) {
+                    if (type === "pct") {
+                        result = {
+                            value: width,
+                            units: "%"
+                        };
+                    } else if (type === "dxa") {
+                        result = {
+                            value: width / 20,
+                            units: "pt"
+                        };
+                    }
+                }
+
+                return result;
+            },
+            /**
+             * @description Parsing content of document
+             * @param params
+             * @return {Object}
+             * @private
+             */
+            _parseTextDocumentContent: function (params) {
+                params.documentData._heading = [];
+                var result = {
+                    pages: []
+                },
+                    pageOptions = {
+                        css: {},
+                        dimensionCSSRules: {},
+                        options: {
+                            pageIndex: 0,
+                            pageNumber: null,
+                            header: {
+                                css: {},
+                                dimensionCSSRules: {}
+                            },
+                            footer: {
+                                css: {},
+                                dimensionCSSRules: {}
+                            },
+                            columns: {
+                                equalWidth: false,
+                                space: 0,
+                                number: 0,
+                                separated: false
+                            }
+                        }
+                    },
+                    self = this,
+                    i = 0,
+                    pageElements = [],
+                    pageLinesHeight = 0,
+                    cachedLength = 0,
+                    callbacks = 0,
+                    lineNodeData = {},
+                    listLine = null,
+                    iteration,
+                    children,
+                    page,
+                    lineHeight = 0,
+                    sectionProperties,
+                    len,
+                    pageHeight = 0,
+                    c,
+                    lazyLoopOptions,
+                    bodyNode = params.xml.querySelector('body');
+
+                params.documentData.styles.defaults.options.pageContentWidth = {
+                    value: 0,
+                    units: "pt"
+                };
+
+                if (bodyNode) {
+                    lazyLoopOptions = {
+                        chunk: 20,
+                        time: 0,
+                        data: jDoc.DOM.children(bodyNode),
+                        index: 0
+                    };
+
+                    lazyLoopOptions.len = lazyLoopOptions.data.length;
+                    lazyLoopOptions.all = lazyLoopOptions.len;
+
+                    sectionProperties = lazyLoopOptions.data[lazyLoopOptions.len - 1];
+
+                    if (sectionProperties.localName === 'sectPr') {
+                        /**
+                         * remove last iteration - iteration with sectionProperties
+                         */
+                        lazyLoopOptions.len--;
+                        lazyLoopOptions.all = lazyLoopOptions.len;
+
+                        children = jDoc.DOM.children(sectionProperties);
+                        len = children.length;
+
+                        for (c = len - 1; c >= 0; c--) {
+                            switch (children[c].localName) {
+                            case "pgSz":
+                                if (children[c].attributes['w:w'] && !isNaN(children[c].attributes['w:w'].value)) {
+                                    pageOptions.dimensionCSSRules.width = {
+                                        value: children[c].attributes['w:w'].value / 20,
+                                        units: "pt"
+                                    };
+
+                                    params.documentData.styles.defaults.options.pageContentWidth.value +=
+                                        pageOptions.dimensionCSSRules.width.value;
+                                }
+
+                                if (children[c].attributes['w:h'] && !isNaN(children[c].attributes['w:h'].value)) {
+                                    pageOptions.dimensionCSSRules.height = {
+                                        value: (+children[c].attributes['w:h'].value / 20),
+                                        units: "pt"
+                                    };
+
+                                    pageHeight += pageOptions.dimensionCSSRules.height.value;
+                                }
+
+                                break;
+                            case "pgMar":
+                                if (children[c].attributes['w:top'] && !isNaN(children[c].attributes['w:top'].value)) {
+                                    pageOptions.dimensionCSSRules.paddingTop = {
+                                        value: children[c].attributes['w:top'].value / 20,
+                                        units: "pt"
+                                    };
+
+                                    pageHeight -= pageOptions.dimensionCSSRules.paddingTop.value;
+                                }
+
+                                if (children[c].attributes['w:left'] && !isNaN(children[c].attributes['w:left'].value)) {
+                                    pageOptions.dimensionCSSRules.paddingLeft = {
+                                        value: children[c].attributes['w:left'].value / 20,
+                                        units: "pt"
+                                    };
+
+                                    params.documentData.styles.defaults.options.pageContentWidth.value -=
+                                        pageOptions.dimensionCSSRules.paddingLeft.value;
+                                }
+
+                                if (children[c].attributes['w:right'] && !isNaN(children[c].attributes['w:right'].value)) {
+                                    pageOptions.dimensionCSSRules.paddingRight = {
+                                        value: children[c].attributes['w:right'].value / 20,
+                                        units: "pt"
+                                    };
+
+                                    params.documentData.styles.defaults.options.pageContentWidth.value -=
+                                        pageOptions.dimensionCSSRules.paddingRight.value;
+                                }
+
+                                if (children[c].attributes['w:bottom'] && !isNaN(children[c].attributes['w:bottom'].value)) {
+                                    pageOptions.dimensionCSSRules.paddingBottom = {
+                                        value: children[c].attributes['w:bottom'].value / 20,
+                                        units: "pt"
+                                    };
+
+                                    pageHeight -= pageOptions.dimensionCSSRules.paddingBottom.value;
+                                }
+
+                                if (
+                                    pageOptions.options.pageNumber &&
+                                    children[c].attributes['w:header'] && !isNaN(children[c].attributes['w:header'].value)
+                                ) {
+                                    pageOptions.options.header.dimensionCSSRules.height = {
+                                        value: children[c].attributes['w:header'].value / 20,
+                                        units: "pt"
+                                    };
+                                }
+                                if (
+                                    children[c].attributes['w:footer'] && !isNaN(children[c].attributes['w:footer'].value)
+                                ) {
+                                    pageOptions.options.footer.dimensionCSSRules.height = {
+                                        value: children[c].attributes['w:footer'].value / 20,
+                                        units: "pt"
+                                    };
+                                }
+
+                                if (
+                                    children[c].attributes['w:gutter'] && !isNaN(children[c].attributes['w:gutter'].value)
+                                ) {
+                                    pageOptions.dimensionCSSRules.marginTop = {
+                                        value: children[c].attributes['w:gutter'].value / 20,
+                                        units: "pt"
+                                    };
+                                }
+
+                                break;
+                            case "pgNumType":
+                                pageOptions.options.pageNumber = {
+                                    value: 0,
+                                    start: (
+                                        children[c].attributes['w:start'] && !isNaN(children[c].attributes['w:start'].value)
+                                    ) ? +children[c].attributes['w:start'].value : 1
+                                };
+                                break;
+                            case "cols":
+                                pageOptions.options.columns.equalWidth =
+                                    self._attributeToBoolean(children[c].attributes['w:equalWidth']);
+                                pageOptions.options.columns.separated =
+                                    self._attributeToBoolean(children[c].attributes['w:sep']);
+                                pageOptions.options.columns.number = (
+                                    children[c].attributes['w:num'] && !isNaN(children[c].attributes['w:num'])
+                                ) ? +children[c].attributes['w:num'] : pageOptions.options.columns.number;
+                                pageOptions.options.columns.space = (
+                                    children[c].attributes['w:space'] && !isNaN(children[c].attributes['w:space'].value)
+                                ) ? {
+                                    value: (+children[c].attributes['w:space'].value / 20),
+                                    units: "pt"
+                                } : pageOptions.options.columns.space;
+                                break;
+                            case "docGrid":
+                                if (
+                                    children[c].attributes['w:linePitch'] && !isNaN(children[c].attributes['w:linePitch'].value)
+                                ) {
+                                    params.documentData.styles.defaults.options.linePitch = {
+                                        value: children[c].attributes['w:linePitch'].value / 20,
+                                        units: "pt"
+                                    };
+                                }
+                                break;
+                            }
+                        }
+
+                        cachedLength = sectionProperties.attributes.length;
+                        for (i = 0; i < cachedLength; i++) {
+                            if (sectionProperties.attributes[i].value) {
+                                pageOptions.options[self._replaceAttributeNamespace(sectionProperties.attributes[i].name)] = (
+                                    isNaN(sectionProperties.attributes[i].value)
+                                ) ? sectionProperties.attributes[i].value : (+sectionProperties.attributes[i].value);
+                            }
+                        }
+                    }
+
+                    iteration = function (options) {
+                        options.end = options.index + (options.all > options.chunk ? options.chunk : options.all);
+                        setTimeout(function () {
+                            for (options.index; options.index < options.end; options.index++) {
+                                if (options.data[options.index].localName === "p") {
+                                    lineHeight = 0;
+                                    lineNodeData = self._parseTextDocumentParagraphNode({
+                                        node: options.data[options.index],
+                                        documentData: params.documentData
+                                    });
+                                    if (lineNodeData.options.isListItem) {
+                                        if (!listLine) {
+                                            listLine = {
+                                                options: {
+                                                    isList: true
+                                                },
+                                                dimensionCSSRules: {
+                                                    padding: {
+                                                        value: 0,
+                                                        units: "pt"
+                                                    },
+                                                    margin: {
+                                                        value: 0,
+                                                        units: "pt"
+                                                    }
+                                                },
+                                                items: []
+                                            };
+                                        }
+
+                                        if (lineNodeData.dimensionCSSRules.paddingLeft) {
+                                            listLine.dimensionCSSRules.paddingLeft = lineNodeData.dimensionCSSRules.paddingLeft;
+                                            delete lineNodeData.dimensionCSSRules.paddingLeft;
+                                        }
+
+                                        if (lineNodeData.dimensionCSSRules.marginLeft) {
+                                            listLine.dimensionCSSRules.marginLeft = lineNodeData.dimensionCSSRules.marginLeft;
+                                            delete lineNodeData.dimensionCSSRules.marginLeft;
+                                        }
+
+                                        lineHeight += lineNodeData.options.elementHeight.value;
+                                        listLine.items.push(lineNodeData);
+                                    } else {
+                                        if (!listLine) {
+                                            lineHeight = lineNodeData.options.elementHeight.value;
+                                        }
+
+                                        pageLinesHeight = self._checkPageLinesHeight({
+                                            pageOptions: pageOptions,
+                                            pageHeight: pageHeight,
+                                            lineHeight: lineHeight,
+                                            pages: result.pages,
+                                            pageLinesHeight: pageLinesHeight,
+                                            pageElements: pageElements
+                                        });
+
+                                        if (!pageLinesHeight) {
+                                            pageOptions.options.pageIndex++;
+                                            pageElements = [];
+                                        }
+
+                                        if (listLine) {
+                                            pageElements.push(listLine);
+                                            listLine = null;
+                                        } else {
+                                            pageElements.push(lineNodeData);
+                                        }
+
+                                        pageLinesHeight += lineHeight;
+                                    }
+
+                                    callbacks++;
+                                } else if (options.data[options.index].localName === 'tbl') {
+                                    self._parseTextDocumentTableNode({
+                                            tableNode: options.data[options.index],
+                                            documentData: params.documentData
+                                        },
+                                        function (data) {
+                                            lineHeight = lineNodeData.options.elementHeight.value;
+
+                                            pageLinesHeight = self._checkPageLinesHeight({
+                                                pageOptions: pageOptions,
+                                                pageHeight: pageHeight,
+                                                lineHeight: lineHeight,
+                                                pages: result.pages,
+                                                pageLinesHeight: pageLinesHeight,
+                                                pageElements: pageElements
+                                            });
+
+                                            if (!pageLinesHeight) {
+                                                pageOptions.options.pageIndex++;
+                                                pageElements = [];
+                                            }
+
+                                            pageElements.push(data);
+                                            pageLinesHeight += lineHeight;
+
+                                            callbacks++;
+                                            return false;
+                                        }
+                                    );
+                                } else {
+                                    callbacks++;
+                                }
+
+                                if (callbacks >= options.len) {
+                                    page = pageOptions;
+                                    page.elements = pageElements;
+                                    result.pages.push(page);
+
+                                    if (typeof params.callback === 'function') {
+                                        params.callback(result);
+                                    }
+                                }
+                            }
+                            options.all = options.len - options.end;
+                            if (options.index < options.len) {
+                                iteration.call(self, options);
+                            }
+                            return true;
+                        }, options.time);
+                    };
+                    iteration.call(self, lazyLoopOptions);
+                } else {
+                    if (typeof params.callback === 'function') {
+                        params.callback(result);
+                    }
+                }
+
+                return null;
+            },
+            /**
+             *
+             * @param params
+             * @return {Object}
+             * @private
+             */
+            _parseTextDocumentParagraphNode: function (params) {
+                var elementInfo = {
+                    options: {
+                        isParagraph: true,
+                        pageBreak: false,
+                        elementHeight: {
+                            value: params.documentData.styles.defaults.options.linePitch ? params.documentData.styles.defaults.options.linePitch.value : 0,
+                            units: "pt"
+                        }
+                    },
+                    attributes: {},
+                    css: jDoc.deepMerge({}, params.documentData.styles.defaults.paragraph.css,
+                        params.cssRules ? params.cssRules.css : {}),
+                    dimensionCSSRules: jDoc.deepMerge({}, params.documentData.styles.defaults.paragraph.dimensionCSSRules,
+                        params.cssRules ? params.cssRules.dimensionCSSRules : {}),
+                    elements: []
+                },
+                    hyperLinkChildren,
+                    hyperLinkChildrenElement,
+                    hyperLinkBlock,
+                    k,
+                    href,
+                    relation,
+                    lineHeight,
+                    element,
+                    defaultFontSize = {
+                        value: 14,
+                        units: "pt"
+                    },
+                    letterWidth = {
+                        value: defaultFontSize.value / 2,
+                        units: "pt"
+                    },
+                    elementHeight,
+                    linesCount,
+                    maxFontSize = 0,
+                    n,
+                    styleProperties,
+                    children = jDoc.DOM.children(params.node),
+                    len,
+                    textContentLength = 0,
+                    length = params.node.attributes.length;
+
+                for (k = 0; k < length; k++) {
+                    if (params.node.attributes[k].value) {
+                        elementInfo[this._replaceAttributeNamespace(params.node.attributes[k].name)] =
+                            isNaN(params.node.attributes[k].value) ? params.node.attributes[k].value : +params.node.attributes[k].value;
+                    }
+                }
+
+                length = children.length;
+
+                for (n = 0; n < length; n++) {
+                    switch (children[n].localName) {
+                    case "bookmarkStart":
+                        if (children[n].attributes['w:name'] && children[n].attributes['w:name'].value) {
+                            elementInfo.elements.push({
+                                options: {
+                                    isLink: true
+                                },
+                                attributes: {
+                                    name: children[n].attributes['w:name'].value
+                                }
+                            });
+                        }
+                        break;
+                    case "pPr":
+                        styleProperties = this._getTextDocumentStyleProperties({
+                            node: children[n],
+                            documentData: params.documentData
+                        });
+
+                        if (styleProperties.options.isListItem) {
+                            elementInfo.options.isParagraph = false;
+                            elementInfo.options.isListItem = true;
+                            /**
+                             * Clear default styles for paragraph
+                             * @type {{}}
+                             */
+                            elementInfo.css = {};
+                            elementInfo.dimensionCSSRules = {};
+                        }
+
+                        jDoc.deepMerge(elementInfo.css, styleProperties.css);
+                        jDoc.deepMerge(elementInfo.dimensionCSSRules, styleProperties.dimensionCSSRules);
+                        jDoc.deepMerge(elementInfo.attributes, styleProperties.attributes);
+
+                        elementInfo.options.childrenCSSRules = styleProperties.options.childrenCSSRules;
+
+                        if (elementInfo.dimensionCSSRules.height) {
+                            elementInfo.options.elementHeight.value = elementInfo.dimensionCSSRules.height.value;
+                        }
+
+                        if (
+                            elementInfo.dimensionCSSRules.minHeight &&
+                            elementInfo.dimensionCSSRules.minHeight.value > elementInfo.options.elementHeight.value
+                        ) {
+                            elementInfo.options.elementHeight.value = elementInfo.dimensionCSSRules.minHeight.value;
+                        }
+
+                        break;
+                    case "hyperlink":
+                        hyperLinkChildren = jDoc.DOM.children(children[n]);
+                        len = hyperLinkChildren.length;
+                        href = "#";
+
+                        relation = children[n].attributes['r:id'] ? this._getRelation({
+                            relationId: children[n].attributes['r:id'].value,
+                            documentData: params.documentData
+                        }) : null;
+                        hyperLinkBlock = {
+                            options: {
+                                isLink: true
+                            },
+                            css: {
+                                color: "#0000EE"
+                            },
+                            attributes: {},
+                            elements: []
+                        };
+                        for (k = 0; k < len; k++) {
+                            hyperLinkChildrenElement = this._parseRunNode({
+                                node: hyperLinkChildren[k],
+                                cssRules: elementInfo.options.childrenCSSRules,
+                                documentData: params.documentData
+                            });
+                            hyperLinkChildrenElement.css.color = "";
+
+                            if (
+                                hyperLinkChildrenElement.dimensionCSSRules.fontSize &&
+                                hyperLinkChildrenElement.dimensionCSSRules.fontSize.value > maxFontSize
+                            ) {
+                                maxFontSize = hyperLinkChildrenElement.dimensionCSSRules.fontSize.value;
+                            }
+
+                            textContentLength += (
+                                hyperLinkChildrenElement.properties.textContent ? (
+                                    hyperLinkChildrenElement.properties.textContent.length * (
+                                        hyperLinkChildrenElement.dimensionCSSRules.fontSize ? (
+                                            hyperLinkChildrenElement.dimensionCSSRules.fontSize.value / defaultFontSize.value
+                                        ) : 1
+                                    )
+                                ) : 0
+                            );
+
+                            hyperLinkBlock.elements.push(hyperLinkChildrenElement);
+                        }
+
+                        if (relation) {
+                            href = relation.target;
+                            hyperLinkBlock.attributes.target = "_blank";
+                        } else {
+                            href += (
+                                children[n].attributes['w:anchor'] && children[n].attributes['w:anchor'].value
+                            ) || "";
+                        }
+
+                        hyperLinkBlock.attributes.href = href;
+
+                        elementInfo.elements.push(hyperLinkBlock);
+
+                        break;
+                    case "r":
+                        element = this._parseRunNode({
+                            node: children[n],
+                            cssRules: elementInfo.options.childrenCSSRules,
+                            documentData: params.documentData
+                        });
+
+                        textContentLength += (element.properties.textContent ? (
+                            element.properties.textContent.length * (
+                                element.dimensionCSSRules.fontSize ? (
+                                    element.dimensionCSSRules.fontSize.value / defaultFontSize.value
+                                ) : 1
+                            )
+                        ) : 0);
+
+                        if (element.options.elementHeight.value > elementInfo.options.elementHeight.value) {
+                            elementInfo.options.elementHeight.value = element.options.elementHeight.value;
+                        }
+
+                        if (
+                            element.dimensionCSSRules.fontSize && element.dimensionCSSRules.fontSize.value > maxFontSize
+                        ) {
+                            maxFontSize = element.dimensionCSSRules.fontSize.value;
+                        }
+
+                        elementInfo.elements.push(element);
+                        break;
+                    }
+                }
+
+                /**
+                 * Align image on center
+                 */
+                if (elementInfo.elements[0] && elementInfo.elements[0].options.isImage && !elementInfo.elements[1] && !elementInfo.css.textAlign) {
+                    elementInfo.css.textAlign = "center";
+                }
+
+                linesCount = Math.ceil(
+                    (
+                        textContentLength * letterWidth.value + (
+                            elementInfo.dimensionCSSRules.textIndent ? elementInfo.dimensionCSSRules.textIndent.value : 0
+                        )
+                    ) / (
+                        params.documentData.styles.defaults.options.pageContentWidth.value - (
+                            elementInfo.dimensionCSSRules.paddingLeft ? elementInfo.dimensionCSSRules.paddingLeft.value : 0
+                        ) - (
+                            elementInfo.dimensionCSSRules.paddingRight ? elementInfo.dimensionCSSRules.paddingRight.value : 0
+                        )
+                    )
+                );
+
+                lineHeight = elementInfo.css.lineHeight ? elementInfo.css.lineHeight : 1;
+
+                maxFontSize *= lineHeight;
+
+                if (linesCount == 1 && maxFontSize > elementInfo.options.elementHeight.value) {
+                    elementInfo.options.elementHeight.value = maxFontSize;
+                } else {
+                    elementHeight = linesCount * defaultFontSize.value * lineHeight;
+
+                    if (elementHeight > elementInfo.options.elementHeight.value) {
+                        elementInfo.options.elementHeight.value = elementHeight;
+                    }
+                }
+
+                if (elementInfo.dimensionCSSRules.marginTop) {
+                    elementInfo.options.elementHeight.value += elementInfo.dimensionCSSRules.marginTop.value;
+                }
+
+                if (elementInfo.dimensionCSSRules.marginBottom) {
+                    elementInfo.options.elementHeight.value += elementInfo.dimensionCSSRules.marginBottom.value;
+                }
+
+                if (elementInfo.dimensionCSSRules.paddingTop) {
+                    elementInfo.options.elementHeight.value += elementInfo.dimensionCSSRules.paddingTop.value;
+                }
+
+                if (elementInfo.dimensionCSSRules.paddingBottom) {
+                    elementInfo.options.elementHeight.value += elementInfo.dimensionCSSRules.paddingBottom.value;
+                }
+
+                return elementInfo;
+            },
+            /**
+             *
+             * @param styleValue
+             * @return {Object}
+             * @private
+             */
+            _parseTextDocumentReferenceStyle: function (styleValue) {
+                var result = {
+                    css: {},
+                    dimensionCSSRules: {}
+                };
+
+                styleValue = styleValue ? styleValue.toLowerCase() : styleValue;
+
+                if (styleValue === "strong") {
+                    result.css.fontWeight = "bold";
+                }
+
+                return result;
+            },
+            /**
+             * Parse document settings
+             * @param xml
+             * @return {Object}
+             * @private
+             */
+            _parseTextDocumentSettings: function (xml) {
+                var result = {
+                    zoom: 100,
+                    compat: {},
+                    rsids: {
+                        rsidRoot: '',
+                        values: []
+                    },
+                    mathProperties: {},
+                    shapeDefaults: {
+                        defaults: {},
+                        layout: {}
+                    },
+                    colorSchemeMapping: {}
+                },
+                    i,
+                    nodes,
+                    compatSettingNodes,
+                    cachedArrayLength = 0,
+                    self = this,
+                    idMapNode,
+                    children = jDoc.DOM.children(xml),
+                    len = children.length,
+                    nameAttr,
+                    uriAttr,
+                    spidMaxAttr,
+                    styleAttr,
+                    dataAttr,
+                    rsidRootNode,
+                    rsidNodes,
+                    defaultsNode,
+                    valueAttr,
+                    layoutNode,
+                    extAttr = null;
+
+                for (i = len - 1; i >= 0; i--) {
+                    switch (children[i].localName) {
+                    case "zoom":
+                        result.zoom = (!children[i].attributes['w:percent'] || isNaN(children[i].attributes['w:percent'].value)) ? 100 : +children[i].attributes['w:percent'].value;
+                        break;
+                    case "proofState":
+                        result.checkSpelling = (children[i].attributes['w:spelling'] && children[i].attributes['w:spelling'].value == 'clean');
+                        result.checkGrammar = (children[i].attributes['w:grammar'] && children[i].attributes['w:grammar'].value == 'clean');
+                        break;
+                    case "defaultTabStop":
+                        result.defaultTabStop = (
+                            children[i].attributes['w:val'] && !isNaN(children[i].attributes['w:val'].value)
+                        ) ? +children[i].attributes['w:val'].value : 1;
+                        break;
+                    case "characterSpacingControl":
+                        result.controlCharacterSpacing = !! (
+                            children[i].attributes['w:val'] && children[i].children[i].attributes['w:val'].value != 'doNotCompress'
+                        );
+                        break;
+                    case "compat":
+                        compatSettingNodes = children[i].querySelectorAll('compatSetting');
+                        cachedArrayLength = compatSettingNodes.length;
+                        for (i = 0; i < cachedArrayLength; i++) {
+                            nameAttr = compatSettingNodes[i].attributes['w:name'];
+                            uriAttr = compatSettingNodes[i].attributes['w:uri'];
+                            valueAttr = compatSettingNodes[i].attributes['w:val'];
+
+                            if (nameAttr && nameAttr.value) {
+                                result.compat[nameAttr.value] = {
+                                    uri: uriAttr ? uriAttr.value || '' : '',
+                                    value: (!valueAttr || isNaN(valueAttr.value)) ? 0 : +valueAttr.value
+                                };
+                            }
+                        }
+                        break;
+                    case "shapeDefaults":
+                        defaultsNode = children[i].querySelector('shapedefaults');
+                        layoutNode = children[i].querySelector('shapelayout');
+
+                        if (defaultsNode) {
+                            extAttr = defaultsNode.attributes['v:ext'];
+                            spidMaxAttr = defaultsNode.attributes.spidmax;
+                            styleAttr = defaultsNode.attributes.style;
+                            result.shapeDefaults.defaults.ext = extAttr ? extAttr.value || '' : '';
+                            result.shapeDefaults.defaults.style =
+                                styleAttr ? styleAttr.value || '' : '';
+                            result.shapeDefaults.defaults.spidMax =
+                                (!spidMaxAttr || isNaN(spidMaxAttr.value)) ? 0 : +spidMaxAttr.value;
+                        }
+                        if (layoutNode) {
+                            extAttr = layoutNode.attributes['v:ext'];
+                            idMapNode = layoutNode.querySelector('idmap');
+                            result.shapeDefaults.layout.ext =
+                                extAttr ? extAttr.value || '' : '';
+                            result.shapeDefaults.layout.idMap = {};
+                            if (idMapNode) {
+                                extAttr = idMapNode.attributes['v:ext'];
+                                dataAttr = idMapNode.attributes.data;
+                                result.shapeDefaults.layout.idMap.ext =
+                                    extAttr ? extAttr.value || '' : '';
+                                result.shapeDefaults.layout.idMap.data =
+                                    (!dataAttr || isNaN(dataAttr.value)) ? 0 : +dataAttr.value;
+                            }
+                        }
+                        break;
+                    case "themeFontLang":
+                        result.themeFontLanguage = this._parseLanguageNode(children[i]);
+                        break;
+                    case "decimalSymbol":
+                        result.decimalSymbol = children[i].attributes['w:val'] ? children[i].attributes['w:val'].value || '' : '';
+                        break;
+                    case "listSeparator":
+                        result.listSeparator = children[i].attributes['w:val'] ? children[i].attributes['w:val'].value || '' : '';
+                        break;
+                    case "clrSchemeMapping":
+                        cachedArrayLength = children[i].attributes.length;
+                        for (i = 0; i < cachedArrayLength; i++) {
+                            if (children[i].attributes[i] && children[i].attributes[i].value) {
+                                result.colorSchemeMapping[self._replaceAttributeNamespace(children[i].attributes[i].name)] =
+                                    children[i].attributes[i].value;
+                            }
+                        }
+                        break;
+                    case "rsids":
+                        rsidRootNode = children[i].querySelector('rsidRoot');
+                        rsidNodes = children[i].querySelectorAll('rsid');
+                        result.rsids.rsidRoot = rsidRootNode.attributes['w:val'] ? rsidRootNode.attributes['w:val'].value || '' : '';
+
+                        cachedArrayLength = rsidNodes.length;
+                        for (i = 0; i < cachedArrayLength; i++) {
+                            valueAttr = rsidNodes[i].attributes['w:val'];
+
+                            if (valueAttr && valueAttr.value) {
+                                result.rsids.values.push(valueAttr.value);
+                            }
+                        }
+                        break;
+                    case "mathPr":
+                        nodes = jDoc.DOM.children(children[i]);
+                        cachedArrayLength = nodes.length;
+
+                        result.mathProperties.intLimit = '';
+
+                        for (i = cachedArrayLength - 1; i >= 0; i--) {
+                            switch (nodes[i].localName) {
+                            case "mathFont":
+                                result.mathProperties.mathFont = (
+                                    nodes[i].attributes['m:val']
+                                ) ? nodes[i].attributes['m:val'].value || '' : '';
+                                break;
+                            case "brkBin":
+                                /**
+                                 * Values : after, before, repeat
+                                 * @type {String}
+                                 */
+                                result.mathProperties.breakOnBinary = (
+                                    nodes[i].attributes['m:val']
+                                ) ? nodes[i].attributes['m:val'].value || '' : '';
+                                break;
+                            case "brkBinSub":
+                                /**
+                                 * Values : after, before, repeat
+                                 * @type {String}
+                                 */
+                                /**
+                                 * Values : --, +-, -+
+                                 * @type {String}
+                                 */
+                                result.mathProperties.breakOnBinarySubtraction = (
+                                    nodes[i].attributes['m:val']
+                                ) ? nodes[i].attributes['m:val'].value || '' : '';
+                                break;
+                            case "smallFrac":
+                                result.mathProperties.onSmallFraction = ( !! nodes[i].attributes['m:val'] && (nodes[i].attributes['m:val'].value != '0'));
+                                break;
+                            case "dispDef":
+                                result.mathProperties.displayDefault = ( !! nodes[i].attributes['m:val'] && (nodes[i].attributes['m:val'].value != '0'));
+                                break;
+                            case "lMargin":
+                                result.mathProperties.leftMargin = (
+                                    nodes[i].attributes['m:val'] && !isNaN(nodes[i].attributes['m:val'].value)
+                                ) ? +nodes[i].attributes['m:val'].value : 0;
+                                break;
+                            case "rMargin":
+                                result.mathProperties.rightMargin = (
+                                    nodes[i].attributes['m:val'] && !isNaN(nodes[i].attributes['m:val'].value)
+                                ) ? +nodes[i].attributes['m:val'].value : 0;
+                                break;
+                            case "defJc":
+                                result.mathProperties.align = nodes[i].attributes['m:val'] ? nodes[i].attributes['m:val'].value : 'left';
+                                if (result.mathProperties.align == 'centerGroup') {
+                                    result.mathProperties.align = 'center';
+                                }
+                                break;
+                            case "preSp":
+                                result.mathProperties.preSpacing = (
+                                    nodes[i].attributes['m:val'] && !isNaN(nodes[i].attributes['m:val'].value)
+                                ) ? +nodes[i].attributes['m:val'].value : 0;
+                                break;
+                            case "postSp":
+                                result.mathProperties.postSpacing = (
+                                    nodes[i].attributes['m:val'] && !isNaN(nodes[i].attributes['m:val'].value)
+                                ) ? 0 : +nodes[i].attributes['m:val'].value;
+                                break;
+                            case "interSp":
+                                result.mathProperties.interSpacing = (
+                                    nodes[i].attributes['m:val'] && !isNaN(nodes[i].attributes['m:val'].value)
+                                ) ? 0 : +nodes[i].attributes['m:val'].value;
+                                break;
+                            case "intraSp":
+                                result.mathProperties.intraSpacing = (
+                                    nodes[i].attributes['m:val'] && !isNaN(nodes[i].attributes['m:val'].value)
+                                ) ? 0 : +nodes[i].attributes['m:val'].value;
+                                break;
+                            case "wrapIndent":
+                                result.mathProperties.wrapIndent = (
+                                    nodes[i].attributes['m:val'] && !isNaN(nodes[i].attributes['m:val'].value)
+                                ) ? 0 : +nodes[i].attributes['m:val'].value;
+                                break;
+                            case "wrapRight":
+                                result.mathProperties.wrapRight = (
+                                    nodes[i].attributes['m:val'] && !isNaN(nodes[i].attributes['m:val'].value)
+                                ) ? 0 : +nodes[i].attributes['m:val'].value;
+                                break;
+                            case "intLim":
+                                if (nodes[i].attributes['m:val'] && nodes[i].attributes['m:val'].value == 'undOvr') {
+                                    result.mathProperties.intLimit = 'UnderOverLocation';
+                                } else if (nodes[i].attributes['m:val'] && nodes[i].attributes['m:val'].value == 'subSup') {
+                                    result.mathProperties.intLimit = 'SubscriptSuperscriptLocation';
+                                } else {
+                                    result.mathProperties.intLimit = '';
+                                }
+                                break;
+                            case "naryLim":
+                                if (nodes[i].attributes['m:val'] && nodes[i].attributes['m:val'].value == 'undOvr') {
+                                    result.mathProperties.naryLimit = 'UnderOverLocation';
+                                } else if (nodes[i].attributes['m:val'] && nodes[i].attributes['m:val'].value == 'subSup') {
+                                    result.mathProperties.naryLimit = 'SubscriptSuperscriptLocation';
+                                } else {
+                                    result.mathProperties.naryLimit = '';
+                                }
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+
+                return result;
+            },
+            /**
+             * @description Parsing document styles
+             * @param xml
+             * @return {Object}
+             * @private
+             */
+            _parseTextDocumentStyles: function (xml) {
+                var result = {
+                    defaults: {
+                        paragraph: {
+                            dimensionCSSRules: {
+                                margin: {
+                                    value: 0,
+                                    units: "pt"
+                                },
+                                padding: {
+                                    value: 0,
+                                    units: "pt"
+                                }
+                            },
+                            css: {
+                                wordWrap: "break-word",
+                                wordBreak: "break-all",
+                                width: "100%"
+                            }
+                        },
+                        paragraphContent: {},
+                        options: {}
+                    },
+                    latentStyles: {
+                        exceptions: {}
+                    },
+                    preferencedStyles: {}
+                },
+                    self = this,
+                    childrenNodes = jDoc.DOM.children(xml.querySelector('styles')),
+                    i,
+                    name,
+                    data,
+                    propertiesNode,
+                    propertyNode,
+                    cachedAttributesLength,
+                    cachedArrayLength,
+                    exceptionsNodes,
+                    contentStyles,
+                    paragraphStyles,
+                    k = 0,
+                    j = 0;
+
+                for (i = childrenNodes.length - 1; i >= 0; i--) {
+                    if (childrenNodes[i].localName === "docDefaults") {
+                        contentStyles = childrenNodes[i].querySelector('rPrDefault rPr');
+                        paragraphStyles = childrenNodes[i].querySelector('pPrDefault pPr');
+
+                        if (contentStyles) {
+                            result.defaults.paragraphContent = this._getTextDocumentStyleProperties({
+                                node: contentStyles,
+                                documentData: null
+                            });
+                        }
+                        if (paragraphStyles) {
+                            jDoc.deepMerge(result.defaults.paragraph,
+                                this._getTextDocumentStyleProperties({
+                                    node: paragraphStyles,
+                                    documentData: null
+                                })
+                            );
+                        }
+                    } else if (childrenNodes[i].localName === 'latentStyles') {
+                        exceptionsNodes = childrenNodes[i].querySelectorAll('lsdException') || [];
+                        name = '';
+                        data = {};
+                        cachedArrayLength = childrenNodes[i].attributes.length;
+                        cachedAttributesLength = 0;
+
+                        for (k = 0; k < cachedArrayLength; k++) {
+                            result.latentStyles[self._replaceAttributeNamespace(childrenNodes[i].attributes[k].name)] = (
+                                isNaN(childrenNodes[i].attributes[k].value)
+                            ) ? (childrenNodes[i].attributes[k].value || '') : +childrenNodes[i].attributes[k].value;
+                        }
+
+                        cachedArrayLength = exceptionsNodes.length;
+
+                        for (k = 0; k < cachedArrayLength; k++) {
+                            name = '';
+                            data = {};
+                            cachedAttributesLength = exceptionsNodes[k].attributes.length;
+                            for (j = 0; j < cachedAttributesLength; j++) {
+                                if (self._replaceAttributeNamespace(exceptionsNodes[i].attributes[j].name) == 'name') {
+                                    name = self._replaceAttributeNamespace(exceptionsNodes[i].attributes[j].name);
+                                    result.latentStyles.exceptions[name] = data;
+                                }
+                                if (name) {
+                                    result.latentStyles.exceptions[name][
+                                        self._replaceAttributeNamespace(exceptionsNodes[i].attributes[j].name)
+                                    ] = (isNaN(exceptionsNodes[i].attributes[j].value)) ? (
+                                        exceptionsNodes[i].attributes[j].value || ''
+                                    ) : +exceptionsNodes[i].attributes[j].value;
+                                } else {
+                                    data[self._replaceAttributeNamespace(exceptionsNodes[i].attributes[j].name)] =
+                                        (isNaN(exceptionsNodes[i].attributes[j].value)) ? (
+                                        exceptionsNodes[i].attributes[j].value || ''
+                                    ) : +exceptionsNodes[i].attributes[j].value;
+                                }
+                            }
+                        }
+                    } else if (childrenNodes[i].localName === 'style') {
+                        if (childrenNodes[i].attributes["w:styleId"] && childrenNodes[i].attributes["w:styleId"].value) {
+                            result.preferencedStyles[childrenNodes[i].attributes["w:styleId"].value] = {
+                                contentProperties: {},
+                                isDefault: this._attributeToBoolean(childrenNodes[i].attributes["w:default"])
+                            };
+
+                            propertiesNode = childrenNodes[i].querySelector('pPr');
+
+                            if (propertiesNode) {
+                                result.preferencedStyles[childrenNodes[i].attributes["w:styleId"].value].lineStyle =
+                                    this._getTextDocumentStyleProperties({
+                                        node: propertiesNode,
+                                        documentData: null
+                                    });
+                            }
+                            propertiesNode = childrenNodes[i].querySelector('rPr');
+                            if (propertiesNode) {
+                                result.preferencedStyles[childrenNodes[i].attributes["w:styleId"].value].contentProperties =
+                                    this._getTextDocumentStyleProperties({
+                                        node: propertiesNode,
+                                        documentData: null
+                                    });
+                            }
+                            propertiesNode = childrenNodes[i].querySelector('tblPr');
+                            if (propertiesNode) {
+                                result.preferencedStyles[childrenNodes[i].attributes["w:styleId"].value].tableStyle =
+                                    this._getTextDocumentStyleProperties({
+                                        node: propertiesNode,
+                                        documentData: null
+                                    });
+                            }
+                            result.preferencedStyles[childrenNodes[i].attributes["w:styleId"].value].type = (
+                                childrenNodes[i].attributes["w:type"] && childrenNodes[i].attributes["w:type"].value
+                            ) ? childrenNodes[i].attributes["w:type"].value : "";
+
+                            propertyNode = childrenNodes[i].querySelector('name');
+
+                            if (propertyNode && propertyNode.attributes['w:val'] && propertyNode.attributes['w:val'].value) {
+                                result.preferencedStyles[childrenNodes[i].attributes["w:styleId"].value].name =
+                                    propertyNode.attributes['w:val'].value;
+                            }
+                            propertyNode = childrenNodes[i].querySelector('rsid');
+                            if (propertyNode && propertyNode.attributes['w:val'] && propertyNode.attributes['w:val'].value) {
+                                result.preferencedStyles[childrenNodes[i].attributes["w:styleId"].value].rsid =
+                                    propertyNode.attributes['w:val'].value;
+                            }
+                            propertyNode = childrenNodes[i].querySelector('basedOn');
+                            if (propertyNode && propertyNode.attributes['w:val'] && propertyNode.attributes['w:val'].value) {
+                                result.preferencedStyles[childrenNodes[i].attributes["w:styleId"].value].parentStyleId =
+                                    propertyNode.attributes['w:val'].value;
+                            }
+                            propertyNode = childrenNodes[i].querySelector('next');
+                            if (propertyNode && propertyNode.attributes['w:val'] && propertyNode.attributes['w:val'].value) {
+                                result.preferencedStyles[childrenNodes[i].attributes["w:styleId"].value].nextElementStyle =
+                                    propertyNode.attributes['w:val'].value;
+                            }
+                            propertyNode = childrenNodes[i].querySelector('uiPriority');
+                            if (propertyNode && propertyNode.attributes['w:val'] && propertyNode.attributes['w:val'].value) {
+                                result.preferencedStyles[childrenNodes[i].attributes["w:styleId"].value].uiPriority = +propertyNode.attributes['w:val'].value;
+                            }
+                            propertyNode = childrenNodes[i].querySelector('link');
+                            if (propertyNode && propertyNode.attributes['w:val'] && propertyNode.attributes['w:val'].value) {
+                                result.preferencedStyles[childrenNodes[i].attributes["w:styleId"].value].linkedStyle =
+                                    propertyNode.attributes['w:val'].value;
+                            }
+                            propertyNode = childrenNodes[i].querySelector('unhideWhenUsed');
+                            result.preferencedStyles[childrenNodes[i].attributes["w:styleId"].value].unHideWhenUsed = (
+                                propertyNode
+                            ) ? this._attributeToBoolean(propertyNode.attributes['w:val']) : false;
+                            propertyNode = childrenNodes[i].querySelector('qFormat');
+                            result.preferencedStyles[childrenNodes[i].attributes["w:styleId"].value].isPrimary = (
+                                propertyNode
+                            ) ? this._attributeToBoolean(propertyNode.attributes['w:val']) : false;
+                        }
+                    }
+                }
+
+                return result;
+            },
+            /**
+             *
+             * @param data
+             * @param callback
+             * @returns {boolean}
+             * @private
+             */
+            _parseTextDocumentTableNode: function (data, callback) {
+                var result = {
+                    options: {
+                        isTable: true,
+                        elementHeight: {
+                            value: 0,
+                            units: "pt"
+                        }
+                    },
+                    header: {
+                        rows: []
+                    },
+                    body: {
+                        rows: []
+                    },
+                    footer: {
+                        rows: []
+                    },
+                    attributes: {},
+                    dimensionCSSRules: {},
+                    css: {}
+                },
+                    tablePreferencedStyle,
+                    i,
+                    j = 0,
+                    c = 0,
+                    length = 0,
+                    children = jDoc.DOM.children(data.tableNode),
+                    len,
+                    childrenNodesCount = 0,
+                    cellWidth = 0,
+                    cellShading = null,
+                    cellContent = [],
+                    cellChildNodesLength = 0,
+                    row,
+                    cell,
+                    horizontalBorder = null,
+                    cellBorderBottom,
+                    verticalBorder = null,
+                    contentChildren = null,
+                    cellBorderRight,
+                    rowPropNodesCount,
+                    parentNodeChildren = null;
+
+                for (i = 0; i < children.length; i++) {
+                    parentNodeChildren = jDoc.DOM.children(children[i]);
+                    switch (children[i].localName) {
+                    case "tr":
+                        cellBorderBottom = horizontalBorder ? this._parseTableBorderProperties(horizontalBorder) : null;
+                        cellBorderRight = verticalBorder ? this._parseTableBorderProperties(verticalBorder) : null;
+                        row = {
+                            cells: [],
+                            css: {},
+                            options: {
+                                colsWidth: []
+                            },
+                            dimensionCSSRules: {}
+                        };
+                        length = parentNodeChildren.length;
+
+                        for (j = 0; j < length; j++) {
+                            contentChildren = jDoc.DOM.children(parentNodeChildren[j]);
+                            if (parentNodeChildren[j].localName === "tc") {
+                                cell = {
+                                    css: {},
+                                    dimensionCSSRules: {},
+                                    options: {},
+                                    elements: []
+                                };
+                                cellContent = parentNodeChildren[j].querySelectorAll('p');
+                                cellChildNodesLength = contentChildren.length;
+
+                                if (
+                                    tablePreferencedStyle &&
+                                    tablePreferencedStyle.tableStyle &&
+                                    tablePreferencedStyle.tableStyle.cellsStyleProperties
+                                ) {
+                                    jDoc.deepMerge(result, tablePreferencedStyle.tableStyle.cellsStyleProperties);
+                                }
+
+                                if (cellBorderRight) {
+                                    cell.dimensionCSSRules.borderRightWidth = cellBorderRight.width;
+                                    cell.css.borderRightColor = cellBorderRight.color;
+                                    cell.css.borderRightStyle = cellBorderRight.style;
+                                }
+
+                                if (cellBorderBottom) {
+                                    cell.dimensionCSSRules.borderBottomWidth = cellBorderBottom.width;
+                                    cell.css.borderBottomColor = cellBorderBottom.color;
+                                    cell.css.borderBottomStyle = cellBorderBottom.style;
+                                }
+
+                                for (c = 0; c < cellChildNodesLength; c++) {
+                                    if (contentChildren[c].localName == 'tcPr') {
+                                        cellWidth = contentChildren[c].querySelector('tcW');
+                                        cellShading = contentChildren[c].querySelector('shd');
+
+                                        if (cellWidth) {
+                                            cell.dimensionCSSRules.width = this._parseTableElementWidth(cellWidth);
+                                        }
+
+                                        if (cellShading) {
+                                            if (
+                                                cellShading.attributes['w:fill'] &&
+                                                cellShading.attributes['w:fill'].value &&
+                                                cellShading.attributes['w:fill'].value != "auto"
+                                            ) {
+                                                cell.css.backgroundColor = this._normalizeColorValue(
+                                                    cellShading.attributes['w:fill'].value
+                                                );
+                                            }
+                                        }
+                                    } else if (contentChildren[c].localName == 'p') {
+                                        cell.elements.push(this._parseTextDocumentParagraphNode({
+                                            node: contentChildren[c],
+                                            documentData: data.documentData
+                                        }));
+                                    }
+                                }
+                                row.cells.push(cell);
+                            } else if (parentNodeChildren[j].localName === "trPr") {
+                                rowPropNodesCount = contentChildren.length;
+
+                                for (c = 0; c < rowPropNodesCount; c++) {
+                                    if (contentChildren[c].localName === "trHeight") {
+                                        if (
+                                            contentChildren[c].attributes['w:val'] && !isNaN(contentChildren[c].attributes['w:val'].value)
+                                        ) {
+                                            row.dimensionCSSRules.height = {
+                                                value: contentChildren[c].attributes['w:val'].value / 20,
+                                                units: "pt"
+                                            };
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        result.body.rows.push(row);
+                        break;
+                    case "tblGrid":
+                        childrenNodesCount = parentNodeChildren.length;
+                        for (j = 0; j < childrenNodesCount; j++) {
+                            if (
+                                parentNodeChildren[j] === "gridCol" && (
+                                    parentNodeChildren[j].attributes['w:w'] && !isNaN(parentNodeChildren[j].attributes['w:w'].value)
+                                )
+                            ) {
+                                result.options.colsWidth.push({
+                                    value: parentNodeChildren[j].attributes['w:w'].value,
+                                    units: "pt"
+                                });
+                            }
+                        }
+                        break;
+                    case 'tblPr':
+                        var tableWidth = children[i].querySelector('tblW');
+                        var tblStyle = children[i].querySelector('tblStyle');
+
+                        if (
+                            tblStyle && tblStyle.attributes['w:val'] && tblStyle.attributes['w:val'].value &&
+                            data.documentData.styles.preferencedStyles[tblStyle.attributes['w:val'].value]
+                        ) {
+                            tablePreferencedStyle = data.documentData.styles.preferencedStyles[tblStyle.attributes['w:val'].value];
+
+                            if (tablePreferencedStyle && tablePreferencedStyle.tableStyle) {
+                                jDoc.deepMerge(result, tablePreferencedStyle.tableStyle);
+                            }
+                        }
+
+                        var tableBorders = children[i].querySelector('tblBorders');
+                        if (tableWidth) {
+                            result.dimensionCSSRules.width = this._parseTableElementWidth(tableWidth);
+                        }
+                        if (tableBorders) {
+                            jDoc.deepMerge(result, this._parseTableBorderStyle({
+                                node: tableBorders
+                            }));
+                            horizontalBorder = tableBorders.querySelector('insideH');
+                            verticalBorder = tableBorders.querySelector('insideV');
+                        }
+                        break;
+                    }
+                }
+
+                length = result.body.rows.length;
+                row = result.body.rows[length - 1];
+
+                if (row) {
+                    len = row.cells.length;
+                    for (j = 0; j < len; j++) {
+                        row.cells[j].dimensionCSSRules.borderBottomWidth = "";
+                        row.cells[j].css.borderBottomStyle = "";
+                        row.cells[j].css.borderBottomColor = "";
+                    }
+                }
+
+                for (j = 0; j < length; j++) {
+                    len = result.body.rows[j].cells.length;
+                    cell = result.body.rows[j].cells[len - 1];
+                    if (cell) {
+                        cell.dimensionCSSRules.borderRightWidth = "";
+                        cell.css.borderRightStyle = "";
+                        cell.css.borderRightColor = "";
+                    }
+                }
+
+                if (typeof callback === 'function') {
+                    callback(result);
+                }
+                return true;
+            },
+            /**
+             * Parsing document web settings
+             * @param xml
+             * @return {Object}
+             * @private
+             */
+            _parseWebSettings: function (xml) {
+                var i,
+                    children = jDoc.DOM.children(xml),
+                    result = {
+                        optimizeForBrowser: false,
+                        allowPNG: false
+                    };
+
+                for (i = children.length - 1; i >= 0; i--) {
+                    if (children[i].localName === "optimizeForBrowser") {
+                        result.optimizeForBrowser = !! (
+                            children[i].attributes['w:val'] &&
+                            this._attributeToBoolean(children[i].attributes['w:val'].value)
+                        );
+                    } else if (children[i].localName === "allowPNG") {
+                        result.allowPNG = !! (
+                            children[i].attributes['w:val'] && this._attributeToBoolean(children[i].attributes['w:val'].value)
+                        );
+                    }
+                }
+                return result;
+            },
+            /**
+             *
+             * @param type
+             * @return {String}
+             * @private
+             */
+            _prepareShapeType: function (type) {
+                var result = "";
+
+                if (typeof type !== 'string')
+                    return "";
+
+                switch (type) {
+                case "line":
+                case "lineInv":
+                    result = "line";
+                    break;
+                case "triangle":
+                case "rtTriangle":
+                    result = "triangle";
+                    break;
+                case "rect":
+                    result = "rectangle";
+                    break;
+                case "diamond":
+                    result = "diamond";
+                    break;
+                case "parallelogram":
+                    result = "parallelogram";
+                    break;
+                case "pentagon":
+                    result = "pentagon";
+                    break;
+                case "hexagon":
+                    result = "hexagon";
+                    break;
+                case "heptagon":
+                    result = "heptagon";
+                    break;
+                case "octagon":
+                    result = "octagon";
+                    break;
+                case "ellipse":
+                    result = "ellipse";
+                    break;
+                case "decagon":
+                    result = "decagon";
+                    break;
+                case "dodecagon":
+                    result = "dodecagon";
+                    break;
+                case "plaque":
+                    result = "plaque";
+                    break;
+                case "trapezoid":
+                case "nonIsoscelesTrapezoid":
+                    result = "trapezoid";
+                    break;
+                default:
+                    result = "rectangle";
+                    break;
+                }
+                return result;
+                /*
+             star4 Four Pointed Star Shape
+             star5 Five Pointed Star Shape
+             star6 Six Pointed Star Shape
+             star7 Seven Pointed Star Shape
+             star8 Eight Pointed Star Shape
+             star10 Ten Pointed Star Shape
+             star12 Twelve Pointed Star Shape
+             star16 Sixteen Pointed Star Shape
+             star24 Twenty Four Pointed Star Shape
+             star32 Thirty Two Pointed Star Shape
+             roundRect Round Corner Rectangle Shape
+             round1Rect One Round Corner Rectangle Shape
+             round2SameRect Two Same-side Round Corner Rectangle Shape
+             round2DiagRect Two Diagonal Round Corner Rectangle Shape
+             snipRoundRect One Snip One Round Corner Rectangle Shape
+             snip1Rect One Snip Corner Rectangle Shape
+             snip2SameRect Two Same-side Snip Corner Rectangle Shape
+             snip2DiagRect Two Diagonal Snip Corner Rectangle Shape
+             teardrop Teardrop Shape
+             homePlate Home Plate Shape
+             chevron Chevron Shape
+             pieWedge Pie Wedge Shape
+             pie Pie Shape
+             blockArc Block Arc Shape
+             donut Donut Shape
+             noSmoking No Smoking Shape
+             rightArrow Right Arrow Shape
+             leftArrow Left Arrow Shape
+             upArrow Up Arrow Shape
+             downArrow Down Arrow Shape
+             stripedRightArrow Striped Right Arrow Shape
+             notchedRightArrow Notched Right Arrow Shape
+             bentUpArrow Bent Up Arrow Shape
+             leftRightArrow Left Right Arrow Shape
+             upDownArrow Up Down Arrow Shape
+             leftUpArrow Left Up Arrow Shape
+             leftRightUpArrow Left Right Up Arrow Shape
+             quadArrow Quad-Arrow Shape
+             leftArrowCallout Callout Left Arrow Shape
+             rightArrowCallout Callout Right Arrow Shape
+             upArrowCallout Callout Up Arrow Shape
+             downArrowCallout Callout Down Arrow Shape
+             leftRightArrowCallout Callout Left Right Arrow Shape
+             upDownArrowCallout Callout Up Down Arrow Shape
+             quadArrowCallout Callout Quad-Arrow Shape
+             bentArrow Bent Arrow Shape
+             uturnArrow U-Turn Arrow Shape
+             circularArrow Circular Arrow Shape
+             leftCircularArrow Left Circular Arrow Shape
+             leftRightCircularArrow Left Right Circular Arrow Shape
+             curvedRightArrow Curved Right Arrow Shape
+             curvedLeftArrow Curved Left Arrow Shape
+             curvedUpArrow Curved Up Arrow Shape
+             curvedDownArrow Curved Down Arrow Shape
+             swooshArrow Swoosh Arrow Shape
+             cube Cube Shape
+             can Can Shape
+             lightningBolt Lightning Bolt Shape
+             heart Heart Shape
+             sun Sun Shape
+             moon Moon Shape
+             smileyFace Smiley Face Shape
+             irregularSeal1 Irregular Seal 1 Shape
+             irregularSeal2 Irregular Seal 2 Shape
+             foldedCorner Folded Corner Shape
+             bevel Bevel Shape
+             frame Frame Shape
+             halfFrame Half Frame Shape
+             corner Corner Shape
+             diagStripe Diagonal Stripe Shape
+             chord Chord Shape
+             arc Curved Arc Shape
+             leftBracket Left Bracket Shape
+             rightBracket Right Bracket Shape
+             leftBrace Left Brace Shape
+             rightBrace Right Brace Shape
+             bracketPair Bracket Pair Shape
+             bracePair Brace Pair Shape
+             straightConnector1 Straight Connector 1 Shape
+             bentConnector2 Bent Connector 2 Shape
+             bentConnector3 Bent Connector 3 Shape
+             bentConnector4 Bent Connector 4 Shape
+             bentConnector5 Bent Connector 5 Shape
+             curvedConnector2 Curved Connector 2 Shape
+             curvedConnector3 Curved Connector 3 Shape
+             curvedConnector4 Curved Connector 4 Shape
+             curvedConnector5 Curved Connector 5 Shape
+             callout1 Callout 1 Shape
+             callout2 Callout 2 Shape
+             callout3 Callout 3 Shape
+             accentCallout1 Callout 1 Shape
+             accentCallout2 Callout 2 Shape
+             accentCallout3 Callout 3 Shape
+             borderCallout1 Callout 1 with Border Shape
+             borderCallout2 Callout 2 with Border Shape
+             borderCallout3 Callout 3 with Border Shape
+             accentBorderCallout1 Callout 1 with Border and Accent Shape
+             accentBorderCallout2 Callout 2 with Border and Accent Shape
+             accentBorderCallout3 Callout 3 with Border and Accent Shape
+             wedgeRectCallout Callout Wedge Rectangle Shape
+             wedgeRoundRectCallout Callout Wedge Round Rectangle Shape
+             wedgeEllipseCallout Callout Wedge Ellipse Shape
+             cloudCallout Callout Cloud Shape
+             cloud Cloud Shape
+             ribbon Ribbon Shape
+             ribbon2 Ribbon 2 Shape
+             ellipseRibbon Ellipse Ribbon Shape
+             ellipseRibbon2 Ellipse Ribbon 2 Shape
+             leftRightRibbon Left Right Ribbon Shape
+             verticalScroll Vertical Scroll Shape
+             horizontalScroll Horizontal Scroll Shape
+             wave Wave Shape
+             doubleWave Double Wave Shape
+             plus Plus Shape
+             flowChartProcess Process Flow Shape
+             flowChartDecision Decision Flow Shape
+             flowChartInputOutput Input Output Flow Shape
+             flowChartPredefinedProcess Predefined Process Flow Shape
+             flowChartInternalStorage Internal Storage Flow Shape
+             flowChartDocument Document Flow Shape
+             flowChartMultidocument Multi-Document Flow Shape
+             flowChartTerminator Terminator Flow Shape
+             flowChartPreparation Preparation Flow Shape
+             flowChartManualInput Manual Input Flow Shape
+             flowChartManualOperation Manual Operation Flow Shape
+             flowChartConnector Connector Flow Shape
+             flowChartPunchedCard Punched Card Flow Shape
+             flowChartPunchedTape Punched Tape Flow Shape
+             flowChartSummingJunction Summing Junction Flow Shape
+             flowChartOr Or Flow Shape
+             flowChartCollate Collate Flow Shape
+             flowChartSort Sort Flow Shape
+             flowChartExtract Extract Flow Shape
+             flowChartMerge Merge Flow Shape
+             flowChartOfflineStorage Offline Storage Flow Shape
+             flowChartOnlineStorage Online Storage Flow Shape
+             flowChartMagneticTape Magnetic Tape Flow Shape
+             flowChartMagneticDisk Magnetic Disk Flow Shape
+             flowChartMagneticDrum Magnetic Drum Flow Shape
+             flowChartDisplay Display Flow Shape
+             flowChartDelay Delay Flow Shape
+             flowChartAlternateProcess Alternate Process Flow Shape
+             flowChartOffpageConnector Off-Page Connector Flow Shape
+             actionButtonBlank Blank Button Shape
+             actionButtonHome Home Button Shape
+             actionButtonHelp Help Button Shape
+             actionButtonInformation Information Button Shape
+             actionButtonForwardNext Forward or Next Button Shape
+             actionButtonBackPrevious Back or Previous Button Shape
+             actionButtonEnd End Button Shape
+             actionButtonBeginning Beginning Button Shape
+             actionButtonReturn Return Button Shape
+             actionButtonDocument Document Button Shape
+             actionButtonSound Sound Button Shape
+             actionButtonMovie Movie Button Shape
+             gear6 Gear 6 Shape
+             gear9 Gear 9 Shape
+             funnel Funnel Shape
+             mathPlus Plus Math Shape
+             mathMinus Minus Math Shape
+             mathMultiply Multiply Math Shape
+             mathDivide Divide Math Shape
+             mathEqual Equal Math Shape
+             mathNotEqual Not Equal Math Shape
+             cornerTabs Corner Tabs Shape
+             squareTabs Square Tabs Shape
+             plaqueTabs Plaque Tabs Shape
+             chartX Chart X Shape
+             chartStar Chart Star Shape
+             chartPlus Chart Plus Shape
+             */
+            }
+        }
+    );
+    /**
+     * @constructor
+     * @type {Object}
+     */
+    jDoc.Engines.Simple = jDoc.Engine.extend(
+        /** @lends jDoc.Engines.Simple.prototype */
+        {
+            /**
+             *
+             * @param text {String}
+             * @param callback {function}
+             * @private
+             */
+            _createParsedFile: function (text, callback) {
+                var textContent,
+                    i,
+                    len,
+                    textSections,
+                    breaks,
+                    element,
+                    isLink = false,
+                    elements = [];
+
+                textSections = text.split(/\s/);
+                len = textSections.length;
+
+                for (i = 0; i < len; i++) {
+                    if (textSections[i]) {
+                        isLink = jDoc.validateURL(textSections[i]);
+
+                        element = {
+                            options: {},
+                            css: {},
+                            attributes: {},
+                            properties: {
+                                textContent: textSections[i] + " "
+                            }
+                        };
+
+                        if (isLink) {
+                            breaks = textSections[i].replace(/\S+/g, '') + " ";
+                            textContent = textSections[i].replace(/\s+/, '');
+                            element.isLink = true;
+                            element.href = textContent;
+                            element.properties.textContent = textContent;
+                            element.after = breaks;
+                        }
+
+                        elements.push(element);
+                    }
+                }
+
+                if (typeof callback === 'function') {
+                    callback(
+                        new jDoc.ParsedFile({
+                            pages: [{
+                                options: {},
+                                css: {},
+                                elements: [{
+                                    options: {
+                                        isParagraph: true
+                                    },
+                                    css: {},
+                                    elements: [{
+                                        options: {},
+                                        css: {},
+                                        elements: elements
+                                    }]
+                                }]
+                            }]
+                        })
+                    );
+                }
+            },
+            /**
+             *
+             * @type {Array}
+             * @private
+             */
+            _fileTypeParsers: [{
+                extension: ['txt'],
+                mime: ['text/plain'],
+                isTextDocument: true
+            }],
+            /**
+             *
+             * @param options
+             * @returns {null}
+             */
+            parse: function (options) {
+                var reader,
+                    self;
+
+                if (typeof options.start === 'function') {
+                    options.start();
+                }
+                if (!this.validate()) {
+                    if (typeof options.error === 'function') {
+                        options.error(this._errors.invalidFileType);
+                    }
+                    if (typeof options.complete === 'function') {
+                        options.complete();
+                    }
+                } else {
+                    reader = new FileReader();
+                    self = this;
+
+                    reader.onload = function (event) {
+                        self._createParsedFile(event.target.result, function (parsedFile) {
+                            if (typeof options.success === 'function') {
+                                options.success(parsedFile);
+                            }
+                            if (typeof options.complete === 'function') {
+                                options.complete();
+                            }
+                        });
+                    };
+
+                    reader.readAsText(this.file);
+                }
+                return null;
             }
         }
     );
