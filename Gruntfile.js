@@ -24,6 +24,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-jdoc-engines-concat');
     grunt.loadNpmTasks('grunt-jsdoc');
+    grunt.loadNpmTasks('grunt-jsbeautifier');
 
     var enginesConcatTaskName = "engines_concat",
         /**
@@ -65,6 +66,7 @@ module.exports = function (grunt) {
             tasksList = tasksList.concat([
                 'concat:app',
                 'clean:engines',
+                'jsbeautifier',
                 'uglify'
             ]);
 

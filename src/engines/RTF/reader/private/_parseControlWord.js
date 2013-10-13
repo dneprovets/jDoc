@@ -1,4 +1,3 @@
-jDoc.Engines.RTF.prototype.controlWordsParsers = {};
 /**
  *
  * @param text {String}
@@ -10,15 +9,11 @@ jDoc.Engines.RTF.prototype.controlWordsParsers = {};
  */
 jDoc.Engines.RTF.prototype._parseControlWord = function (text, index, parseParams, parseResult) {
     var match,
-        el,
-        i,
-        currentRowIndex = 0,
-        currentCellIndex = 0,
-        count,
-        page = parseResult.pages[parseParams.currentPageIndex],
+        clearedControlWord,
         controlWordParseResult,
         param,
-        controlWordParserData;
+        controlWord = "",
+        controlWordParserData = "";
 
     while (text[index] !== ' ' && text[index] !== '\\' && text[index] !== '{' && text[index] !== '}') {
         if (text[index] !== '\r' && text[index] !== '\n') {
@@ -65,89 +60,12 @@ jDoc.Engines.RTF.prototype._parseControlWord = function (text, index, parseParam
                 parseParams: parseParams,
                 param: param
             };
-            controlWordParseResult = this.controlWordsParsers[clearedControlWord];
+            controlWordParseResult = this.controlWordsParsers[clearedControlWord].call(this, controlWordParserData);
             parseResult = controlWordParseResult.parseResult;
             parseParams = controlWordParseResult.parseParams;
             controlWordParserData = null;
             controlWordParseResult = null;
         } else {
-
-        }
-
-        switch (clearedControlWord) {
-        case "tab":
-            if (parseParams.currentTextElement) {
-                parseParams.currentTextElement.properties.textContent += this._getTabAsSpaces();
-            }
-            break;
-        case "~":
-            if (parseParams.currentTextElement) {
-                parseParams.currentTextElement.properties.textContent += this._getNonbreakingSpace();
-            }
-            break;
-        case "'":
-            if (parseParams.currentTextElement && isNaN(param)) {
-                parseParams.currentTextElement.properties.textContent += this._getCharFromHex(param);
-            }
-            break;
-        case "clvertalt":
-            parseParams.styles.cells.css.verticalAlign = "top";
-            break;
-        case "clvertalc":
-            parseParams.styles.cells.css.verticalAlign = "middle";
-            break;
-        case "clvertalb":
-            parseParams.styles.cells.css.verticalAlign = "bottom";
-            break;
-        case "clbrdrt":
-            parseParams.styles.cells.dimensionCSSRules.borderTopWidth =
-                parseParams.styles.defaults.dimensionCSSRules.borderWidth;
-            parseParams.styles.cells.css.borderTopStyle = parseParams.styles.defaults.css.borderStyle;
-            parseParams.styles.cells.css.borderTopColor = parseParams.styles.defaults.css.borderColor;
-            break;
-        case "clbrdrb":
-            parseParams.styles.cells.dimensionCSSRules.borderBottomWidth =
-                parseParams.styles.defaults.dimensionCSSRules.borderWidth;
-            parseParams.styles.cells.css.borderBottomStyle = parseParams.styles.defaults.css.borderStyle;
-            parseParams.styles.cells.css.borderBottomColor = parseParams.styles.defaults.css.borderColor;
-            break;
-        case "clbrdrl":
-            parseParams.styles.cells.dimensionCSSRules.borderLeftWidth =
-                parseParams.styles.defaults.dimensionCSSRules.borderWidth;
-            parseParams.styles.cells.css.borderLeftStyle = parseParams.styles.defaults.css.borderStyle;
-            parseParams.styles.cells.css.borderLeftColor = parseParams.styles.defaults.css.borderColor;
-            break;
-        case "clbrdrr":
-            parseParams.styles.cells.dimensionCSSRules.borderRightWidth =
-                parseParams.styles.defaults.dimensionCSSRules.borderWidth;
-            parseParams.styles.cells.css.borderRightStyle = parseParams.styles.defaults.css.borderStyle;
-            parseParams.styles.cells.css.borderRightColor = parseParams.styles.defaults.css.borderColor;
-            break;
-        case "trbrdrr":
-            parseParams.styles.table.dimensionCSSRules.borderRightWidth =
-                parseParams.styles.defaults.dimensionCSSRules.borderWidth;
-            parseParams.styles.table.css.borderRightStyle = parseParams.styles.defaults.css.borderStyle;
-            parseParams.styles.table.css.borderRightColor = parseParams.styles.defaults.css.borderColor;
-            break;
-        case "trbrdrl":
-            parseParams.styles.table.dimensionCSSRules.borderLeftWidth =
-                parseParams.styles.defaults.dimensionCSSRules.borderWidth;
-            parseParams.styles.table.css.borderLeftStyle = parseParams.styles.defaults.css.borderStyle;
-            parseParams.styles.table.css.borderLeftColor = parseParams.styles.defaults.css.borderColor;
-            break;
-        case "trbrdrb":
-            parseParams.styles.table.dimensionCSSRules.borderBottomWidth =
-                parseParams.styles.defaults.dimensionCSSRules.borderWidth;
-            parseParams.styles.table.css.borderBottomStyle = parseParams.styles.defaults.css.borderStyle;
-            parseParams.styles.table.css.borderBottomColor = parseParams.styles.defaults.css.borderColor;
-            break;
-        case "trbrdrt":
-            parseParams.styles.table.dimensionCSSRules.borderTopWidth =
-                parseParams.styles.defaults.dimensionCSSRules.borderWidth;
-            parseParams.styles.table.css.borderTopStyle = parseParams.styles.defaults.css.borderStyle;
-            parseParams.styles.table.css.borderTopColor = parseParams.styles.defaults.css.borderColor;
-            break;
-        default:
             parseParams.unParsedControlWords[controlWord] = true;
         }
     }
