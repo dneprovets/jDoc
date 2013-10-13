@@ -58,42 +58,6 @@ module.exports = function () {
             writer: {}
         },
 
-        rtf: {
-            reader: {
-                options: {
-                    namespace: 'jDoc.Engines.RTF.prototype',
-                    mainFilePath: 'src/engines/RTF/main.js',
-                    complexProperties: [
-                        {
-                            name: "controlWordsParsers",
-                            src: ['src/engines/RTF/reader/private/controlWordsParsers/**/*.js']
-                        }
-                    ]
-                },
-                src: [
-                    'src/engines/RTF/reader/private/*.js',
-                    'src/engines/RTF/reader/public/*.js'
-                ],
-                dest: 'src/build/rtf.js'
-            },
-            writer: {}
-        },
-
-        wcbff: {
-            reader: {
-                options: {
-                    namespace: 'jDoc.Engines.WCBFF.prototype',
-                    mainFilePath: 'src/engines/WCBFF/main.js'
-                },
-                src: [
-                    'src/engines/WCBFF/reader/private/*.js',
-                    'src/engines/WCBFF/reader/public/*.js'
-                ],
-                dest: 'src/build/wcbff.js'
-            },
-            writer: {}
-        },
-
         fictionBook: {
             reader: {
                 options: {
