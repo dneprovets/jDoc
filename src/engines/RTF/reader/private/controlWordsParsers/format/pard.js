@@ -1,6 +1,7 @@
 jDoc.Engines.RTF.prototype.controlWordsParsers.pard = function (options) {
     var parseParams = options.parseParams,
-        parseResult = options.parseResult;
+        parseResult = options.parseResult,
+        page = parseResult.pages[parseParams.currentPageIndex];
 
     if (parseResult.table) {
         parseResult.table = this._destroyTable(parseParams);

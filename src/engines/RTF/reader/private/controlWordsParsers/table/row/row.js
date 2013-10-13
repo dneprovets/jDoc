@@ -1,7 +1,8 @@
-jDoc.Engines.RTF.prototype.controlWordsParsers.par = function (options) {
+jDoc.Engines.RTF.prototype.controlWordsParsers.row = function (options) {
     var parseParams = options.parseParams,
         parseResult = options.parseResult,
         table = parseParams.table,
+        page = parseResult.pages[parseParams.currentPageIndex],
         row = table ? table.body.rows[table.body.rows.length - 1] : null;
 
     row = row || this._initRow();

@@ -5,11 +5,12 @@ jDoc.Engines.RTF.prototype.controlWordsParsers.cellx = function (options) {
         param = options.param,
         currentRowIndex,
         table = parseParams.table,
+        page = parseResult.pages[parseParams.currentPageIndex],
         row = table ? table.body.rows[table.body.rows.length - 1] : null;
 
     row = row || this._initRow();
 
-    table = this._checkTable({
+    table = this._initTable({
         table: table,
         row: row,
         parseParams: parseParams,
