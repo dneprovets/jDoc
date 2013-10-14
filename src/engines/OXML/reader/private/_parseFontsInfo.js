@@ -5,7 +5,7 @@
  * @return {Object}
  * @private
  */
-jDoc.Engines.OXML.prototype._parseFontsInfo = function (xml) {
+jDoc.engines.OXML.prototype._parseFontsInfo = function (xml) {
     var fontInfoNodes = xml.childNodes[0] ? jDoc.DOM.children(xml.childNodes[0]) : [],
         result = {},
         self = this,

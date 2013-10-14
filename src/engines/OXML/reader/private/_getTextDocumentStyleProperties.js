@@ -4,7 +4,7 @@
  * @return {Object}
  * @private
  */
-jDoc.Engines.OXML.prototype._getTextDocumentStyleProperties = function (params) {
+jDoc.engines.OXML.prototype._getTextDocumentStyleProperties = function (params) {
     var result = {
         options: {
             classList: []

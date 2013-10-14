@@ -4,7 +4,7 @@
  * @param callback
  * @private
  */
-jDoc.Engines.ODF.prototype._parseTextDocumentContent = function (params, callback) {
+jDoc.engines.ODF.prototype._parseTextDocumentContent = function (params, callback) {
     var result = {
             pages: []
         },

@@ -4,7 +4,7 @@
  * @returns {*}
  * @private
  */
-jDoc.Engines.ODF.prototype._parseTextDocumentTableRowNode = function (params) {
+jDoc.engines.ODF.prototype._parseTextDocumentTableRowNode = function (params) {
     var row = {
             cells: [],
             css: {},

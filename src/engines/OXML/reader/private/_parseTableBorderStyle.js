@@ -3,7 +3,7 @@
  * @param options
  * @private
  */
-jDoc.Engines.OXML.prototype._parseTableBorderStyle = function (options) {
+jDoc.engines.OXML.prototype._parseTableBorderStyle = function (options) {
     var result = {
         css: {},
         dimensionCSSRules: {}

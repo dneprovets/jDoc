@@ -5,7 +5,7 @@ var ArrayPrototype = Array.prototype;
  * @type {Object}
  */
 var jDoc = {
-    Engines: {},
+    engines: {},
 
     currentEngine: null,
 
@@ -107,9 +107,9 @@ var jDoc = {
          */
         this.currentEngine = null;
 
-        for (engine in this.Engines) {
-            if (this.Engines.hasOwnProperty(engine)) {
-                engineObj = new this.Engines[engine](file);
+        for (engine in this.engines) {
+            if (this.engines.hasOwnProperty(engine)) {
+                engineObj = new this.engines[engine](file);
                 if (engineObj.validate()) {
                     this.currentEngine = engineObj;
                     break;

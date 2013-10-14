@@ -131,7 +131,7 @@
      * @type {Object}
      */
     var jDoc = {
-        Engines: {},
+        engines: {},
 
         currentEngine: null,
 
@@ -233,9 +233,9 @@
              */
             this.currentEngine = null;
 
-            for (engine in this.Engines) {
-                if (this.Engines.hasOwnProperty(engine)) {
-                    engineObj = new this.Engines[engine](file);
+            for (engine in this.engines) {
+                if (this.engines.hasOwnProperty(engine)) {
+                    engineObj = new this.engines[engine](file);
                     if (engineObj.validate()) {
                         this.currentEngine = engineObj;
                         break;
@@ -9290,8 +9290,8 @@
      * @constructor
      * @type {Object}
      */
-    jDoc.Engines.DSV = jDoc.Engine.extend(
-        /** @lends jDoc.Engines.DSV.prototype */
+    jDoc.engines.DSV = jDoc.Engine.extend(
+        /** @lends jDoc.engines.DSV.prototype */
         {
             /**
              *
@@ -9469,8 +9469,8 @@
      * @constructor
      * @type {Object}
      */
-    jDoc.Engines.FictionBook = jDoc.Engine.extend(
-        /** @lends jDoc.Engines.FictionBook.prototype */
+    jDoc.engines.FictionBook = jDoc.Engine.extend(
+        /** @lends jDoc.engines.FictionBook.prototype */
         {
             /**
              *
@@ -10026,8 +10026,8 @@
             }
         }
     );
-    jDoc.Engines.ODF = jDoc.Engine.extend(
-        /** @lends jDoc.Engines.ODF.prototype */
+    jDoc.engines.ODF = jDoc.Engine.extend(
+        /** @lends jDoc.engines.ODF.prototype */
         {
             /**
              *
@@ -11046,7 +11046,7 @@
 
                 return result;
             },
-            /** @lends jDoc.Engines.ODF.prototype
+            /** @lends jDoc.engines.ODF.prototype
              *
              * @param node
              * @return {Object}
@@ -11755,7 +11755,7 @@
 
                 return row;
             },
-            /** @lends jDoc.Engines.ODF.prototype
+            /** @lends jDoc.engines.ODF.prototype
              *
              * @param node
              * @return {Object}
@@ -11795,8 +11795,8 @@
      * @constructor
      * @type {Object}
      */
-    jDoc.Engines.OXML = jDoc.Engine.extend(
-        /** @lends jDoc.Engines.OXML.prototype */
+    jDoc.engines.OXML = jDoc.Engine.extend(
+        /** @lends jDoc.engines.OXML.prototype */
         {
             /**
              *
@@ -12598,7 +12598,7 @@
 
                 return result;
             },
-            /** @lends jDoc.Engines.OXML.prototype */
+            /** @lends jDoc.engines.OXML.prototype */
             _parseEmphasis: function (attribute) {
                 var result = "";
 
@@ -14825,8 +14825,8 @@
      * @constructor
      * @type {Object}
      */
-    jDoc.Engines.Simple = jDoc.Engine.extend(
-        /** @lends jDoc.Engines.Simple.prototype */
+    jDoc.engines.Simple = jDoc.Engine.extend(
+        /** @lends jDoc.engines.Simple.prototype */
         {
             /**
              *

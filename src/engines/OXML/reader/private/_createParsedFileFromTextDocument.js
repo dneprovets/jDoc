@@ -4,7 +4,7 @@
  * @param callback {function}
  * @private
  */
-jDoc.Engines.OXML.prototype._createParsedFileFromTextDocument = function (filesEntry, callback) {
+jDoc.engines.OXML.prototype._createParsedFileFromTextDocument = function (filesEntry, callback) {
     var filesCount = filesEntry.length,
         i,
         reader,

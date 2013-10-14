@@ -1,10 +1,10 @@
-/** @lends jDoc.Engines.ODF.prototype
+/** @lends jDoc.engines.ODF.prototype
  *
  * @param node
  * @return {Object}
  * @private
  */
-jDoc.Engines.ODF.prototype._parseTextDocumentParagraphStyles = function (node) {
+jDoc.engines.ODF.prototype._parseTextDocumentParagraphStyles = function (node) {
     var nodes = jDoc.DOM.children(node),
         length = nodes.length,
         j,

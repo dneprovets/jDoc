@@ -4,7 +4,7 @@
  * @returns {*}
  * @private
  */
-jDoc.Engines.OXML.prototype._getMediaFromRelation = function (params) {
+jDoc.engines.OXML.prototype._getMediaFromRelation = function (params) {
     var media,
         relation = this._getRelation(params);
 

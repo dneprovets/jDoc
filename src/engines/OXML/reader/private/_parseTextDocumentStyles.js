@@ -4,7 +4,7 @@
  * @return {Object}
  * @private
  */
-jDoc.Engines.OXML.prototype._parseTextDocumentStyles = function (xml) {
+jDoc.engines.OXML.prototype._parseTextDocumentStyles = function (xml) {
     var result = {
             defaults: {
                 paragraph: {

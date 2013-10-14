@@ -3,7 +3,7 @@
  * @param options
  * @private
  */
-jDoc.Engines.FictionBook.prototype._parseBlockElement = function (options) {
+jDoc.engines.FictionBook.prototype._parseBlockElement = function (options) {
     var result;
 
     switch (options.node.localName) {

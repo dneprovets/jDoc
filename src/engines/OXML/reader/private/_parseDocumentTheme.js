@@ -4,7 +4,7 @@
  * @returns {*}
  * @private
  */
-jDoc.Engines.OXML.prototype._parseDocumentTheme = function (xml) {
+jDoc.engines.OXML.prototype._parseDocumentTheme = function (xml) {
     var themeElementsNode = xml.querySelector('themeElements'),
         themeElements,
         i,

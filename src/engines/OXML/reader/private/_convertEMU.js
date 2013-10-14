@@ -5,7 +5,7 @@
  * @return {*}
  * @private
  */
-jDoc.Engines.OXML.prototype._convertEMU = function (val) {
+jDoc.engines.OXML.prototype._convertEMU = function (val) {
     return {
         value: val / (635 * 20),
         units: "pt"

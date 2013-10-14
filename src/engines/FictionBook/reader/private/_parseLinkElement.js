@@ -4,7 +4,7 @@
  * @returns {{options: {isLink: boolean}, attributes: {}, css: {}, dimensionCSSRules: {}, textContent: string}}
  * @private
  */
-jDoc.Engines.FictionBook.prototype._parseLinkElement = function (node) {
+jDoc.engines.FictionBook.prototype._parseLinkElement = function (node) {
     var result = {
             options: {
                 isLink: true

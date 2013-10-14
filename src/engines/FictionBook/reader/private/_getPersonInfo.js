@@ -4,7 +4,7 @@
  * @return {Object}
  * @private
  */
-jDoc.Engines.FictionBook.prototype._getPersonInfo = function (xml) {
+jDoc.engines.FictionBook.prototype._getPersonInfo = function (xml) {
     var i,
         nodes = jDoc.DOM.children(xml),
         len = nodes.length,

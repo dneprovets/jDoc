@@ -4,7 +4,7 @@
  * @param callback {function}
  * @private
  */
-jDoc.Engines.DSV.prototype._createParsedFile = function (text, callback) {
+jDoc.engines.DSV.prototype._createParsedFile = function (text, callback) {
     var delimiterType = this.options.fileType.delimiterType || "comma",
         delimiterMask,
         delimiter = "",

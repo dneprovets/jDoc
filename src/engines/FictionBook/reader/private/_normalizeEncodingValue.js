@@ -4,7 +4,7 @@
  * @return {String}
  * @private
  */
-jDoc.Engines.FictionBook.prototype._normalizeEncodingValue = function (value) {
+jDoc.engines.FictionBook.prototype._normalizeEncodingValue = function (value) {
     var result = "utf-8";
 
     if (value) {

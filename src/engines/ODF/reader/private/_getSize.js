@@ -4,7 +4,7 @@
  * @returns {{value: number, units: string}}
  * @private
  */
-jDoc.Engines.ODF.prototype._getSize = function (val) {
+jDoc.engines.ODF.prototype._getSize = function (val) {
     var result = {
             value: 0,
             units: ""

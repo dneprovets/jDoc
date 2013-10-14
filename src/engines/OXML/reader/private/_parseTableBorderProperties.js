@@ -3,7 +3,7 @@
  * @return {Object}
  * @private
  */
-jDoc.Engines.OXML.prototype._parseTableBorderProperties = function (node) {
+jDoc.engines.OXML.prototype._parseTableBorderProperties = function (node) {
     var borderColor = (
             node.attributes['w:color'] && node.attributes['w:color'].value
         ) ? node.attributes['w:color'].value : "";

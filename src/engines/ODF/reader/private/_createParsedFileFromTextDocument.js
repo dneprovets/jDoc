@@ -4,7 +4,7 @@
  * @param callback {function}
  * @private
  */
-jDoc.Engines.ODF.prototype._createParsedFileFromTextDocument = function (filesEntry, callback) {
+jDoc.engines.ODF.prototype._createParsedFileFromTextDocument = function (filesEntry, callback) {
     var filesCount = filesEntry.length,
         i,
         counter = 0,

@@ -4,7 +4,7 @@
  * @return {Object}
  * @private
  */
-jDoc.Engines.ODF.prototype._parseTextDocumentTableNode = function (params) {
+jDoc.engines.ODF.prototype._parseTextDocumentTableNode = function (params) {
     var result = {
             options: {
                 isTable: true,

@@ -3,7 +3,7 @@
  * @param options
  * @returns {null}
  */
-jDoc.Engines.DSV.prototype.parse = function (options) {
+jDoc.engines.DSV.prototype.parse = function (options) {
     var reader,
         self;
 

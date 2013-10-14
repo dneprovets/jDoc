@@ -4,7 +4,7 @@
  * @return {Object}
  * @private
  */
-jDoc.Engines.ODF.prototype._parsePageLayoutStyles = function (node) {
+jDoc.engines.ODF.prototype._parsePageLayoutStyles = function (node) {
     var result = {
             page: {
                 css: {},

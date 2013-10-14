@@ -4,7 +4,7 @@
  * @return {Object}
  * @private
  */
-jDoc.Engines.OXML.prototype._parseTextDocumentReferenceStyle = function (styleValue) {
+jDoc.engines.OXML.prototype._parseTextDocumentReferenceStyle = function (styleValue) {
     var result = {
         css: {},
         dimensionCSSRules: {}

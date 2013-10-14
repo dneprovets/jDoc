@@ -1,5 +1,5 @@
-jDoc.Engines.ODF = jDoc.Engine.extend(
-    /** @lends jDoc.Engines.ODF.prototype */
+jDoc.engines.ODF = jDoc.Engine.extend(
+    /** @lends jDoc.engines.ODF.prototype */
     {
         //[ENGINE]
     }

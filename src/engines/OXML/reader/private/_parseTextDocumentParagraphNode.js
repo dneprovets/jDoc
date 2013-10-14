@@ -4,7 +4,7 @@
  * @return {Object}
  * @private
  */
-jDoc.Engines.OXML.prototype._parseTextDocumentParagraphNode = function (params) {
+jDoc.engines.OXML.prototype._parseTextDocumentParagraphNode = function (params) {
     var elementInfo = {
         options: {
             isParagraph: true,

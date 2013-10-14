@@ -4,7 +4,7 @@
  * @return {Object}
  * @private
  */
-jDoc.Engines.ODF.prototype._parseTextDocumentParagraphNode = function (params) {
+jDoc.engines.ODF.prototype._parseTextDocumentParagraphNode = function (params) {
     var result = {
             options: {
                 isParagraph: true,

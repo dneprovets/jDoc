@@ -2,8 +2,8 @@
  * @constructor
  * @type {Object}
  */
-jDoc.Engines.FictionBook = jDoc.Engine.extend(
-    /** @lends jDoc.Engines.FictionBook.prototype */
+jDoc.engines.FictionBook = jDoc.Engine.extend(
+    /** @lends jDoc.engines.FictionBook.prototype */
     {
         //[ENGINE]
     }

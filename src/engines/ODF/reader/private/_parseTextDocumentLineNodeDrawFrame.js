@@ -4,7 +4,7 @@
  * @return {Object}
  * @private
  */
-jDoc.Engines.ODF.prototype._parseTextDocumentParagraphNodeDrawFrame = function (options) {
+jDoc.engines.ODF.prototype._parseTextDocumentParagraphNodeDrawFrame = function (options) {
     var data = {
             attributes: {},
             properties: {},

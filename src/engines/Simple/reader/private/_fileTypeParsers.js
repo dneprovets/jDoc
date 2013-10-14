@@ -3,7 +3,7 @@
  * @type {Array}
  * @private
  */
-jDoc.Engines.Simple.prototype._fileTypeParsers = [
+jDoc.engines.Simple.prototype._fileTypeParsers = [
     {
         extension: ['txt'],
         mime: ['text/plain'],

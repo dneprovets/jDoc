@@ -3,7 +3,7 @@
  * @param options
  * @returns {null}
  */
-jDoc.Engines.Simple.prototype.parse = function (options) {
+jDoc.engines.Simple.prototype.parse = function (options) {
     var reader,
         self;
 

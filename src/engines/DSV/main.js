@@ -3,8 +3,8 @@
  * @constructor
  * @type {Object}
  */
-jDoc.Engines.DSV = jDoc.Engine.extend(
-    /** @lends jDoc.Engines.DSV.prototype */
+jDoc.engines.DSV = jDoc.Engine.extend(
+    /** @lends jDoc.engines.DSV.prototype */
     {
         //[ENGINE]
     }

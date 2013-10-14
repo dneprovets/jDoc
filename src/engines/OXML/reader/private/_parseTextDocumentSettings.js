@@ -4,7 +4,7 @@
  * @return {Object}
  * @private
  */
-jDoc.Engines.OXML.prototype._parseTextDocumentSettings = function (xml) {
+jDoc.engines.OXML.prototype._parseTextDocumentSettings = function (xml) {
     var result = {
         zoom: 100,
         compat: {},

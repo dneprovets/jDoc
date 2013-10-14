@@ -2,7 +2,7 @@
  * @description File types for parsing
  * @private
  */
-jDoc.Engines.DSV.prototype._fileTypeParsers = [
+jDoc.engines.DSV.prototype._fileTypeParsers = [
     {
         extension: ['csv'],
         mime: ['text/csv'],

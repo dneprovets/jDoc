@@ -4,7 +4,7 @@
  * @param callback
  * @private
  */
-jDoc.Engines.ODF.prototype._parseTextDocumentStylesNode = function (stylesNode, callback) {
+jDoc.engines.ODF.prototype._parseTextDocumentStylesNode = function (stylesNode, callback) {
     var result = {
             named: {},
             paragraph: {},

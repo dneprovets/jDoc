@@ -4,7 +4,7 @@
  * @return {Object}
  * @private
  */
-jDoc.Engines.OXML.prototype._parseTextDocumentContent = function (params) {
+jDoc.engines.OXML.prototype._parseTextDocumentContent = function (params) {
     params.documentData._heading = [];
     var result = {
         pages: []

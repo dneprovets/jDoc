@@ -4,7 +4,7 @@
  * @returns {{options: {isParagraph: boolean}, css: {}, dimensionCSSRules: {}, elements: Array}}
  * @private
  */
-jDoc.Engines.FictionBook.prototype._parseParagraph = function (options) {
+jDoc.engines.FictionBook.prototype._parseParagraph = function (options) {
     var children = jDoc.DOM.children(options.node),
         len = children.length,
         i,

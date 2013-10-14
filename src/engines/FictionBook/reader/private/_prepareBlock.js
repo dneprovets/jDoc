@@ -3,7 +3,7 @@
  * @param documentData
  * @private
  */
-jDoc.Engines.FictionBook.prototype._prepareBlock = function (xml, documentData) {
+jDoc.engines.FictionBook.prototype._prepareBlock = function (xml, documentData) {
     var i,
         nodes = jDoc.DOM.children(xml),
         len = nodes.length,

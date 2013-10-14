@@ -4,7 +4,7 @@
  * @returns {*}
  * @private
  */
-jDoc.Engines.ODF.prototype._getStyleRules = function (params) {
+jDoc.engines.ODF.prototype._getStyleRules = function (params) {
     var result = {},
         i;
 

@@ -4,7 +4,7 @@
  * @return {Object}
  * @private
  */
-jDoc.Engines.OXML.prototype._parseRunNode = function (data) {
+jDoc.engines.OXML.prototype._parseRunNode = function (data) {
     var result = jDoc.deepMerge({}, {
         css:  jDoc.clone(data.documentData.styles.defaults.paragraphContent.css),
         dimensionCSSRules: jDoc.clone(data.documentData.styles.defaults.paragraphContent.dimensionCSSRules),

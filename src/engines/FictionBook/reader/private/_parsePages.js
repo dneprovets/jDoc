@@ -5,7 +5,7 @@
  * @param list
  * @private
  */
-jDoc.Engines.FictionBook.prototype._parsePages = function (xml, documentData, list) {
+jDoc.engines.FictionBook.prototype._parsePages = function (xml, documentData, list) {
     var i,
         nodes = jDoc.DOM.children(xml),
         len = nodes.length,

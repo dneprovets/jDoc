@@ -1,5 +1,5 @@
-/** @lends jDoc.Engines.OXML.prototype */
-jDoc.Engines.OXML.prototype._parseEmphasis = function (attribute) {
+/** @lends jDoc.engines.OXML.prototype */
+jDoc.engines.OXML.prototype._parseEmphasis = function (attribute) {
     var result = "";
 
     if (attribute) {

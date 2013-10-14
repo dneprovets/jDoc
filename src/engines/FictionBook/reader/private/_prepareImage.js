@@ -4,7 +4,7 @@
  * @returns {{options: {isImage: boolean}, attributes: {}}}
  * @private
  */
-jDoc.Engines.FictionBook.prototype._prepareImage = function (options) {
+jDoc.engines.FictionBook.prototype._prepareImage = function (options) {
     var result = {
         options: {
             isImage: true

@@ -4,7 +4,7 @@
  * @returns {number}
  * @private
  */
-jDoc.Engines.OXML.prototype._checkPageLinesHeight = function (options) {
+jDoc.engines.OXML.prototype._checkPageLinesHeight = function (options) {
     var page;
 
     if (

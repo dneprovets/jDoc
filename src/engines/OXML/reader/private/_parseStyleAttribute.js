@@ -4,7 +4,7 @@
  * @return {Object}
  * @private
  */
-jDoc.Engines.OXML.prototype._parseStyleAttribute = function (value, options) {
+jDoc.engines.OXML.prototype._parseStyleAttribute = function (value, options) {
     var result = {
             css: {},
             dimensionCSSRules: {}

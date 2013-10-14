@@ -5,7 +5,7 @@
  * @returns {boolean}
  * @private
  */
-jDoc.Engines.OXML.prototype._parseTextDocumentTableNode = function (data, callback) {
+jDoc.engines.OXML.prototype._parseTextDocumentTableNode = function (data, callback) {
     var result = {
         options: {
             isTable: true,

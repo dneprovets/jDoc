@@ -3,7 +3,7 @@
  * @return {Object}
  * @private
  */
-jDoc.Engines.FictionBook.prototype._parsePublishInfo = function (xml) {
+jDoc.engines.FictionBook.prototype._parsePublishInfo = function (xml) {
     var nodes = jDoc.DOM.children(xml),
         i,
         len = nodes.length,

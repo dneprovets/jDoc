@@ -2,8 +2,8 @@
  * @constructor
  * @type {Object}
  */
-jDoc.Engines.OXML = jDoc.Engine.extend(
-    /** @lends jDoc.Engines.OXML.prototype */
+jDoc.engines.OXML = jDoc.Engine.extend(
+    /** @lends jDoc.engines.OXML.prototype */
     {
         //[ENGINE]
     }

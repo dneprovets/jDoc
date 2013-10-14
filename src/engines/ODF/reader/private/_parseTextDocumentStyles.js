@@ -5,7 +5,7 @@
  * @returns {*}
  * @private
  */
-jDoc.Engines.ODF.prototype._parseTextDocumentStyles = function (xml, callback) {
+jDoc.engines.ODF.prototype._parseTextDocumentStyles = function (xml, callback) {
     var result = {
             automatic: {
                 layouts: {}

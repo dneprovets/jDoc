@@ -1,4 +1,4 @@
-jDoc.Engines.ODF.prototype._parseTextDocumentListStyles = function (xml) {
+jDoc.engines.ODF.prototype._parseTextDocumentListStyles = function (xml) {
     var result = {
             list: {
                 css: {},

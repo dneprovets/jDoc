@@ -4,7 +4,7 @@
  * @returns {*}
  * @private
  */
-jDoc.Engines.OXML.prototype._getRelation = function (params) {
+jDoc.engines.OXML.prototype._getRelation = function (params) {
     var relation;
 
     if (

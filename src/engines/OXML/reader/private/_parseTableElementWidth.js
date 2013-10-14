@@ -4,7 +4,7 @@
  * @return {*}
  * @private
  */
-jDoc.Engines.OXML.prototype._parseTableElementWidth = function (widthPropertyNode) {
+jDoc.engines.OXML.prototype._parseTableElementWidth = function (widthPropertyNode) {
     var result = {
             value: 100,
             units: "%"

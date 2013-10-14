@@ -4,7 +4,7 @@
  * @returns {*}
  * @private
  */
-jDoc.Engines.ODF.prototype._getListStyleType = function (value) {
+jDoc.engines.ODF.prototype._getListStyleType = function (value) {
     var result;
 
     switch (value) {

@@ -4,7 +4,7 @@
  * @return {String}
  * @private
  */
-jDoc.Engines.OXML.prototype._prepareShapeType = function (type) {
+jDoc.engines.OXML.prototype._prepareShapeType = function (type) {
     var result = "";
 
     if (typeof type !== 'string')

@@ -4,7 +4,7 @@
  * @private
  * @returns {*}
  */
-jDoc.Engines.FictionBook.prototype._parseBinaryItems = function (nodes) {
+jDoc.engines.FictionBook.prototype._parseBinaryItems = function (nodes) {
     var result = {},
         i;
 

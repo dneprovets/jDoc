@@ -3,7 +3,7 @@
  * @return {Number}
  * @private
  */
-jDoc.Engines.OXML.prototype._getLineHeight = function (value) {
+jDoc.engines.OXML.prototype._getLineHeight = function (value) {
     var result = Math.round(value / 240 * 100) / 100;
 
     return (isNaN(result) || result < 1) ? 1 : result;

@@ -5,7 +5,7 @@
  * @private
  * @return {Object}
  */
-jDoc.Engines.OXML.prototype._parseDocumentInfo = function (xml) {
+jDoc.engines.OXML.prototype._parseDocumentInfo = function (xml) {
     var i,
         children = jDoc.DOM.children(xml),
         result = {

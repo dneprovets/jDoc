@@ -4,7 +4,7 @@
  * @return {Object}
  * @private
  */
-jDoc.Engines.OXML.prototype._parseWebSettings = function (xml) {
+jDoc.engines.OXML.prototype._parseWebSettings = function (xml) {
     var i,
         children = jDoc.DOM.children(xml),
         result = {

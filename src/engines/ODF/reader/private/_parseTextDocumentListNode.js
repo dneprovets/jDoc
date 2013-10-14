@@ -4,7 +4,7 @@
  * @return {Object}
  * @private
  */
-jDoc.Engines.ODF.prototype._parseTextDocumentListNode = function (params) {
+jDoc.engines.ODF.prototype._parseTextDocumentListNode = function (params) {
     var result = {
             options: {
                 isList: true,

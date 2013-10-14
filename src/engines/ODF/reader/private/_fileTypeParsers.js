@@ -2,7 +2,7 @@
  * @type {Array}
  * @private
  */
-jDoc.Engines.ODF.prototype._fileTypeParsers = [
+jDoc.engines.ODF.prototype._fileTypeParsers = [
     {
         extension : 'odt',
         mime : 'vnd.oasis.opendocument.text',

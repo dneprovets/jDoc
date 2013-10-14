@@ -4,7 +4,7 @@
  * @returns {{options: {}, css: {}, dimensionCSSRules: {}, elements: Array}}
  * @private
  */
-jDoc.Engines.ODF.prototype._createPage = function (params) {
+jDoc.engines.ODF.prototype._createPage = function (params) {
     var data = {
         options: {},
         css: {},

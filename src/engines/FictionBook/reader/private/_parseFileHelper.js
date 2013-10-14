@@ -4,7 +4,7 @@
  * @param options
  * @private
  */
-jDoc.Engines.FictionBook.prototype._parseFileHelper = function (text, options) {
+jDoc.engines.FictionBook.prototype._parseFileHelper = function (text, options) {
     var domParser = new DOMParser();
 
     this._createParsedFile(domParser.parseFromString(text, "application/xml"), function (parsedFile) {

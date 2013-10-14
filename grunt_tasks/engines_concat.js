@@ -3,7 +3,7 @@ module.exports = function () {
         simple: {
             reader: {
                 options: {
-                    namespace: 'jDoc.Engines.Simple.prototype',
+                    namespace: 'jDoc.engines.Simple.prototype',
                     mainFilePath: 'src/engines/Simple/main.js'
                 },
                 src: [
@@ -18,7 +18,7 @@ module.exports = function () {
         odf: {
             reader: {
                 options: {
-                    namespace: 'jDoc.Engines.ODF.prototype',
+                    namespace: 'jDoc.engines.ODF.prototype',
                     mainFilePath: 'src/engines/ODF/main.js'
                 },
                 src: [
@@ -32,7 +32,7 @@ module.exports = function () {
         oxml: {
             reader: {
                 options: {
-                    namespace: 'jDoc.Engines.OXML.prototype',
+                    namespace: 'jDoc.engines.OXML.prototype',
                     mainFilePath: 'src/engines/OXML/main.js'
                 },
                 src: [
@@ -46,7 +46,7 @@ module.exports = function () {
         dsv: {
             reader: {
                 options: {
-                    namespace: 'jDoc.Engines.DSV.prototype',
+                    namespace: 'jDoc.engines.DSV.prototype',
                     mainFilePath: 'src/engines/DSV/main.js'
                 },
                 src: [
@@ -61,7 +61,7 @@ module.exports = function () {
         fictionBook: {
             reader: {
                 options: {
-                    namespace: 'jDoc.Engines.FictionBook.prototype',
+                    namespace: 'jDoc.engines.FictionBook.prototype',
                     mainFilePath: 'src/engines/FictionBook/main.js'
                 },
                 src: [

@@ -5,7 +5,7 @@
  * @return {*}
  * @private
  */
-jDoc.Engines.OXML.prototype._parseRelations = function (xml) {
+jDoc.engines.OXML.prototype._parseRelations = function (xml) {
     var relationsNodes = xml.childNodes[0] ? jDoc.DOM.children(xml.childNodes[0]) : [],
         result = {},
         i,

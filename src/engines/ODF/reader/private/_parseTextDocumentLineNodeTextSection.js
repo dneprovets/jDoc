@@ -4,7 +4,7 @@
  * @returns {*}
  * @private
  */
-jDoc.Engines.ODF.prototype._parseTextDocumentParagraphNodeTextSection = function (params) {
+jDoc.engines.ODF.prototype._parseTextDocumentParagraphNodeTextSection = function (params) {
     var children = jDoc.DOM.children(params.node),
         i,
         len = children.length,

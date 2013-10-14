@@ -4,7 +4,7 @@
  * @return {Object}
  * @private
  */
-jDoc.Engines.ODF.prototype._parseTextDocumentMetaInformation = function (xml) {
+jDoc.engines.ODF.prototype._parseTextDocumentMetaInformation = function (xml) {
     var result = {
             documentInfo: {},
             applicationInfo: {}

@@ -4,7 +4,7 @@
  * @param callback {function}
  * @private
  */
-jDoc.Engines.FictionBook.prototype._createParsedFile = function (xml, callback) {
+jDoc.engines.FictionBook.prototype._createParsedFile = function (xml, callback) {
     var nodes,
         i,
         len,

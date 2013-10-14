@@ -4,7 +4,7 @@
  * @return {Object}
  * @private
  */
-jDoc.Engines.ODF.prototype._parseTextDocumentTableCellStyles = function (node) {
+jDoc.engines.ODF.prototype._parseTextDocumentTableCellStyles = function (node) {
     var nodes = jDoc.DOM.children(node),
         length = nodes.length,
         j,

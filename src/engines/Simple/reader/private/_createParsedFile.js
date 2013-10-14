@@ -4,7 +4,7 @@
  * @param callback {function}
  * @private
  */
-jDoc.Engines.Simple.prototype._createParsedFile = function (text, callback) {
+jDoc.engines.Simple.prototype._createParsedFile = function (text, callback) {
     var textContent,
         i,
         len,

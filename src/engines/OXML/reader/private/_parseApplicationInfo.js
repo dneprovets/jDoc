@@ -5,7 +5,7 @@
  * @private
  * @return {Object}
  */
-jDoc.Engines.OXML.prototype._parseApplicationInfo = function (xml) {
+jDoc.engines.OXML.prototype._parseApplicationInfo = function (xml) {
     var i,
         result = {
             template: "",

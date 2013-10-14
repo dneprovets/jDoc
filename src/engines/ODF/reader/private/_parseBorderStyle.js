@@ -4,7 +4,7 @@
  * @return {Object}
  * @private
  */
-jDoc.Engines.ODF.prototype._parseBorderStyle = function (str) {
+jDoc.engines.ODF.prototype._parseBorderStyle = function (str) {
     var result = {
             width: {},
             style: "none",

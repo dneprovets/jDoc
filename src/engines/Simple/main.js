@@ -2,8 +2,8 @@
  * @constructor
  * @type {Object}
  */
-jDoc.Engines.Simple = jDoc.Engine.extend(
-    /** @lends jDoc.Engines.Simple.prototype */
+jDoc.engines.Simple = jDoc.Engine.extend(
+    /** @lends jDoc.engines.Simple.prototype */
     {
         //[ENGINE]
     }

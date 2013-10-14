@@ -4,7 +4,7 @@
  * @returns {*}
  * @private
  */
-jDoc.Engines.OXML.prototype._getCSSRulesFromPreferencedStyle = function (style) {
+jDoc.engines.OXML.prototype._getCSSRulesFromPreferencedStyle = function (style) {
     return {
         elementCSSRules: {
             css: style.lineStyle.css || {},

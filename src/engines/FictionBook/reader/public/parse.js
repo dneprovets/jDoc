@@ -3,7 +3,7 @@
  * @param options
  * @public
  */
-jDoc.Engines.FictionBook.prototype.parse = function (options) {
+jDoc.engines.FictionBook.prototype.parse = function (options) {
     if (typeof options.start === 'function') {
         options.start();
     }
