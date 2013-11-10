@@ -76,6 +76,7 @@ Build a library:
 ## Release History
 
  * 2013-09-10   v0.1.0   Work in progress, not yet officially released.
+ * 2013-11-10   v0.2.0   Support of RTF format.
 
 ---
 
