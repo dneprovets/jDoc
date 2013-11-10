@@ -228,8 +228,6 @@ jDoc.engines.RTF.prototype._createParsedFile = function (text, callback) {
         }
     }
 
-    console.log(Object.keys(parseParams.unParsedControlWords));
-
     if (typeof callback === 'function') {
         callback(new jDoc.ParsedFile(parseResult));
     }

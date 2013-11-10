@@ -15133,8 +15133,6 @@
                     }
                 }
 
-                console.log(Object.keys(parseParams.unParsedControlWords));
-
                 if (typeof callback === 'function') {
                     callback(new jDoc.ParsedFile(parseResult));
                 }
@@ -16473,8 +16471,6 @@
                         paragraphHeight = this._getElementHeight(parseParams.currentTextElementParent, {
                             width: parseParams.pageWidth
                         });
-
-                        console.log(parseParams.pageHeight, paragraphHeight);
 
                         /**
                          * divide into several parts

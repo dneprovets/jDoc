@@ -16,8 +16,6 @@ jDoc.engines.RTF.prototype._controlWordsParsers.par = function (options) {
             width: parseParams.pageWidth
         });
 
-        console.log(parseParams.pageHeight, paragraphHeight);
-
         /**
          * divide into several parts
          */
