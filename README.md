@@ -16,6 +16,7 @@ This library depends on [zip.js](http://gildas-lormeau.github.io/zip.js/) librar
 * `odt`
 * `csv`
 * `tsv`
+* `rtf`
 
 ## Getting Started
 Include script on your page:

@@ -1,7 +1,11 @@
 {
     "name": "jDoc",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "private": true,
+    "author": {
+        "name": "Denis Knyazevich",
+        "email": "webschik@gmail.com"
+    },
     "dependencies": {
         "express": "3.0.x"
     },

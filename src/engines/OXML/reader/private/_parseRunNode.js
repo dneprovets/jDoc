@@ -107,130 +107,134 @@ jDoc.engines.OXML.prototype._parseRunNode = function (data) {
                     }
                 };
                 switch (pictureNodeChildren[k].localName) {
-                    case "shape":
-                        if (
-                            pictureNodeChildren[k].attributes.style &&
-                                pictureNodeChildren[k].attributes.style.value
-                            ) {
-                            jDoc.deepMerge(
-                                partInfo,
-                                this._parseStyleAttribute(
-                                    pictureNodeChildren[k].attributes.style.value,
-                                    {
-                                        denominator: 20
-                                    }
-                                )
-                            );
-                        }
-                        if (pictureNodeChildren[k].attributes.strokeweight &&
-                            pictureNodeChildren[k].attributes.strokeweight.value) {
-                            partInfo.css.borderStyle = "solid";
-                            partInfo.dimensionCSSRules.borderWidth = {
-                                value: 1,
-                                units: "px"
-                            };
-                            partInfo.css.borderColor = "#000000";
-                            if (this._cropUnits(partInfo.css.height)) {
-                                partInfo.css.height = (this._cropUnits(partInfo.css.height) - 2) + "px";
-                            }
-                            if (this._cropUnits(partInfo.css.width)) {
-                                partInfo.css.width = (this._cropUnits(partInfo.css.width) - 2) + "px";
-                            }
-                        }
-                        imageData = pictureNodeChildren[k].querySelector('imagedata');
-                        if (imageData) {
-                            if (
-                                imageData.attributes['o:title'] &&
-                                    imageData.attributes['o:title'].value
-                                ) {
-                                partInfo.attributes.title = imageData.attributes['o:title'].value;
-                            }
-                            if (
-                                imageData.attributes['r:id'] && imageData.attributes['r:id'].value
-                            ) {
-                                mediaData = this._getMediaFromRelation({
-                                    relationId: imageData.attributes['r:id'].value,
-                                    documentData: data.documentData
-                                });
+                case "shape":
+                    if (
+                        pictureNodeChildren[k].attributes.style &&
+                            pictureNodeChildren[k].attributes.style.value
+                        ) {
+                        jDoc.deepMerge(
+                            partInfo,
+                            this._parseStyleAttribute(
+                                pictureNodeChildren[k].attributes.style.value,
+                                {
+                                    denominator: 20
+                                }
+                            )
+                        );
+                    }
+                    if (
+                        pictureNodeChildren[k].attributes.strokeweight &&
+                            pictureNodeChildren[k].attributes.strokeweight.value
+                    ) {
+                        partInfo.css.borderStyle = "solid";
+                        partInfo.dimensionCSSRules.borderWidth = {
+                            value: 1,
+                            units: "px"
+                        };
+                        partInfo.css.borderColor = "#000000";
 
-                                if (mediaData) {
-                                    partInfo.css.backgroundImage = 'url("' + mediaData.data + '")';
-                                    partInfo.css.backgroundRepeat = "no-repeat";
+                        /**
+                         * in pt
+                         */
+                        if (partInfo.dimensionCSSRules.height) {
+                            partInfo.dimensionCSSRules.height.value -= 1.45;
+                        }
+                        if (partInfo.dimensionCSSRules.width) {
+                            partInfo.dimensionCSSRules.width.value -= 1.45;
+                        }
+                    }
+                    imageData = pictureNodeChildren[k].querySelector('imagedata');
+                    if (imageData) {
+                        if (
+                            imageData.attributes['o:title'] &&
+                                imageData.attributes['o:title'].value
+                            ) {
+                            partInfo.attributes.title = imageData.attributes['o:title'].value;
+                        }
+                        if (
+                            imageData.attributes['r:id'] && imageData.attributes['r:id'].value
+                        ) {
+                            mediaData = this._getMediaFromRelation({
+                                relationId: imageData.attributes['r:id'].value,
+                                documentData: data.documentData
+                            });
+
+                            if (mediaData) {
+                                partInfo.css.backgroundImage = 'url("' + mediaData.data + '")';
+                                partInfo.css.backgroundRepeat = "no-repeat";
+                            }
+                        }
+                    }
+                    partInfo.css.zIndex = k + 2;
+                    result.parts.push(partInfo);
+                    break;
+                case "rect":
+                    if (
+                        pictureNodeChildren[k].attributes.style &&
+                            pictureNodeChildren[k].attributes.style.value
+                        ) {
+                        jDoc.deepMerge(
+                            partInfo,
+                            this._parseStyleAttribute(
+                                pictureNodeChildren[k].attributes.style.value,
+                                {
+                                    denominator: 20
+                                }
+                            )
+                        );
+                    }
+
+                    if (pictureNodeChildren[k].attributes.strokeweight &&
+                        pictureNodeChildren[k].attributes.strokeweight.value) {
+                        partInfo.css.borderStyle = "solid";
+                        partInfo.dimensionCSSRules.borderWidth = {
+                            value: 1,
+                            units: "px"
+                        };
+                        partInfo.css.borderColor = "#000000";
+
+                        /**
+                         * in pt
+                         */
+                        if (partInfo.dimensionCSSRules.height) {
+                            partInfo.dimensionCSSRules.height.value -= 1.45;
+                        }
+                        if (partInfo.dimensionCSSRules.width) {
+                            partInfo.dimensionCSSRules.width.value -= 1.45;
+                        }
+                    }
+
+                    textBox = pictureNodeChildren[k].querySelector('textbox');
+
+                    if (textBox) {
+                        textBoxContent = textBox.querySelector('txbxContent');
+
+                        if (textBoxContent) {
+                            textBoxContentChildren = jDoc.DOM.children(textBoxContent);
+                            textBoxContentChildrenCount = textBoxContentChildren.length;
+
+                            for (j = 0; j < textBoxContentChildrenCount; j++) {
+                                if (textBoxContentChildren[j].localName === "p") {
+                                    partInfo.elements.push(
+                                        this._parseTextDocumentParagraphNode({
+                                            node: textBoxContentChildren[j],
+                                            cssRules: {
+                                                css: {
+                                                    wordWrap: "normal",
+                                                    wordBreak: "normal",
+                                                    width: "auto"
+                                                }
+                                            },
+                                            documentData: data.documentData
+                                        })
+                                    );
                                 }
                             }
                         }
-                        partInfo.css.zIndex = k + 2;
-                        result.parts.push(partInfo);
-                        break;
-                    case "rect":
-                        if (
-                            pictureNodeChildren[k].attributes.style &&
-                                pictureNodeChildren[k].attributes.style.value
-                            ) {
-                            jDoc.deepMerge(
-                                partInfo,
-                                this._parseStyleAttribute(
-                                    pictureNodeChildren[k].attributes.style.value,
-                                    {
-                                        denominator: 20
-                                    }
-                                )
-                            );
-                        }
-
-                        if (pictureNodeChildren[k].attributes.strokeweight &&
-                            pictureNodeChildren[k].attributes.strokeweight.value) {
-                            partInfo.css.borderStyle = "solid";
-                            partInfo.dimensionCSSRules.borderWidth = {
-                                value: 1,
-                                units: "px"
-                            };
-                            partInfo.css.borderColor = "#000000";
-                            if (this._cropUnits(partInfo.css.height)) {
-                                partInfo.dimensionCSSRules.height = {
-                                    value: (this._cropUnits(partInfo.css.height) - 2),
-                                    units: "px"
-                                };
-                            }
-                            if (this._cropUnits(partInfo.css.width)) {
-                                partInfo.dimensionCSSRules.width = {
-                                    value: (this._cropUnits(partInfo.css.width) - 2),
-                                    units: "px"
-                                };
-                            }
-                        }
-
-                        textBox = pictureNodeChildren[k].querySelector('textbox');
-
-                        if (textBox) {
-                            textBoxContent = textBox.querySelector('txbxContent');
-
-                            if (textBoxContent) {
-                                textBoxContentChildren = jDoc.DOM.children(textBoxContent);
-                                textBoxContentChildrenCount = textBoxContentChildren.length;
-
-                                for (j = 0; j < textBoxContentChildrenCount; j++) {
-                                    if (textBoxContentChildren[j].localName === "p") {
-                                        partInfo.elements.push(
-                                            this._parseTextDocumentParagraphNode({
-                                                node: textBoxContentChildren[j],
-                                                cssRules: {
-                                                    css: {
-                                                        wordWrap: "normal",
-                                                        wordBreak: "normal",
-                                                        width: "auto"
-                                                    }
-                                                },
-                                                documentData: data.documentData
-                                            })
-                                        );
-                                    }
-                                }
-                            }
-                        }
-                        partInfo.css.zIndex = k + 2;
-                        result.parts.push(partInfo);
-                        break;
+                    }
+                    partInfo.css.zIndex = k + 2;
+                    result.parts.push(partInfo);
+                    break;
                 }
             }
         }

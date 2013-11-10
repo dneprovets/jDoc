@@ -8444,38 +8444,6 @@
          */
         _fileTypeParsers: [],
 
-        /**
-         *
-         * @private
-         */
-        _effectPatterns: {
-            blinkBackground: "blinkBackgroundAnimation",
-            lights: "lightsAnimation",
-            antsBlack: "blackDashedLineAnimation",
-            antsRed: "redDashedLineAnimation",
-            shimmer: "shimmerAnimation",
-            sparkle: "sparkleAnimation",
-            none: "none"
-        },
-
-        /**
-         *
-         * @private
-         */
-        _shadowPatterns: {
-            nil: null,
-            clear: null,
-            solid: "0 0 5px 0",
-            horzStripe: "5px 0 5px 0",
-            vertStripe: "0 5px 5px 0",
-            reverseDiagStripe: "-5px -5px 5px 0",
-            diagStripe: "5px 5px 5px 0",
-            thinHorzStripe: "1px 0 1px 0",
-            thinVertStripe: "0 1px 1px 0",
-            thinReverseDiagStripe: "-1px -1px 1px 0",
-            thinDiagStripe: "1px 1px 1px 0"
-        },
-
         _errors: {
             invalidFileType: {
                 message: 'Invalid file format'
@@ -8823,27 +8791,6 @@
         },
 
         /**
-         * Parse boxShadow style from property node
-         * @param node
-         * @return {String}
-         * @private
-         */
-        _parseShadowProperty: function (node) {
-            var result = "none";
-
-            if (
-                node &&
-                node.attributes['w:val'] &&
-                node.attributes['w:color'] &&
-                this._shadowPatterns[node.attributes['w:val'].value]
-            ) {
-                result = this._shadowPatterns[node.attributes['w:val'].value] + " " + node.attributes['w:color'];
-            }
-
-            return result;
-        },
-
-        /**
          * get type of file
          * @param file
          * @return {null|String}
@@ -8900,31 +8847,6 @@
 
         /**
          *
-         * @param node
-         * @return {Object}
-         * @private
-         */
-        _parseLanguageNode: function (node) {
-            var result = {
-                latin: null,
-                eastAsia: null,
-                complexLanguage: null
-            };
-            if (node) {
-                result.latin = (node.attributes['w:val']) ? node.attributes['w:val'] || result.latin : result.latin;
-                result.complexLanguage =
-                    (node.attributes['w:bidi']) ? (
-                    node.attributes['w:bidi'] || result.complexLanguage
-                ) : result.complexLanguage;
-                result.eastAsia = (node.attributes['w:eastAsia']) ? (
-                    node.attributes['w:eastAsia'] || result.eastAsia
-                ) : result.eastAsia;
-            }
-            return result;
-        },
-
-        /**
-         *
          * @param cssList
          * @param rule
          * @param value
@@ -8941,15 +8863,6 @@
             }
 
             return cssList;
-        },
-
-        /**
-         * @param node
-         * @return {String}
-         * @private
-         */
-        _parseStyleEffectProperty: function (node) {
-            return (node && node.attributes['w:val']) ? this._effectPatterns[node.attributes['w:val']] || "none" : "none";
         },
 
         /**
@@ -9034,8 +8947,45 @@
      * @returns {string}
      * @private
      */
+    jDoc.Engine.prototype._getEmDash = function () {
+        return "—";
+    };
+    /**
+     *
+     * @returns {string}
+     * @private
+     */
+    jDoc.Engine.prototype._getEnDash = function () {
+        return "–";
+    };
+    /**
+     *
+     * @returns {string}
+     * @private
+     */
     jDoc.Engine.prototype._getHalfTabAsSpaces = function () {
         return "\u2000\u2000";
+    };
+    /**
+     *
+     * @param element
+     * @returns {*}
+     * @private
+     */
+    jDoc.Engine.prototype._getMaxFontSize = function (element) {
+        var i,
+            len = element.elements ? element.elements.length : 0,
+            fontSize = (
+                element.dimensionCSSRules.fontSize && element.dimensionCSSRules.fontSize.value
+            ) || 0;
+
+        for (i = len - 1; i >= 0; i--) {
+            if (element.elements[i].dimensionCSSRules.fontSize && element.elements[i].dimensionCSSRules.fontSize.value > fontSize) {
+                fontSize = element.elements[i].dimensionCSSRules.fontSize.value;
+            }
+        }
+
+        return fontSize;
     };
     /**
      *
@@ -9284,6 +9234,16 @@
                 }
             }
         });
+    };
+    /**
+     *
+     * @param str
+     * @returns {string}
+     * @private
+     */
+    jDoc.Engine.prototype._replaceSpaces = function (str) {
+        str = (str || "").replace(/\s{2,}/g, this._getHalfTabAsSpaces());
+        return str;
     };
     /**
      * @description Delimiter-separated values. Delimiters: comma, tab
@@ -11970,6 +11930,19 @@
                 }
             },
             /**
+             *
+             * @private
+             */
+            _effectPatterns: {
+                blinkBackground: "blinkBackgroundAnimation",
+                lights: "lightsAnimation",
+                antsBlack: "blackDashedLineAnimation",
+                antsRed: "redDashedLineAnimation",
+                shimmer: "shimmerAnimation",
+                sparkle: "sparkleAnimation",
+                none: "none"
+            },
+            /**
              * @description File types for parsing
              * @private
              */
@@ -12689,6 +12662,30 @@
             },
             /**
              *
+             * @param node
+             * @return {Object}
+             * @private
+             */
+            _parseLanguageNode: function (node) {
+                var result = {
+                    latin: null,
+                    eastAsia: null,
+                    complexLanguage: null
+                };
+                if (node) {
+                    result.latin = (node.attributes['w:val']) ? node.attributes['w:val'] || result.latin : result.latin;
+                    result.complexLanguage =
+                        (node.attributes['w:bidi']) ? (
+                        node.attributes['w:bidi'] || result.complexLanguage
+                    ) : result.complexLanguage;
+                    result.eastAsia = (node.attributes['w:eastAsia']) ? (
+                        node.attributes['w:eastAsia'] || result.eastAsia
+                    ) : result.eastAsia;
+                }
+                return result;
+            },
+            /**
+             *
              * @description Parse info about relations between files
              * @param xml
              * @return {*}
@@ -12843,19 +12840,25 @@
                                         )
                                     );
                                 }
-                                if (pictureNodeChildren[k].attributes.strokeweight &&
-                                    pictureNodeChildren[k].attributes.strokeweight.value) {
+                                if (
+                                    pictureNodeChildren[k].attributes.strokeweight &&
+                                    pictureNodeChildren[k].attributes.strokeweight.value
+                                ) {
                                     partInfo.css.borderStyle = "solid";
                                     partInfo.dimensionCSSRules.borderWidth = {
                                         value: 1,
                                         units: "px"
                                     };
                                     partInfo.css.borderColor = "#000000";
-                                    if (this._cropUnits(partInfo.css.height)) {
-                                        partInfo.css.height = (this._cropUnits(partInfo.css.height) - 2) + "px";
+
+                                    /**
+                                     * in pt
+                                     */
+                                    if (partInfo.dimensionCSSRules.height) {
+                                        partInfo.dimensionCSSRules.height.value -= 1.45;
                                     }
-                                    if (this._cropUnits(partInfo.css.width)) {
-                                        partInfo.css.width = (this._cropUnits(partInfo.css.width) - 2) + "px";
+                                    if (partInfo.dimensionCSSRules.width) {
+                                        partInfo.dimensionCSSRules.width.value -= 1.45;
                                     }
                                 }
                                 imageData = pictureNodeChildren[k].querySelector('imagedata');
@@ -12906,17 +12909,15 @@
                                         units: "px"
                                     };
                                     partInfo.css.borderColor = "#000000";
-                                    if (this._cropUnits(partInfo.css.height)) {
-                                        partInfo.dimensionCSSRules.height = {
-                                            value: (this._cropUnits(partInfo.css.height) - 2),
-                                            units: "px"
-                                        };
+
+                                    /**
+                                     * in pt
+                                     */
+                                    if (partInfo.dimensionCSSRules.height) {
+                                        partInfo.dimensionCSSRules.height.value -= 1.45;
                                     }
-                                    if (this._cropUnits(partInfo.css.width)) {
-                                        partInfo.dimensionCSSRules.width = {
-                                            value: (this._cropUnits(partInfo.css.width) - 2),
-                                            units: "px"
-                                        };
+                                    if (partInfo.dimensionCSSRules.width) {
+                                        partInfo.dimensionCSSRules.width.value -= 1.45;
                                     }
                                 }
 
@@ -13153,6 +13154,26 @@
                 return result;
             },
             /**
+             * Parse boxShadow style from property node
+             * @param node
+             * @return {String}
+             * @private
+             */
+            _parseShadowProperty: function (node) {
+                var result = "none";
+
+                if (
+                    node &&
+                    node.attributes['w:val'] &&
+                    node.attributes['w:color'] &&
+                    this._shadowPatterns[node.attributes['w:val'].value]
+                ) {
+                    result = this._shadowPatterns[node.attributes['w:val'].value] + " " + node.attributes['w:color'];
+                }
+
+                return result;
+            },
+            /**
              *
              * @param value
              * @return {Object}
@@ -13197,6 +13218,14 @@
                 }
 
                 return result;
+            },
+            /**
+             * @param node
+             * @return {String}
+             * @private
+             */
+            _parseStyleEffectProperty: function (node) {
+                return (node && node.attributes['w:val']) ? this._effectPatterns[node.attributes['w:val']] || "none" : "none";
             },
             /**
              * @param node
@@ -14818,6 +14847,2443 @@
              chartStar Chart Star Shape
              chartPlus Chart Plus Shape
              */
+            },
+            /**
+             *
+             * @private
+             */
+            _shadowPatterns: {
+                nil: null,
+                clear: null,
+                solid: "0 0 5px 0",
+                horzStripe: "5px 0 5px 0",
+                vertStripe: "0 5px 5px 0",
+                reverseDiagStripe: "-5px -5px 5px 0",
+                diagStripe: "5px 5px 5px 0",
+                thinHorzStripe: "1px 0 1px 0",
+                thinVertStripe: "0 1px 1px 0",
+                thinReverseDiagStripe: "-1px -1px 1px 0",
+                thinDiagStripe: "1px 1px 1px 0"
+            }
+        }
+    );
+    /**
+     * @constructor
+     * @type {Object}
+     */
+    jDoc.engines.RTF = jDoc.Engine.extend(
+        /** @lends jDoc.engines.RTF.prototype */
+        {
+            _createNewPage: function (options) {
+                var parseParams = options.parseParams,
+                    page,
+                    parseResult = options.parseResult;
+
+                parseResult.table = this._destroyTable(parseParams);
+                parseParams.currentTextElementParent = jDoc.clone(parseParams.paragraphData);
+                parseParams.currentTextElement = {
+                    options: {},
+                    css: {},
+                    dimensionCSSRules: {},
+                    properties: {
+                        textContent: ""
+                    }
+                };
+                parseParams.currentPageIndex++;
+                parseParams.currentElementIndex = -1;
+                parseParams.pageContentHeight = 0;
+
+                page = jDoc.deepMerge({}, parseParams.pageData, {
+                    elements: []
+                });
+                parseResult.pages[parseParams.currentPageIndex] = page;
+
+                return {
+                    parseParams: parseParams,
+                    parseResult: parseResult
+                };
+            },
+            /**
+             *
+             * @param text
+             * @param callback
+             * @private
+             */
+            _createParsedFile: function (text, callback) {
+                var i = 0,
+                    textContent,
+                    pageHeight = 756,
+                    pageWidth = 595,
+                    parseParams = {
+                        unParsedControlWords: {},
+                        styles: {
+                            cells: {
+                                css: {},
+                                dimensionCSSRules: {}
+                            },
+                            table: {
+                                css: {
+                                    width: "100%"
+                                },
+                                dimensionCSSRules: {}
+                            },
+                            rows: {
+                                css: {},
+                                dimensionCSSRules: {}
+                            },
+                            defaults: {
+                                css: {
+                                    borderStyle: "solid",
+                                    borderColor: "#000000"
+                                },
+                                dimensionCSSRules: {
+                                    borderWidth: {
+                                        value: 0.75,
+                                        units: "pt"
+                                    }
+                                }
+                            }
+                        },
+                        options: {
+                            table: {}
+                        },
+                        pageData: {
+                            options: {},
+                            attributes: {},
+                            css: {},
+                            dimensionCSSRules: {
+                                paddingBottom: {
+                                    units: "pt",
+                                    value: 42.5
+                                },
+                                paddingLeft: {
+                                    units: "pt",
+                                    value: 70.85
+                                },
+                                paddingRight: {
+                                    units: "pt",
+                                    value: 42.5
+                                },
+                                paddingTop: {
+                                    units: "pt",
+                                    value: 42.5
+                                },
+                                width: {
+                                    value: pageWidth,
+                                    units: "pt"
+                                },
+                                height: {
+                                    value: pageHeight,
+                                    units: "pt"
+                                }
+                            },
+                            elements: []
+                        },
+                        paragraphData: {
+                            options: {
+                                isParagraph: true
+                            },
+                            css: {
+                                margin: "0"
+                            },
+                            dimensionCSSRules: {
+                                /**
+                                 * default font size
+                                 */
+                                fontSize: {
+                                    value: 14,
+                                    units: "pt"
+                                }
+                            },
+                            elements: []
+                        },
+                        hexWordsMask: (/^'/),
+                        pageContentHeight: 0,
+                        pageHeight: pageHeight,
+                        pageWidth: pageWidth,
+                        currentTextElementParent: null,
+                        currentTextElement: null,
+                        currentPageIndex: 0,
+                        currentElementIndex: 0,
+                        ignoreGroups: [],
+                        braceCounter: 0
+                    },
+                    parseResult = {
+                        options: {
+                            zoom: 100
+                        },
+                        pages: [jDoc.deepMerge(parseParams.pageData, {
+                            elements: [jDoc.deepMerge(parseParams.paragraphData, {
+                                elements: [{
+                                    options: {},
+                                    css: {},
+                                    dimensionCSSRules: {},
+                                    properties: {
+                                        textContent: ""
+                                    }
+                                }]
+                            })]
+                        })]
+                    };
+
+                parseParams.currentTextElementParent = parseResult.pages[0].elements[0];
+                parseParams.currentTextElement = parseParams.currentTextElementParent.elements[0];
+
+                while (text[i]) {
+                    switch (text[i]) {
+                    case '\r':
+                        i += 1;
+                        break;
+                    case '\n':
+                        i += 1;
+                        break;
+                    case '\\':
+                        i += 1;
+                        if (text[i] !== '\\') {
+                            i = this._parseControlWord(text, i, parseParams, parseResult);
+                        } else {
+                            if (!parseParams.ignoreGroups.length) {
+                                if (!parseParams.currentTextElement) {
+                                    parseParams.currentTextElement = {
+                                        options: {},
+                                        css: {},
+                                        dimensionCSSRules: {},
+                                        properties: {
+                                            textContent: ""
+                                        }
+                                    };
+                                    if (parseParams.currentTextElementParent.options.isImage) {
+                                        parseParams.currentTextElementParent.attributes.src = (
+                                            parseParams.currentTextElementParent.attributes.src || ""
+                                        ) + parseParams.currentTextElement.properties.textContent;
+                                    } else {
+                                        parseParams.currentTextElementParent.elements.push(parseParams.currentTextElement);
+                                    }
+                                }
+                                if (parseParams.currentTextElementParent.options.isImage) {
+                                    parseParams.currentTextElementParent.attributes.src = (
+                                        parseParams.currentTextElementParent.attributes.src || ""
+                                    ) + text[i];
+                                } else {
+                                    parseParams.currentTextElement.properties.textContent += text[i];
+                                }
+                            }
+                            i += 1;
+                        }
+                        break;
+                    case '{':
+                        parseParams.braceCounter += 1;
+                        i += 1;
+                        break;
+                    case '}':
+                        if (parseParams.braceCounter === parseParams.ignoreGroups[parseParams.ignoreGroups.length - 1]) {
+                            parseParams.ignoreGroups.pop();
+                        }
+                        parseParams.braceCounter -= 1;
+                        i += 1;
+                        if (parseParams.currentTextElement && parseParams.currentTextElement.properties.textContent.length) {
+                            parseParams.currentTextElementParent.elements.push(parseParams.currentTextElement);
+                            parseParams.currentTextElement = {
+                                options: {},
+                                css: {},
+                                dimensionCSSRules: {},
+                                properties: {
+                                    textContent: ""
+                                }
+                            };
+                        }
+                        break;
+                    default:
+                        textContent = "";
+                        if (!parseParams.ignoreGroups.length) {
+                            if (!parseParams.currentTextElement) {
+                                parseParams.currentTextElement = {
+                                    options: {},
+                                    css: {},
+                                    dimensionCSSRules: {},
+                                    properties: {
+                                        textContent: ""
+                                    }
+                                };
+                                if (parseParams.currentTextElementParent.options.isImage) {
+                                    parseParams.currentTextElementParent.attributes.src = (
+                                        parseParams.currentTextElementParent.attributes.src || ""
+                                    ) + parseParams.currentTextElement.properties.textContent;
+                                } else {
+                                    parseParams.currentTextElementParent.elements.push(parseParams.currentTextElement);
+                                }
+                            }
+                            if (text[i] === " " && text[i + 1] === " ") {
+                                i += 1;
+                                textContent = this._getHalfTabAsSpaces();
+                            } else {
+                                textContent = text[i];
+                            }
+
+                            if (parseParams.currentTextElementParent.options.isImage) {
+                                parseParams.currentTextElementParent.attributes.src = (
+                                    parseParams.currentTextElementParent.attributes.src || ""
+                                ) + textContent;
+                            } else {
+                                parseParams.currentTextElement.properties.textContent += textContent;
+                            }
+                        }
+                        i += 1;
+                        break;
+                    }
+                }
+
+                console.log(Object.keys(parseParams.unParsedControlWords));
+
+                if (typeof callback === 'function') {
+                    callback(new jDoc.ParsedFile(parseResult));
+                }
+            },
+            /**
+             *
+             * @param parseParams
+             * @returns {null}
+             * @private
+             */
+            _destroyTable: function (parseParams) {
+                parseParams.styles.cells = {
+                    css: {},
+                    dimensionCSSRules: {}
+                };
+                parseParams.styles.rows = {
+                    css: {},
+                    dimensionCSSRules: {}
+                };
+                parseParams.styles.table = {
+                    css: {},
+                    dimensionCSSRules: {}
+                };
+                parseParams.options.table = {};
+
+                return null;
+            },
+            /**
+             * @description File types for parsing
+             * @private
+             */
+            _fileTypeParsers: [{
+                extension: ['rtf'],
+                mime: ['text/rtf', 'application/rtf']
+            }],
+            /**
+             *
+             * @param element
+             * @param options
+             * @returns {number}
+             * @private
+             */
+            _getElementHeight: function (element, options) {
+                options = options || {};
+
+                var height = (element.dimensionCSSRules.height && element.dimensionCSSRules.height.value) || 0,
+                    i,
+                    textContent,
+                    fontSize,
+                    elementsHeight = 0,
+                    lineHeight = (element.dimensionCSSRules.lineHeight && element.dimensionCSSRules.lineHeight.value) || 0,
+                    width = options.width || 0,
+                    len;
+
+                if (lineHeight > height) {
+                    height = lineHeight;
+                }
+
+                height += (element.dimensionCSSRules.marginTop && element.dimensionCSSRules.marginTop.value) || 0;
+                height += (element.dimensionCSSRules.marginBottom && element.dimensionCSSRules.marginBottom.value) || 0;
+                height += (element.dimensionCSSRules.paddingTop && element.dimensionCSSRules.paddingTop.value) || 0;
+                height += (element.dimensionCSSRules.paddingBottom && element.dimensionCSSRules.paddingBottom.value) || 0;
+
+                if (width) {
+                    width -= (element.dimensionCSSRules.paddingLeft && element.dimensionCSSRules.paddingLeft.value) || 0;
+                    width -= (element.dimensionCSSRules.paddingRight && element.dimensionCSSRules.paddingRight.value) || 0;
+                    width -= (element.dimensionCSSRules.marginLeft && element.dimensionCSSRules.marginLeft.value) || 0;
+                    width -= (element.dimensionCSSRules.marginRight && element.dimensionCSSRules.marginRight.value) || 0;
+                }
+
+                if (element.options.isParagraph) {
+                    len = (element.elements && element.elements.length) || 0;
+                    textContent = "";
+                    fontSize = 0;
+                    elementsHeight = 0;
+
+                    for (i = 0; i < len; i++) {
+                        textContent += element.elements[i].properties.textContent;
+
+                        if (!fontSize && element.elements[i].properties.textContent[0]) {
+                            fontSize = (
+                                element.elements[i].dimensionCSSRules.fontSize && element.elements[i].dimensionCSSRules.fontSize.value
+                            ) || 0;
+                        }
+
+                        if (element.elements[i].dimensionCSSRules.lineHeight && element.elements[i].dimensionCSSRules.lineHeight.value) {
+                            lineHeight = element.elements[i].dimensionCSSRules.lineHeight.value;
+                        }
+                    }
+
+                    if (textContent[0]) {
+                        elementsHeight = this._spotElementHeight({
+                            el: {
+                                textContent: textContent
+                            },
+                            lineHeight: lineHeight / fontSize,
+                            width: width,
+                            parentFontSize: (element.dimensionCSSRules.fontSize && element.dimensionCSSRules.fontSize.value),
+                            fontSize: fontSize
+                        });
+                    }
+
+                    if (elementsHeight > height) {
+                        height = elementsHeight;
+                    }
+                }
+
+                return height;
+            },
+            _ignoreControlWordGroups: {
+                "stylesheet": true,
+                "fonttbl": true,
+                "colortbl": true,
+                "info": true,
+                "fldrslt": true,
+                "field": true
+            },
+            /**
+             *
+             * @param params
+             * @returns {*}
+             * @private
+             */
+            _initImage: function (params) {
+                params = params || {};
+
+                var image = jDoc.deepMerge(params.data || {}, {
+                    options: {
+                        isImage: true
+                    },
+                    properties: {},
+                    attributes: {},
+                    css: {},
+                    dimensionCSSRules: {}
+                });
+
+                delete image.options.isParagraph;
+
+                return image;
+            },
+            /**
+             *
+             * @returns {*}
+             * @private
+             */
+            _initRow: function () {
+                return {
+                    cells: [],
+                    css: {},
+                    options: {},
+                    dimensionCSSRules: {}
+                };
+            },
+            /**
+             *
+             * @param params
+             * @returns {*}
+             * @private
+             */
+            _initTable: function (params) {
+                params = params || {};
+
+                var data = params.params || {},
+                    table = {
+                        options: jDoc.deepMerge(data.options, {
+                            isTable: true,
+                            elementHeight: {
+                                value: 0,
+                                units: "pt"
+                            },
+                            cellsWidth: []
+                        }),
+                        header: {
+                            rows: []
+                        },
+                        body: {
+                            rows: []
+                        },
+                        footer: {
+                            rows: []
+                        },
+                        attributes: jDoc.clone(data.attributes),
+                        dimensionCSSRules: jDoc.clone(data.dimensionCSSRules),
+                        css: jDoc.deepMerge({}, data.css, {
+                            borderCollapse: "collapse"
+                        })
+                    };
+
+                delete table.options.isParagraph;
+
+                if (params.row) {
+                    table.body.rows.push(params.row);
+                }
+
+                if (params.parentElementsList) {
+                    params.parentElementsList[params.parentElementsIndex || 0] = table;
+                }
+
+                table.css = jDoc.deepMerge({},
+                    table.css,
+                    params.parseParams.styles.table.css
+                );
+
+                table.dimensionCSSRules = jDoc.deepMerge({},
+                    table.dimensionCSSRules,
+                    params.parseParams.styles.table.dimensionCSSRules
+                );
+
+                if (params.parseParams) {
+                    params.parseParams.table = table;
+                }
+
+                return table;
+            },
+            /**
+             *
+             * @param text {String}
+             * @param index {Number}
+             * @param parseParams {*}
+             * @param parseResult {*}
+             * @returns {Number}
+             * @private
+             */
+            _parseControlWord: function (text, index, parseParams, parseResult) {
+                var match,
+                    matchedPart,
+                    clearedControlWord,
+                    controlWordParseResult,
+                    param,
+                    paramText = "",
+                    controlWord = "",
+                    controlWordParserData = "";
+
+                while (text[index] !== '\\' && text[index] !== '{' && text[index] !== '}') {
+                    if (text[index] === ' ' && !parseParams.hexWordsMask.test(controlWord)) {
+                        break;
+                    }
+
+                    if (text[index] !== '\r' && text[index] !== '\n') {
+                        if (text[index] === '*') {
+                            parseParams.ignoreGroups.push(parseParams.braceCounter);
+                        } else {
+                            controlWord += text[index];
+                        }
+                    } else if (controlWord[0]) {
+                        break;
+                    }
+
+                    index += 1;
+                }
+                index += text[index] === ' ' ? 1 : 0;
+
+                if (controlWord[0] === "'") {
+                    /**
+                     * @type {Array|null}
+                     */
+                    matchedPart = controlWord.match(/[a-z0-9]+/gi);
+
+                    if (matchedPart) {
+                        param = matchedPart[0];
+
+                        matchedPart = controlWord.match(/[^a-z0-9]+$/gi);
+                        paramText = matchedPart ? matchedPart[0] : "";
+                        controlWord = "'";
+                        clearedControlWord = controlWord;
+                    }
+                } else {
+                    match = controlWord.search(/-?\d+$/gi);
+
+                    if (match !== -1) {
+                        param = parseInt(controlWord.substr(match), 10);
+                        controlWord = controlWord.substr(0, match);
+                    }
+
+                    clearedControlWord = controlWord.replace(/[;]/, '');
+                }
+
+                if (this._ignoreControlWordGroups[clearedControlWord]) {
+                    parseParams.ignoreGroups.push(parseParams.braceCounter);
+                } else if (clearedControlWord && !parseParams.ignoreGroups.length) {
+                    if (this._controlWordsParsers[clearedControlWord]) {
+                        controlWordParserData = {
+                            clearedControlWord: clearedControlWord,
+                            controlWord: controlWord,
+                            parseResult: parseResult,
+                            parseParams: parseParams,
+                            paramText: paramText,
+                            param: param
+                        };
+                        controlWordParseResult = this._controlWordsParsers[clearedControlWord].call(this, controlWordParserData);
+                        parseResult = controlWordParseResult.parseResult;
+                        parseParams = controlWordParseResult.parseParams;
+                        controlWordParserData = null;
+                        controlWordParseResult = null;
+                    } else {
+                        parseParams.unParsedControlWords[controlWord] = true;
+                    }
+                }
+
+                return index;
+            },
+            /**
+             * @description Reset font properties to default
+             * @param el
+             * @private
+             */
+            _resetFontProperties: function (el) {
+                el.css.fontStyle = "none";
+                el.css.fontVariant = "none";
+                el.css.textDecoration = "none";
+                el.css.fontWeight = "normal";
+                el.dimensionCSSRules.fontSize = {
+                    value: 12,
+                    units: "pt"
+                };
+
+                return el;
+            },
+            /**
+             *
+             * @param options
+             * @returns {null}
+             */
+            parse: function (options) {
+                var reader,
+                    self;
+
+                if (typeof options.start === 'function') {
+                    options.start();
+                }
+                if (!this.validate()) {
+                    if (typeof options.error === 'function') {
+                        options.error(this._errors.invalidFileType);
+                    }
+                    if (typeof options.complete === 'function') {
+                        options.complete();
+                    }
+                } else {
+                    reader = new FileReader();
+                    self = this;
+
+                    reader.onload = function (event) {
+                        self._createParsedFile(event.target.result, function (parsedFile) {
+                            if (typeof options.success === 'function') {
+                                options.success(parsedFile);
+                            }
+                            if (typeof options.complete === 'function') {
+                                options.complete();
+                            }
+                        });
+                    };
+
+                    reader.readAsText(this.file);
+                }
+                return null;
+            },
+
+            _controlWordsParsers: {
+                "'": function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        paramText = options.paramText || "",
+                        param = options.param;
+
+                    if (parseParams.currentTextElement) {
+                        /*if (isNaN(param)) {
+                    parseParams.currentTextElement.properties.textContent += this._getCharFromHex(param);
+                }*/
+
+                        parseParams.currentTextElement.properties.textContent += paramText;
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                ab: function (options) {
+                    return this._controlWordsParsers.b.apply(this, arguments);
+                },
+                afs: function (options) {
+                    return this._controlWordsParsers.fs.apply(this, arguments);
+                },
+                ai: function () {
+                    return this._controlWordsParsers.i.apply(this, arguments);
+                },
+                b: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param,
+                        el = parseParams.currentTextElement || parseParams.currentTextElementParent;
+
+                    if (param !== -1) {
+                        el.css.fontWeight = "bold";
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                brdrs: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        el = parseParams.currentTextElement || parseParams.currentTextElementParent;
+
+                    el.css.borderStyle = "solid";
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                brdrw: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param,
+                        el = parseParams.currentTextElement || parseParams.currentTextElementParent;
+
+                    el.dimensionCSSRules.borderWidth = {
+                        value: param / 20,
+                        units: "pt"
+                    };
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                charscalex: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        fontSize,
+                        param = options.param;
+
+                    if (parseParams.currentTextElement && parseParams.currentTextElement.dimensionCSSRules.fontSize) {
+                        fontSize = parseParams.currentTextElement.dimensionCSSRules.fontSize;
+                    } else if (parseParams.currentTextElementParent && parseParams.currentTextElementParent.dimensionCSSRules.fontSize) {
+                        fontSize = parseParams.currentTextElementParent.dimensionCSSRules.fontSize;
+                    }
+
+                    if (fontSize) {
+                        fontSize.value = Math.round(fontSize.value * param / 100);
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                emdash: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult;
+
+                    if (parseParams.currentTextElement) {
+                        parseParams.currentTextElement.properties.textContent += this._getEmDash();
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                endash: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult;
+
+                    if (parseParams.currentTextElement) {
+                        parseParams.currentTextElement.properties.textContent += this._getEnDash();
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                expnd: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param,
+                        el = parseParams.currentTextElement || parseParams.currentTextElementParent;
+
+                    if (param > 0) {
+                        el.dimensionCSSRules.letterSpacing = {
+                            value: param / 4,
+                            units: "pt"
+                        };
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                expndtw: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param,
+                        el = parseParams.currentTextElement || parseParams.currentTextElementParent;
+
+                    if (param > 0) {
+                        el.dimensionCSSRules.letterSpacing = {
+                            value: param / 20,
+                            units: "pt"
+                        };
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                fi: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    if (param > 0) {
+                        parseParams.currentTextElementParent.dimensionCSSRules.textIndent = {
+                            value: param / 20,
+                            units: "pt"
+                        };
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                fs: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param,
+                        el = parseParams.currentTextElement || parseParams.currentTextElementParent;
+
+                    if (param !== -1) {
+                        el.dimensionCSSRules.fontSize = {
+                            value: param / 2,
+                            units: "pt"
+                        };
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                i: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param,
+                        el = parseParams.currentTextElement || parseParams.currentTextElementParent;
+
+                    if (param !== -1) {
+                        el.css.fontStyle = "italic";
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                li: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    if (param > 0) {
+                        parseParams.currentTextElementParent.dimensionCSSRules.paddingLeft = {
+                            value: param / 20,
+                            units: "pt"
+                        };
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                /**
+                 *
+                 * @param options
+                 * @returns {*}
+                 */
+                lin: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        propertyName,
+                        param = options.param;
+
+                    if (parseParams.currentTextElementParent) {
+                        if (parseParams.currentTextElementParent.css.direction === "rtl") {
+                            propertyName = "paddingRight";
+                        } else {
+                            propertyName = "paddingLeft";
+                        }
+
+                        parseParams.currentTextElementParent.dimensionCSSRules[propertyName] = {
+                            value: param / 20,
+                            units: "pt"
+                        };
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                ltrch: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult;
+
+                    parseParams.currentTextElementParent.css.direction = "ltr";
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                plain: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        el = parseParams.currentTextElement || parseParams.currentTextElementParent;
+
+                    this._resetFontProperties(el);
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                qc: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    if (param !== -1) {
+                        parseParams.currentTextElementParent.css.textAlign = "center";
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                qj: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    if (param !== -1) {
+                        parseParams.currentTextElementParent.css.textAlign = "justify";
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                ql: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    if (param !== -1) {
+                        parseParams.currentTextElementParent.css.textAlign = "left";
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                qr: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    if (param !== -1) {
+                        parseParams.currentTextElementParent.css.textAlign = "right";
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                ri: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    if (param > 0) {
+                        parseParams.currentTextElementParent.dimensionCSSRules.paddingRight = {
+                            value: param / 20,
+                            units: "pt"
+                        };
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                /**
+                 *
+                 * @param options
+                 * @returns {*}
+                 */
+                rin: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        propertyName,
+                        param = options.param;
+
+                    if (parseParams.currentTextElementParent) {
+                        if (parseParams.currentTextElementParent.css.direction === "rtl") {
+                            propertyName = "paddingLeft";
+                        } else {
+                            propertyName = "paddingRight";
+                        }
+
+                        parseParams.currentTextElementParent.dimensionCSSRules[propertyName] = {
+                            value: param / 20,
+                            units: "pt"
+                        };
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                rtlch: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult;
+
+                    parseParams.currentTextElementParent.css.direction = "rtl";
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                sa: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    if (param > 0) {
+                        parseParams.currentTextElementParent.dimensionCSSRules.marginBottom = {
+                            value: param / 20,
+                            units: "pt"
+                        };
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                sb: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    if (param > 0) {
+                        parseParams.currentTextElementParent.dimensionCSSRules.marginTop = {
+                            value: param / 20,
+                            units: "pt"
+                        };
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                scaps: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param,
+                        el = parseParams.currentTextElement || parseParams.currentTextElementParent;
+
+                    if (param !== -1) {
+                        el.css.fontVariant = "small-caps";
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                sl: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = (options.param !== -1 && options.param) || 0,
+                        el = parseParams.currentTextElement || parseParams.currentTextElementParent;
+
+                    if (param > 0) {
+                        param /= 20;
+
+                        if (!el.dimensionCSSRules.fontSize || this._getMaxFontSize(el) <= param) {
+                            el.dimensionCSSRules.lineHeight = {
+                                value: param,
+                                units: "pt"
+                            };
+                        }
+                    } else if (param < 0) {
+                        el.dimensionCSSRules.lineHeight = {
+                            value: Math.abs(param) / 20,
+                            units: "pt"
+                        };
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                strike: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param,
+                        el = parseParams.currentTextElement || parseParams.currentTextElementParent;
+
+                    if (param !== -1) {
+                        el.css.textDecoration = "line-through";
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                'super': function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        el = parseParams.currentTextElement || parseParams.currentTextElementParent;
+
+                    el.css.verticalAlign = "super";
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                tab: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult;
+
+                    if (parseParams.currentTextElement) {
+                        parseParams.currentTextElement.properties.textContent += this._getTabAsSpaces();
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                u: function (options) {
+                    var parseParams = options.parseParams,
+                        param = options.param,
+                        parseResult = options.parseResult;
+
+                    if (parseParams.currentTextElement && param) {
+                        parseParams.currentTextElement.properties.textContent += String.fromCharCode(param);
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                ul: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param,
+                        el = parseParams.currentTextElement || parseParams.currentTextElementParent;
+
+                    if (param !== -1) {
+                        el.css.textDecoration = "underline";
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                "~": function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult;
+
+                    if (parseParams.currentTextElement) {
+                        parseParams.currentTextElement.properties.textContent += this._getNonbreakingSpace();
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                pichgoal: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    if (param > 0) {
+                        parseParams.currentTextElementParent.dimensionCSSRules.height = {
+                            value: param / 20,
+                            units: "pt"
+                        };
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                picscalex: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    if (parseParams.currentTextElementParent.dimensionCSSRules.height) {
+                        parseParams.currentTextElementParent.dimensionCSSRules.height.value = Math.round(
+                            parseParams.currentTextElementParent.dimensionCSSRules.height.value * param / 100
+                        );
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                picscaley: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    if (parseParams.currentTextElementParent.dimensionCSSRules.width) {
+                        parseParams.currentTextElementParent.dimensionCSSRules.width.value = Math.round(
+                            parseParams.currentTextElementParent.dimensionCSSRules.width.value * param / 100
+                        );
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                /**
+                 *
+                 * @param options
+                 */
+                pict: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult;
+
+                    parseParams.currentTextElementParent = this._initImage({
+                        data: parseParams.currentTextElementParent
+                    });
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                picwgoal: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    if (param > 0) {
+                        parseParams.currentTextElementParent.dimensionCSSRules.width = {
+                            value: param / 20,
+                            units: "pt"
+                        };
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                gutter: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param,
+                        i;
+
+                    parseParams.pageData.dimensionCSSRules.marginTop = {
+                        value: param / 20,
+                        units: "pt"
+                    };
+                    for (i = parseResult.pages.length - 1; i > 0; i--) {
+                        parseResult.pages[i].dimensionCSSRules.marginTop = parseParams.pageData.dimensionCSSRules.marginTop;
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                margb: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param,
+                        i;
+
+                    parseParams.pageData.dimensionCSSRules.paddingBottom = {
+                        value: param / 20,
+                        units: "pt"
+                    };
+                    parseParams.pageHeight -= parseParams.pageData.dimensionCSSRules.paddingBottom.value;
+                    for (i = parseResult.pages.length - 1; i >= 0; i--) {
+                        parseResult.pages[i].dimensionCSSRules.paddingBottom = parseParams.pageData.dimensionCSSRules.paddingBottom;
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                margbsxn: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param,
+                        i;
+
+                    if (!parseParams.pageData.dimensionCSSRules.paddingBottom) {
+                        parseParams.pageData.dimensionCSSRules.paddingBottom = {
+                            value: param / 20,
+                            units: "pt"
+                        };
+                        parseParams.pageHeight -= parseParams.pageData.dimensionCSSRules.paddingBottom.value;
+                        for (i = parseResult.pages.length - 1; i >= 0; i--) {
+                            parseResult.pages[i].dimensionCSSRules.paddingBottom = parseParams.pageData.dimensionCSSRules.paddingBottom;
+                        }
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                margl: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param,
+                        i;
+
+                    parseParams.pageData.dimensionCSSRules.paddingLeft = {
+                        value: param / 20,
+                        units: "pt"
+                    };
+                    parseParams.pageWidth -= parseParams.pageData.dimensionCSSRules.paddingLeft.value;
+                    for (i = parseResult.pages.length - 1; i >= 0; i--) {
+                        parseResult.pages[i].dimensionCSSRules.paddingLeft = parseParams.pageData.dimensionCSSRules.paddingLeft;
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                marglsxn: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param,
+                        i;
+
+                    if (!parseParams.pageData.dimensionCSSRules.paddingLeft) {
+                        parseParams.pageData.dimensionCSSRules.paddingLeft = {
+                            value: param / 20,
+                            units: "pt"
+                        };
+                        parseParams.pageWidth -= parseParams.pageData.dimensionCSSRules.paddingLeft.value;
+                        for (i = parseResult.pages.length - 1; i >= 0; i--) {
+                            parseResult.pages[i].dimensionCSSRules.paddingLeft = parseParams.pageData.dimensionCSSRules.paddingLeft;
+                        }
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                margr: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param,
+                        i;
+
+                    parseParams.pageData.dimensionCSSRules.paddingRight = {
+                        value: param / 20,
+                        units: "pt"
+                    };
+                    parseParams.pageWidth -= parseParams.pageData.dimensionCSSRules.paddingRight.value;
+                    for (i = parseResult.pages.length - 1; i >= 0; i--) {
+                        parseResult.pages[i].dimensionCSSRules.paddingRight = parseParams.pageData.dimensionCSSRules.paddingRight;
+                    }
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                margrsxn: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param,
+                        i;
+
+                    if (!parseParams.pageData.dimensionCSSRules.paddingRight) {
+                        parseParams.pageData.dimensionCSSRules.paddingRight = {
+                            value: param / 20,
+                            units: "pt"
+                        };
+                        parseParams.pageWidth -= parseParams.pageData.dimensionCSSRules.paddingRight.value;
+                        for (i = parseResult.pages.length - 1; i >= 0; i--) {
+                            parseResult.pages[i].dimensionCSSRules.paddingRight = parseParams.pageData.dimensionCSSRules.paddingRight;
+                        }
+
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                margt: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param,
+                        i;
+
+                    parseParams.pageData.dimensionCSSRules.paddingTop = {
+                        value: param / 20,
+                        units: "pt"
+                    };
+                    parseParams.pageHeight -= parseParams.pageData.dimensionCSSRules.paddingTop.value;
+                    for (i = parseResult.pages.length - 1; i >= 0; i--) {
+                        parseResult.pages[i].dimensionCSSRules.paddingTop = parseParams.pageData.dimensionCSSRules.paddingTop;
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                margtsxn: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param,
+                        i;
+
+                    if (!parseParams.pageData.dimensionCSSRules.paddingTop) {
+                        parseParams.pageData.dimensionCSSRules.paddingTop = {
+                            value: param / 20,
+                            units: "pt"
+                        };
+                        parseParams.pageHeight -= parseParams.pageData.dimensionCSSRules.paddingTop.value;
+                        for (i = parseResult.pages.length - 1; i >= 0; i--) {
+                            parseResult.pages[i].dimensionCSSRules.paddingTop = parseParams.pageData.dimensionCSSRules.paddingTop;
+                        }
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                page: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult;
+
+                    this._createNewPage(options);
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                paperh: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param,
+                        i;
+
+                    parseParams.pageData.dimensionCSSRules.height = {
+                        value: param / 20,
+                        units: "pt"
+                    };
+                    if (parseParams.pageHeight > 0) {
+                        parseParams.pageHeight = 0;
+                    }
+
+                    parseParams.pageHeight += parseParams.pageData.dimensionCSSRules.height.value;
+                    for (i = parseResult.pages.length - 1; i >= 0; i--) {
+                        parseResult.pages[i].dimensionCSSRules.height = parseParams.pageData.dimensionCSSRules.height;
+                    }
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                paperw: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param,
+                        i;
+
+                    parseParams.pageData.dimensionCSSRules.width = {
+                        value: param / 20,
+                        units: "pt"
+                    };
+                    if (parseParams.pageWidth > 0) {
+                        parseParams.pageWidth = 0;
+                    }
+                    parseParams.pageWidth = parseParams.pageData.dimensionCSSRules.width.value;
+                    for (i = parseResult.pages.length - 1; i >= 0; i--) {
+                        parseResult.pages[i].dimensionCSSRules.width = parseParams.pageData.dimensionCSSRules.width;
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                pghsxn: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param,
+                        i;
+
+                    if (!parseParams.pageData.dimensionCSSRules.height) {
+                        parseParams.pageData.dimensionCSSRules.height = {
+                            value: param / 20,
+                            units: "pt"
+                        };
+                        if (parseParams.pageHeight > 0) {
+                            parseParams.pageHeight = 0;
+                        }
+                        parseParams.pageHeight -= parseParams.pageData.dimensionCSSRules.height.value;
+                        for (i = parseResult.pages.length - 1; i >= 0; i--) {
+                            parseResult.pages[i].dimensionCSSRules.height = parseParams.pageData.dimensionCSSRules.height;
+                        }
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                pgwsxn: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param,
+                        i;
+
+                    if (!parseParams.pageData.dimensionCSSRules.width) {
+                        parseParams.pageData.dimensionCSSRules.width = {
+                            value: param / 20,
+                            units: "pt"
+                        };
+                        if (parseParams.pageWidth > 0) {
+                            parseParams.pageWidth = 0;
+                        }
+                        parseParams.pageWidth = parseParams.pageData.dimensionCSSRules.width.value;
+                        for (i = parseResult.pages.length - 1; i >= 0; i--) {
+                            parseResult.pages[i].dimensionCSSRules.width = parseParams.pageData.dimensionCSSRules.width;
+                        }
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                viewscale: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    if (param) {
+                        parseResult.options.zoom = param;
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                widowctrl: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        i;
+
+                    parseParams.pageData.attributes.spellcheck = true;
+
+                    for (i = parseResult.pages.length - 1; i >= 0; i--) {
+                        parseResult.pages[i].attributes.spellcheck = parseParams.pageData.attributes.spellcheck;
+                    }
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                jexpand: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult;
+
+                    if (parseParams.currentTextElementParent) {
+                        parseParams.currentTextElementParent.css.textAlign = "justify";
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                par: function (options) {
+                    var parseParams = options.parseParams,
+                        paragraphHeight,
+                        beforePartHeight,
+                        parts,
+                        i,
+                        el,
+                        elements,
+                        h,
+                        count,
+                        partHeight,
+                        parseResult = options.parseResult;
+
+                    if (parseParams.currentTextElementParent && parseParams.pageWidth && parseParams.pageHeight) {
+                        paragraphHeight = this._getElementHeight(parseParams.currentTextElementParent, {
+                            width: parseParams.pageWidth
+                        });
+
+                        console.log(parseParams.pageHeight, paragraphHeight);
+
+                        /**
+                         * divide into several parts
+                         */
+                        if (paragraphHeight > parseParams.pageHeight) {
+                            parts = [];
+                            elements = parseParams.currentTextElementParent.elements;
+                            count = elements.length;
+                            beforePartHeight = parseParams.pageContentHeight;
+                            i = 0;
+
+                            while (count) {
+                                parts[i] = jDoc.deepMerge({}, parseParams.currentTextElementParent, {
+                                    elements: []
+                                });
+                                partHeight = 0;
+
+                                while (partHeight < parseParams.pageHeight) {
+                                    el = elements.shift();
+                                    parts[i].elements.push(el);
+                                    count--;
+
+                                    h = this._getElementHeight(parts[i], {
+                                        width: parseParams.pageWidth
+                                    });
+
+                                    if (beforePartHeight + h > parseParams.pageHeight || h > parseParams.pageHeight) {
+                                        el = parts[i].elements.pop();
+                                        elements.unshift(el);
+                                        count++;
+                                        break;
+                                    }
+
+                                    partHeight = beforePartHeight + h;
+
+                                    if (!count) {
+                                        break;
+                                    }
+                                }
+
+                                if (!beforePartHeight) {
+                                    this._createNewPage(options);
+                                }
+
+                                parseResult.pages[parseParams.currentPageIndex].elements[parseParams.currentElementIndex] =
+                                    parts[i];
+
+                                i++;
+                                beforePartHeight = 0;
+                                parseParams.currentElementIndex++;
+                            }
+
+                            if (i) {
+                                parseParams.currentElementIndex--;
+                            }
+
+                            if (partHeight < parseParams.pageHeight) {
+                                paragraphHeight = partHeight;
+                            } else {
+                                paragraphHeight = 0;
+                            }
+                        } else if (parseParams.pageContentHeight + paragraphHeight > parseParams.pageHeight) {
+                            this._createNewPage(options);
+                            parseParams.currentElementIndex++;
+                            parseResult.pages[parseParams.currentPageIndex].elements[parseParams.currentElementIndex] =
+                                parseParams.currentTextElementParent;
+                            parseParams.currentElementIndex--;
+                        }
+
+                        parseParams.pageContentHeight += paragraphHeight;
+                    }
+
+                    parseParams.currentElementIndex++;
+
+                    /**
+                     * inherit previous paragraph
+                     * @type {*}
+                     */
+
+                    parseParams.currentTextElementParent = jDoc.deepMerge({}, parseParams.paragraphData, {
+                        elements: []
+                    });
+
+                    parseResult.pages[parseParams.currentPageIndex].elements[parseParams.currentElementIndex] =
+                        parseParams.currentTextElementParent;
+
+                    parseParams.currentTextElement = {
+                        options: {},
+                        css: {},
+                        dimensionCSSRules: {},
+                        properties: {
+                            textContent: ""
+                        }
+                    };
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                pard: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        page = parseResult.pages[parseParams.currentPageIndex];
+
+                    if (parseResult.table) {
+                        parseResult.table = this._destroyTable(parseParams);
+                        parseParams.currentElementIndex++;
+                        parseParams.currentTextElementParent = jDoc.clone(parseParams.paragraphData);
+                        page.elements[parseParams.currentElementIndex] = parseParams.currentTextElementParent;
+                        parseParams.currentTextElement = null;
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                cell: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        count,
+                        currentRowIndex,
+                        currentCellIndex,
+                        table = parseParams.table,
+                        page = parseResult.pages[parseParams.currentPageIndex],
+                        row = table ? table.body.rows[table.body.rows.length - 1] : null;
+
+                    row = row || this._initRow();
+
+                    table = table || this._initTable({
+                        row: row,
+                        parseParams: parseParams,
+                        parentElementsList: page.elements,
+                        parentElementsIndex: parseParams.currentElementIndex,
+                        data: parseParams.currentTextElementParent
+                    });
+
+                    parseParams.currentTextElementParent.css = jDoc.deepMerge({},
+                        parseParams.currentTextElementParent.css,
+                        parseParams.styles.cells.css
+                    );
+
+                    parseParams.currentTextElementParent.dimensionCSSRules = jDoc.deepMerge({},
+                        parseParams.currentTextElementParent.dimensionCSSRules,
+                        parseParams.styles.cells.dimensionCSSRules
+                    );
+
+                    row.cells.push(parseParams.currentTextElementParent);
+
+                    count = table.body.rows.length;
+                    currentRowIndex = count ? count - 1 : 0;
+                    count = row.cells.length;
+                    currentCellIndex = count ? count - 1 : 0;
+
+                    if (
+                        table.options.cellsWidth[currentRowIndex] &&
+                        table.options.cellsWidth[currentRowIndex][currentCellIndex]
+                    ) {
+                        parseParams.currentTextElementParent.dimensionCSSRules.width =
+                            parseParams.currentTextElementParent.dimensionCSSRules.width ||
+                            table.options.cellsWidth[currentRowIndex][currentCellIndex];
+                    }
+                    parseParams.currentTextElementParent = {
+                        options: {},
+                        css: {},
+                        dimensionCSSRules: {},
+                        elements: []
+                    };
+                    parseParams.currentTextElement = {
+                        options: {},
+                        css: {},
+                        dimensionCSSRules: {},
+                        properties: {
+                            textContent: ""
+                        }
+                    };
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                cellx: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        count,
+                        param = options.param,
+                        currentRowIndex,
+                        table = parseParams.table,
+                        page = parseResult.pages[parseParams.currentPageIndex],
+                        row = table ? table.body.rows[table.body.rows.length - 1] : null;
+
+                    row = row || this._initRow();
+
+                    table = table || this._initTable({
+                        row: row,
+                        parseParams: parseParams,
+                        parentElementsList: page.elements,
+                        parentElementsIndex: parseParams.currentElementIndex,
+                        data: parseParams.currentTextElementParent
+                    });
+
+                    count = table.body.rows.length;
+                    currentRowIndex = count ? count - 1 : 0;
+
+                    table.options.cellsWidth[currentRowIndex] = table.options.cellsWidth[currentRowIndex] || [];
+                    table.options.cellsWidth[currentRowIndex].push({
+                        value: param / 20,
+                        units: "pt"
+                    });
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                clbrdrb: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult;
+
+                    parseParams.styles.cells.dimensionCSSRules.borderBottomWidth =
+                        parseParams.styles.defaults.dimensionCSSRules.borderWidth;
+                    parseParams.styles.cells.css.borderBottomStyle = parseParams.styles.defaults.css.borderStyle;
+                    parseParams.styles.cells.css.borderBottomColor = parseParams.styles.defaults.css.borderColor;
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                clbrdrl: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult;
+
+                    parseParams.styles.cells.dimensionCSSRules.borderLeftWidth =
+                        parseParams.styles.defaults.dimensionCSSRules.borderWidth;
+                    parseParams.styles.cells.css.borderLeftStyle = parseParams.styles.defaults.css.borderStyle;
+                    parseParams.styles.cells.css.borderLeftColor = parseParams.styles.defaults.css.borderColor;
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                clbrdrr: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult;
+
+                    parseParams.styles.cells.dimensionCSSRules.borderRightWidth =
+                        parseParams.styles.defaults.dimensionCSSRules.borderWidth;
+                    parseParams.styles.cells.css.borderRightStyle = parseParams.styles.defaults.css.borderStyle;
+                    parseParams.styles.cells.css.borderRightColor = parseParams.styles.defaults.css.borderColor;
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                clbrdrt: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult;
+
+                    parseParams.styles.cells.dimensionCSSRules.borderTopWidth =
+                        parseParams.styles.defaults.dimensionCSSRules.borderWidth;
+                    parseParams.styles.cells.css.borderTopStyle = parseParams.styles.defaults.css.borderStyle;
+                    parseParams.styles.cells.css.borderTopColor = parseParams.styles.defaults.css.borderColor;
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                clpadb: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    parseParams.styles.cells.dimensionCSSRules.paddingBottom = {
+                        value: param / 20,
+                        units: "pt"
+                    };
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                clpadfb: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    if (param == 0) {
+                        delete parseParams.styles.cells.dimensionCSSRules.paddingBottom;
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                clpadfl: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    if (param == 0) {
+                        delete parseParams.styles.cells.dimensionCSSRules.paddingLeft;
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                clpadfr: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    if (param == 0) {
+                        delete parseParams.styles.cells.dimensionCSSRules.paddingRight;
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                clpadft: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    if (param == 0) {
+                        delete parseParams.styles.cells.dimensionCSSRules.paddingTop;
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                clpadl: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    parseParams.styles.cells.dimensionCSSRules.paddingLeft = {
+                        value: param / 20,
+                        units: "pt"
+                    };
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                clpadr: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    parseParams.styles.cells.dimensionCSSRules.paddingRight = {
+                        value: param / 20,
+                        units: "pt"
+                    };
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                clpadt: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    parseParams.styles.cells.dimensionCSSRules.paddingTop = {
+                        value: param / 20,
+                        units: "pt"
+                    };
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                clvertalb: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    parseParams.styles.cells.css.verticalAlign = "bottom";
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                clvertalc: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    parseParams.styles.cells.css.verticalAlign = "middle";
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                clvertalt: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    parseParams.styles.cells.css.verticalAlign = "top";
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                trbrdrb: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult;
+
+                    parseParams.styles.table.dimensionCSSRules.borderBottomWidth =
+                        parseParams.styles.defaults.dimensionCSSRules.borderWidth;
+                    parseParams.styles.table.css.borderBottomStyle = parseParams.styles.defaults.css.borderStyle;
+                    parseParams.styles.table.css.borderBottomColor = parseParams.styles.defaults.css.borderColor;
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                trbrdrl: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult;
+
+                    parseParams.styles.table.dimensionCSSRules.borderLeftWidth =
+                        parseParams.styles.defaults.dimensionCSSRules.borderWidth;
+                    parseParams.styles.table.css.borderLeftStyle = parseParams.styles.defaults.css.borderStyle;
+                    parseParams.styles.table.css.borderLeftColor = parseParams.styles.defaults.css.borderColor;
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                trbrdrr: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult;
+
+                    parseParams.styles.table.dimensionCSSRules.borderRightWidth =
+                        parseParams.styles.defaults.dimensionCSSRules.borderWidth;
+                    parseParams.styles.table.css.borderRightStyle = parseParams.styles.defaults.css.borderStyle;
+                    parseParams.styles.table.css.borderRightColor = parseParams.styles.defaults.css.borderColor;
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                trbrdrt: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult;
+
+                    parseParams.styles.table.dimensionCSSRules.borderTopWidth =
+                        parseParams.styles.defaults.dimensionCSSRules.borderWidth;
+                    parseParams.styles.table.css.borderTopStyle = parseParams.styles.defaults.css.borderStyle;
+                    parseParams.styles.table.css.borderTopColor = parseParams.styles.defaults.css.borderColor;
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                trgaph: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    parseParams.styles.cells.dimensionCSSRules.padding = {
+                        value: param / 20,
+                        units: "pt"
+                    };
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                trspdb: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    parseParams.options.table.cellMarginBottom = param / 20;
+                    parseParams.styles.cells.dimensionCSSRules.paddingBottom =
+                        parseParams.styles.cells.dimensionCSSRules.paddingBottom || {
+                            value: 0,
+                            units: "pt"
+                    };
+                    parseParams.styles.cells.dimensionCSSRules.paddingBottom.value += parseParams.options.table.cellMarginBottom;
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                trspdfb: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    if (param === 0 && parseParams.options.table.cellMarginBottom && parseParams.styles.cells.dimensionCSSRules.paddingBottom) {
+                        parseParams.styles.cells.dimensionCSSRules.paddingBottom.value -= parseParams.options.table.cellMarginBottom;
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                trspdfl: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    if (param === 0 && parseParams.options.table.cellMarginLeft && parseParams.styles.cells.dimensionCSSRules.paddingLeft) {
+                        parseParams.styles.cells.dimensionCSSRules.paddingLeft.value -= parseParams.options.table.cellMarginLeft;
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                trspdfr: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    if (param === 0 && parseParams.options.table.cellMarginRight && parseParams.styles.cells.dimensionCSSRules.paddingRight) {
+                        parseParams.styles.cells.dimensionCSSRules.paddingRight.value -= parseParams.options.table.cellMarginRight;
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                trspdft: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    if (param === 0 && parseParams.options.table.cellMarginTop && parseParams.styles.cells.dimensionCSSRules.paddingTop) {
+                        parseParams.styles.cells.dimensionCSSRules.paddingTop.value -= parseParams.options.table.cellMarginTop;
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                trspdl: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    parseParams.options.table.cellMarginLeft = param / 20;
+                    parseParams.styles.cells.dimensionCSSRules.paddingLeft =
+                        parseParams.styles.cells.dimensionCSSRules.paddingLeft || {
+                            value: 0,
+                            units: "pt"
+                    };
+
+                    parseParams.styles.cells.dimensionCSSRules.paddingLeft.value += parseParams.options.table.cellMarginLeft;
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                trspdr: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    parseParams.options.table.cellMarginRight = param / 20;
+                    parseParams.styles.cells.dimensionCSSRules.paddingRight =
+                        parseParams.styles.cells.dimensionCSSRules.paddingRight || {
+                            value: 0,
+                            units: "pt"
+                    };
+                    parseParams.styles.cells.dimensionCSSRules.paddingRight.value += parseParams.options.table.cellMarginRight;
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                trspdt: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    parseParams.options.table.cellMarginTop = param / 20;
+                    parseParams.styles.cells.dimensionCSSRules.paddingTop =
+                        parseParams.styles.cells.dimensionCSSRules.paddingTop || {
+                            value: 0,
+                            units: "pt"
+                    };
+                    parseParams.styles.cells.dimensionCSSRules.paddingTop.value += parseParams.options.table.cellMarginTop;
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                row: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        table = parseParams.table,
+                        paragraphHeight,
+                        page = parseResult.pages[parseParams.currentPageIndex],
+                        row = table ? table.body.rows[table.body.rows.length - 1] : null,
+                        isNeedDestroy = !! row;
+
+                    if (isNeedDestroy) {
+                        if (parseParams.currentTextElementParent && parseParams.pageWidth && parseParams.pageHeight) {
+                            paragraphHeight = this._getElementHeight(parseParams.currentTextElementParent, {
+                                width: parseParams.pageWidth
+                            });
+
+                            if (parseParams.pageContentHeight + paragraphHeight > parseParams.pageHeight) {
+                                this._createNewPage(options);
+                                parseResult.pages[parseParams.currentPageIndex].elements[parseParams.currentElementIndex] =
+                                    parseParams.currentTextElementParent;
+                            }
+
+                            parseParams.pageContentHeight += paragraphHeight;
+                        }
+
+                        parseParams.currentElementIndex++;
+                        this._destroyTable(parseParams);
+                    }
+
+                    table = this._initTable({
+                        row: isNeedDestroy ? null : row,
+                        parseParams: parseParams,
+                        parentElementsList: page.elements,
+                        parentElementsIndex: parseParams.currentElementIndex,
+                        data: parseParams.currentTextElementParent
+                    });
+
+                    row = this._initRow();
+                    table.body.rows.push(row);
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                trowd: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        table = parseParams.table,
+                        row = table ? table.body.rows[table.body.rows.length - 1] : null;
+
+                    if (row) {
+                        row.css = {};
+                        row.dimensionCSSRules = {};
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                trpaddb: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    if (param > 0) {
+                        parseParams.styles.rows.dimensionCSSRules.paddingBottom = {
+                            value: param / 20,
+                            units: "pt"
+                        };
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                trpaddfb: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    if (param == 0) {
+                        delete parseParams.styles.rows.dimensionCSSRules.paddingBottom;
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                trpaddfl: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    if (param == 0) {
+                        delete parseParams.styles.rows.dimensionCSSRules.paddingLeft;
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                trpaddfr: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    if (param == 0) {
+                        delete parseParams.styles.rows.dimensionCSSRules.paddingRight;
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                trpaddft: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    if (param == 0) {
+                        delete parseParams.styles.rows.dimensionCSSRules.paddingTop;
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                trpaddl: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    if (param > 0) {
+                        parseParams.styles.rows.dimensionCSSRules.paddingLeft = {
+                            value: param / 20,
+                            units: "pt"
+                        };
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                trpaddr: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    if (param > 0) {
+                        parseParams.styles.rows.dimensionCSSRules.paddingRight = {
+                            value: param / 20,
+                            units: "pt"
+                        };
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                },
+                trpaddt: function (options) {
+                    var parseParams = options.parseParams,
+                        parseResult = options.parseResult,
+                        param = options.param;
+
+                    if (param > 0) {
+                        parseParams.styles.rows.dimensionCSSRules.paddingTop = {
+                            value: param / 20,
+                            units: "pt"
+                        };
+                    }
+
+                    return {
+                        parseParams: parseParams,
+                        parseResult: parseResult
+                    };
+                }
             }
         }
     );

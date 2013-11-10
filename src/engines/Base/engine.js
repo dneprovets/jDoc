@@ -9,38 +9,6 @@ jDoc.Engine.prototype = {
      */
     _fileTypeParsers: [],
 
-    /**
-     *
-     * @private
-     */
-    _effectPatterns: {
-        blinkBackground: "blinkBackgroundAnimation",
-        lights: "lightsAnimation",
-        antsBlack: "blackDashedLineAnimation",
-        antsRed: "redDashedLineAnimation",
-        shimmer: "shimmerAnimation",
-        sparkle: "sparkleAnimation",
-        none: "none"
-    },
-
-    /**
-     *
-     * @private
-     */
-    _shadowPatterns: {
-        nil: null,
-        clear: null,
-        solid: "0 0 5px 0",
-        horzStripe: "5px 0 5px 0",
-        vertStripe: "0 5px 5px 0",
-        reverseDiagStripe: "-5px -5px 5px 0",
-        diagStripe: "5px 5px 5px 0",
-        thinHorzStripe: "1px 0 1px 0",
-        thinVertStripe: "0 1px 1px 0",
-        thinReverseDiagStripe: "-1px -1px 1px 0",
-        thinDiagStripe: "1px 1px 1px 0"
-    },
-
     _errors: {
         invalidFileType: {
             message: 'Invalid file format'
@@ -388,27 +356,6 @@ jDoc.Engine.prototype = {
     },
 
     /**
-     * Parse boxShadow style from property node
-     * @param node
-     * @return {String}
-     * @private
-     */
-    _parseShadowProperty: function (node) {
-        var result = "none";
-
-        if (
-            node &&
-                node.attributes['w:val'] &&
-                node.attributes['w:color'] &&
-                this._shadowPatterns[node.attributes['w:val'].value]
-        ) {
-            result = this._shadowPatterns[node.attributes['w:val'].value] + " " + node.attributes['w:color'];
-        }
-
-        return result;
-    },
-
-    /**
      * get type of file
      * @param file
      * @return {null|String}
@@ -465,31 +412,6 @@ jDoc.Engine.prototype = {
 
     /**
      *
-     * @param node
-     * @return {Object}
-     * @private
-     */
-    _parseLanguageNode: function (node) {
-        var result = {
-            latin: null,
-            eastAsia: null,
-            complexLanguage: null
-        };
-        if (node) {
-            result.latin = (node.attributes['w:val']) ? node.attributes['w:val'] || result.latin : result.latin;
-            result.complexLanguage =
-                (node.attributes['w:bidi']) ? (
-                    node.attributes['w:bidi'] || result.complexLanguage
-                ) : result.complexLanguage;
-            result.eastAsia = (node.attributes['w:eastAsia']) ? (
-                node.attributes['w:eastAsia'] || result.eastAsia
-            ) : result.eastAsia;
-        }
-        return result;
-    },
-
-    /**
-     *
      * @param cssList
      * @param rule
      * @param value
@@ -506,15 +428,6 @@ jDoc.Engine.prototype = {
         }
 
         return cssList;
-    },
-
-    /**
-     * @param node
-     * @return {String}
-     * @private
-     */
-    _parseStyleEffectProperty: function (node) {
-        return (node && node.attributes['w:val']) ? this._effectPatterns[node.attributes['w:val']] || "none" : "none";
     },
 
     /**
