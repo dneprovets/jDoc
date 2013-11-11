@@ -8823,7 +8823,10 @@
                     }
                 }
 
-                if (!found && !file.type && extension) {
+                /**
+                 * if not found by mime type find by file extension
+                 */
+                if (!found && extension) {
                     fileExtensions = this._fileTypeParsers[i].extension;
                     if (!(fileExtensions instanceof Array)) {
                         fileExtensions = [fileExtensions];
