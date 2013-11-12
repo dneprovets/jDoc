@@ -15085,7 +15085,9 @@
                         parseParams.braceCounter -= 1;
                         i += 1;
                         if (parseParams.currentTextElement && parseParams.currentTextElement.properties.textContent.length) {
-                            parseParams.currentTextElementParent.elements.push(parseParams.currentTextElement);
+                            if (parseParams.currentTextElementParent.elements.indexOf(parseParams.currentTextElement) < 0) {
+                                parseParams.currentTextElementParent.elements.push(parseParams.currentTextElement);
+                            }
                             parseParams.currentTextElement = {
                                 options: {},
                                 css: {},
