@@ -67,13 +67,16 @@ module.exports = function (grunt) {
                 }
             }
 
-            tasksList = tasksList.concat([
-                'clean:start',
-                'concat:app',
-                'clean:engines',
-                'jsbeautifier',
-                'uglify'
-            ]);
+            tasksList = [
+                'clean:start'
+            ].concat(
+                tasksList.concat([
+                    'concat:app',
+                    'clean:engines',
+                    'jsbeautifier',
+                    'uglify'
+                ])
+            );
 
             grunt.task.run(tasksList);
         },
