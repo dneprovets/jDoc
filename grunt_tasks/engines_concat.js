@@ -1,5 +1,21 @@
 module.exports = function () {
     return {
+        base: {
+            reader: {
+                options: {
+                    namespace: 'jDoc.Engine.prototype',
+                    mainFilePath: 'src/engines/Base/engine.js'
+                },
+                src: [
+                    'src/engines/Base/reader/private/*.js',
+                    'src/engines/Base/reader/public/*.js',
+                    'src/engines/Base/reader/public/*/*.js'
+                ],
+                dest: 'src/build/base.js'
+            },
+            writer: {}
+        },
+
         simple: {
             reader: {
                 options: {
@@ -22,7 +38,8 @@ module.exports = function () {
                     mainFilePath: 'src/engines/ODF/main.js'
                 },
                 src: [
-                    'src/engines/ODF/reader/private/*.js'
+                    'src/engines/ODF/reader/private/*.js',
+                    'src/engines/ODF/reader/public/*.js'
                 ],
                 dest: 'src/build/odf.js'
             },
@@ -36,7 +53,8 @@ module.exports = function () {
                     mainFilePath: 'src/engines/OXML/main.js'
                 },
                 src: [
-                    'src/engines/OXML/reader/private/*.js'
+                    'src/engines/OXML/reader/private/*.js',
+                    'src/engines/OXML/reader/public/*.js'
                 ],
                 dest: 'src/build/oxml.js'
             },

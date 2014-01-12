@@ -5,16 +5,10 @@
  * @private
  */
 jDoc.engines.ODF.prototype._createParsedFileFromTextDocument = function (filesEntry, callback) {
-    var filesCount = filesEntry.length,
-        i,
-        counter = 0,
+    var counter = 0,
         domParser = new DOMParser(),
-        self = this,
         document,
         info,
-        interval,
-        reader,
-        time = 100,
         documentData = {
             documentInfo: {},
             applicationInfo: {},
@@ -25,54 +19,52 @@ jDoc.engines.ODF.prototype._createParsedFileFromTextDocument = function (filesEn
     /**
      * Reading files
      */
-    for (i = filesCount - 1; i != -1; i--) {
-        reader = new FileReader();
-        reader.onload = (function (fileData) {
-            return function (event) {
-                if (fileData.entry.filename.indexOf('styles.') != -1) {
-                    self._parseTextDocumentStyles(
-                        domParser.parseFromString(event.target.result, "application/xml"),
+    this.readFilesEntries({
+        entries: filesEntry,
+        read: function (result, fileEntry) {
+            var filename = fileEntry.entry.filename,
+                xml;
+
+            if (filename.indexOf('Pictures') != -1) {
+                documentData.media[filename] = this._normalizeDataURI(result, filename);
+                counter++;
+            } else {
+                xml = domParser.parseFromString(result, "application/xml");
+
+                if (filename.indexOf('styles.') != -1) {
+                    this._parseTextDocumentStyles(
+                        xml,
                         function (styles) {
                             documentData.styles = styles;
                             counter++;
                         }
                     );
-                } else if (fileData.entry.filename.indexOf('meta.') != -1) {
-                    info = self._parseTextDocumentMetaInformation(
-                        domParser.parseFromString(event.target.result, "application/xml")
-                    );
-                    documentData.documentInfo = info.documentInfo;
-                    documentData.applicationInfo = info.applicationInfo;
-                    counter++;
-                } else if (fileData.entry.filename.indexOf('content.') != -1) {
-                    document = domParser.parseFromString(event.target.result, "application/xml");
-                    counter++;
-                } else if (fileData.entry.filename.indexOf('Pictures') != -1) {
-                    documentData.media[fileData.entry.filename] =
-                        self._normalizeDataURI(event.target.result, fileData.entry.filename);
-                    counter++;
                 } else {
+                    if (filename.indexOf('meta.') != -1) {
+                        info = this._parseTextDocumentMetaInformation(xml);
+                        documentData.documentInfo = info.documentInfo;
+                        documentData.applicationInfo = info.applicationInfo;
+                    } else if (filename.indexOf('content.') != -1) {
+                        document = xml;
+                    }
+
                     counter++;
                 }
-
-                return null;
-            };
-        }(filesEntry[i]));
-
-        reader[
-            (filesEntry[i].entry.filename.indexOf('Pictures') != -1) ? "readAsDataURL" : "readAsText"
-        ](filesEntry[i].file);
-    }
-
-    interval = setInterval(function () {
-        if (counter == filesCount) {
-            clearInterval(interval);
-            self._parseTextDocumentContent({
-                xml: document,
-                documentData: documentData
-            }, function (result) {
-                callback(new jDoc.ParsedFile(result));
-            });
-        }
-    }, time);
+            }
+        }.bind(this),
+        success: function (results, filesEntry, len) {
+            var time = 100,
+                interval = setInterval(function () {
+                    if (counter == len) {
+                        clearInterval(interval);
+                        this._parseTextDocumentContent({
+                            xml: document,
+                            documentData: documentData
+                        }, function (result) {
+                            callback(new jDoc.ParsedFile(result));
+                        });
+                    }
+                }.bind(this), time);
+        }.bind(this)
+    });
 };

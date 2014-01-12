@@ -1,9 +1,16 @@
 module.exports = function () {
     return {
         app: {
+            options: {
+                banner: "(function (window, document) {\n" +
+                    "window.localStorage = window.localStorage || window.mozLocalStorage || window.webkitLocalStorage;\n" +
+                    "window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem || window.mozRequestFileSystem;\n" +
+                    "window.URL = window.URL || window.webkitURL || window.mozURL;\n" +
+                    "window.Blob = window.Blob || window.webkitBlob || window.mozBlob;",
+                footer: "window.jDoc = jDoc;\n" +
+                        "}(window, document));"
+            },
             src: [
-                'src/beginBanner.js',
-
                 'src/browser.js',
 
                 'src/main.js',
@@ -13,14 +20,8 @@ module.exports = function () {
 
                 'src/utils/DOM/*.js',
 
-                'src/engines/Base/engine.js',
-                'src/engines/Base/extend.js',
-                'src/engines/Base/reader/private/*.js',
-
                 'src/build/*',
-                '!src/build/jdoc.*',
-
-                'src/endBanner.js'
+                '!src/build/jdoc.*'
             ],
             dest: 'src/build/jdoc.<%= version %>.js'
         }

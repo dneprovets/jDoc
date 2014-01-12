@@ -7,7 +7,23 @@ var assert = require('assert'),
     locators = {
         fileField: {
             css: '[type="file"]'
+        },
+        pages: {
+            css: '#pages-container'
         }
+    },
+    testFiles = {
+        dsv: ["/var/projects/jDoc/files/DSV/transaction.csv"],
+        fictionBook: ["/var/projects/jDoc/files/FictionBook/«Об интеллекте».fb2"],
+        odt: ["/var/projects/jDoc/files/ODT/file1.odt"],
+        oxml: [
+            "/var/projects/jDoc/files/OXML/Collection_and_Map.docx",
+            "/var/projects/jDoc/files/OXML/ПДР-2013.doc"
+        ],
+        rtf: [
+            "/var/projects/jDoc/files/RTF/Collection_and_Map2.rtf",
+            '/var/projects/jDoc/files/RTF/my_people.rtf'
+        ]
     },
     capabilities = {
         'browserName': 'firefox'
@@ -36,7 +52,18 @@ test.describe('jDoc', function () {
             return driver.isElementPresent(locators.fileField);
         }, 1000)
             .then(function () {
-                driver.findElement(locators.fileField).sendKeys('');
+                var key,
+                    i;
+
+                for (key in testFiles) {
+                    if (testFiles.hasOwnProperty(key)) {
+                        for (i = testFiles[key].length - 1; i >= 0; i--) {
+                            driver.findElement(locators.fileField).sendKeys(testFiles[key][i]);
+                            driver.sleep(5000);
+                            driver.findElement(locators.pages);
+                        }
+                    }
+                }
             });
     });
 

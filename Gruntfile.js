@@ -39,13 +39,17 @@ module.exports = function (grunt) {
 
             var len = list.length,
                 engineName,
+                baseEngineName = "base",
                 isNeedInclude,
                 tasksList = [],
                 enginesConcatTaskList = grunt.config.data[enginesConcatTaskName];
 
             for (engineName in enginesConcatTaskList) {
                 isNeedInclude = false;
-                if (isExclude) {
+
+                if (engineName === baseEngineName && (list.indexOf(baseEngineName) < 0 || isExclude)) {
+                    isNeedInclude = true;
+                } else if (isExclude) {
                     if (len && list.indexOf(engineName) < 0) {
                         isNeedInclude = true;
                     }
@@ -64,6 +68,7 @@ module.exports = function (grunt) {
             }
 
             tasksList = tasksList.concat([
+                'clean:start',
                 'concat:app',
                 'clean:engines',
                 'jsbeautifier',

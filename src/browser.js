@@ -6,7 +6,7 @@
         /**
          * версии браузеров
          */
-        _versions = {
+            _versions = {
             "msie": ((/(?:msie\s([0-9a-z,.]+);)/).exec(_browserInfo) || [])[1] || '',
             "opera": ((/(?:version\/([0-9a-z,.]+))$/).exec(_browserInfo) || [])[1] || '',
             "chrome": ((/(?:chrome\/([0-9a-z,.]+)\s)/).exec(_browserInfo) || [])[1] || '',
@@ -18,7 +18,7 @@
          * преобразуем в float
          * может прити и с текстом (14.0b.1)
          */
-        browser,
+            browser,
         versionArr;
 
     for (browser in _versions) {
@@ -30,10 +30,6 @@
 
     window.browser = {
         language: (navigator.systemLanguage || navigator.language.split('-')[0]).toLowerCase(),
-        localStorage:      window.localStorage || window.mozLocalStorage || window.webkitLocalStorage,
-        requestFileSystem: window.requestFileSystem || window.webkitRequestFileSystem || window.mozRequestFileSystem,
-        URL:               window.URL || window.webkitURL || window.mozURL,
-        Blob:              window.Blob,
 
         isSupportHistoryAPI: function () {
             return !!(window.history.pushState && window.history.replaceState);

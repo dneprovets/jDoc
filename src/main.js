@@ -100,6 +100,7 @@ var jDoc = {
      */
     _selectEngine: function (file, options) {
         var engine,
+            parse,
             engineObj;
 
         /**
@@ -124,7 +125,13 @@ var jDoc = {
                 options.complete();
             }
         } else {
-            this.currentEngine.parse({
+            if (this.currentEngine.options.parseMethod) {
+                parse = this.currentEngine[this.currentEngine.options.parseMethod];
+            } else {
+                parse = this.currentEngine.parse;
+            }
+
+            parse.call(this.currentEngine, {
                 success: function (parsedFile) {
                     if (typeof options.success === 'function') {
                         options.success(parsedFile);
@@ -160,16 +167,14 @@ var jDoc = {
         var wnd = window;
 
         return !!(
-            wnd.browser.localStorage &&
-            wnd.browser.Blob &&
+            wnd.localStorage &&
+            wnd.Blob &&
+            wnd.Blob.prototype.slice &&
             wnd.FileReader &&
-            wnd.Worker &&
             wnd.ArrayBuffer &&
             wnd.Uint8Array &&
-            wnd.DataView &&
-            wnd.browser.Blob.prototype.slice &&
-            //wnd.browser.requestFileSystem &&
-            wnd.browser.URL
+            wnd.DataView
+            //wnd.requestFileSystem
         );
     },
 

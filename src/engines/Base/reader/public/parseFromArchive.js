@@ -1,12 +1,10 @@
 /**
- *
+ * @description Read the file
  * @param options
- * @returns {null}
+ * @returns {*}
  */
-jDoc.engines.RTF.prototype.parse = function (options) {
-    var reader,
-        self;
-
+jDoc.Engine.prototype.parseFromArchive = function (options) {
+    var self = this;
     if (typeof options.start === 'function') {
         options.start();
     }
@@ -17,12 +15,11 @@ jDoc.engines.RTF.prototype.parse = function (options) {
         if (typeof options.complete === 'function') {
             options.complete();
         }
-    } else {
-        reader = new FileReader();
-        self = this;
-
-        reader.onload = function (event) {
-            self._createParsedFile(event.target.result, function (parsedFile) {
+        return false;
+    }
+    this._readFilesFromZIP({
+        success: function (fileEntries) {
+            self._createParsedFile(fileEntries, function (parsedFile) {
                 if (typeof options.success === 'function') {
                     options.success(parsedFile);
                 }
@@ -30,9 +27,16 @@ jDoc.engines.RTF.prototype.parse = function (options) {
                     options.complete();
                 }
             });
-        };
+        },
+        error: function () {
+            if (typeof options.error === 'function') {
+                options.error(this._errors.invalidReadZIPFile);
+            }
+            if (typeof options.complete === 'function') {
+                options.complete();
+            }
+        }.bind(this)
+    });
 
-        reader.readAsText(this.file);
-    }
     return null;
 };

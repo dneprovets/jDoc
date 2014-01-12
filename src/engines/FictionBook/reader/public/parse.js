@@ -4,6 +4,8 @@
  * @public
  */
 jDoc.engines.FictionBook.prototype.parse = function (options) {
+    var fileEntries;
+
     if (typeof options.start === 'function') {
         options.start();
     }
@@ -19,25 +21,34 @@ jDoc.engines.FictionBook.prototype.parse = function (options) {
         return null;
     }
 
-    var self = this,
-        reader = new FileReader(),
-        defaultEncoding = "utf-8";
-    reader.onload = function (event) {
-        var encoding = (/encoding="(.+)"/).exec(event.target.result);
-        encoding = encoding ? self._normalizeEncodingValue(encoding[1]) : defaultEncoding;
+    fileEntries = [{
+        file: this.file,
+        entry: {}
+    }];
 
-        if (encoding != defaultEncoding) {
-            reader.onload = function (event) {
-                self._parseFileHelper(event.target.result, options);
-            };
+    this.readFilesEntries({
+        entries: fileEntries,
+        error: options.error,
+        read: function (result) {
+            var encoding = (/encoding="(.+)"/).exec(result),
+                defaultEncoding = "utf-8";
 
-            reader.readAsText(self.file, encoding);
-        } else {
-            self._parseFileHelper(event.target.result, options);
-        }
-    };
+            encoding = encoding ? this._normalizeEncodingValue(encoding[1]) : defaultEncoding;
 
-    reader.readAsText(this.file);
+            if (encoding != defaultEncoding) {
+                this.readFilesEntries({
+                    encoding: encoding,
+                    entries: fileEntries,
+                    error: options.error,
+                    read: function (result) {
+                        this._parseFileHelper(result, options);
+                    }.bind(this)
+                });
+            } else {
+                this._parseFileHelper(result, options);
+            }
+        }.bind(this)
+    });
 
     return null;
 };
