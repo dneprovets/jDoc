@@ -77,6 +77,7 @@ Build a library:
 
  * 2013-09-10   v0.1.0   Work in progress, not yet officially released.
  * 2013-11-10   v0.2.0   Support of RTF format.
+ * 2014-01-12   v0.3.0   Add web workers support.
 
 ---
 
