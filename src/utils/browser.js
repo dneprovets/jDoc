@@ -2,11 +2,11 @@
     "use strict";
 
     var _browserInfo = (navigator.userAgent || "").toLowerCase(),
-
+        history = window.history,
         /**
-         * версии браузеров
+         * @description версии браузеров
          */
-            _versions = {
+        _versions = {
             "msie": ((/(?:msie\s([0-9a-z,.]+);)/).exec(_browserInfo) || [])[1] || '',
             "opera": ((/(?:version\/([0-9a-z,.]+))$/).exec(_browserInfo) || [])[1] || '',
             "chrome": ((/(?:chrome\/([0-9a-z,.]+)\s)/).exec(_browserInfo) || [])[1] || '',
@@ -15,10 +15,9 @@
         },
 
         /**
-         * преобразуем в float
-         * может прити и с текстом (14.0b.1)
+         * @description может прити и с текстом (14.0b.1)
          */
-            browser,
+        browser,
         versionArr;
 
     for (browser in _versions) {
@@ -28,7 +27,7 @@
         }
     }
 
-    window.browser = {
+    jDoc.utils.browser = {
         language: (navigator.systemLanguage || navigator.language.split('-')[0]).toLowerCase(),
 
         isSupportHistoryAPI: function () {
@@ -52,9 +51,7 @@
                 type = elements[i].attributes['data-type'];
 
                 if (type && type.value) {
-                    /**
-                     * в Safari возвращается не строка, а число, например, 01 -> 1, 09 -> 9  и т.д.
-                     */
+                    // в Safari возвращается не строка, а число, например, 01 -> 1, 09 -> 9  и т.д.
                     if (type.value == "number" && this.isIOSDevice()) {
                         elements[i].pattern = '[0-9]*';
                     } else {

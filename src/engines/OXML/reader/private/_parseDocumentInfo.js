@@ -1,6 +1,6 @@
 /**
  *
- * Parsing information about document
+ * @description Parsing information about document
  * @param xml
  * @private
  * @return {Object}

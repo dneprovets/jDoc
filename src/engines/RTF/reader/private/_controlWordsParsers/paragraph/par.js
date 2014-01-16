@@ -16,9 +16,7 @@ jDoc.engines.RTF.prototype._controlWordsParsers.par = function (options) {
             width: parseParams.pageWidth
         });
 
-        /**
-         * divide into several parts
-         */
+        // divide into several parts
         if (paragraphHeight > parseParams.pageHeight) {
             parts = [];
             elements = parseParams.currentTextElementParent.elements;
@@ -90,7 +88,7 @@ jDoc.engines.RTF.prototype._controlWordsParsers.par = function (options) {
     parseParams.currentElementIndex++;
 
     /**
-     * inherit previous paragraph
+     * @description inherit previous paragraph
      * @type {*}
      */
 

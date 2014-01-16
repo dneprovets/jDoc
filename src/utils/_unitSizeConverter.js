@@ -71,7 +71,7 @@ jDoc._unitSizeConversations = {
 };
 
 /**
- * @description 10pt = 13px, params = {value: 2, from: "px", to: "em"}
+ * @description 10pt = 13px
  * @param params
  * @return {Number}
  * @private

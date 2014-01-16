@@ -1,5 +1,4 @@
 /**
- * @constructor
  * @type {Object}
  */
 jDoc.engines.OXML = jDoc.Engine.extend(

@@ -1,5 +1,5 @@
 /**
- * Read files in Fiction Book Formal
+ * @description Read files in Fiction Book Formal
  * @param options
  * @public
  */

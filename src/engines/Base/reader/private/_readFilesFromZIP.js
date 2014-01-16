@@ -28,9 +28,7 @@ jDoc.Engine.prototype._readFilesFromZIP = function (options) {
 
                         counter++;
 
-                        /**
-                         * If all files was processed - run parser
-                         */
+                        // If all files was processed - run parser
                         if (counter == entriesCount) {
                             if (typeof options.success === 'function') {
                                 options.success(fileEntries);

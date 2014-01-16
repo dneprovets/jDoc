@@ -70,7 +70,7 @@ jDoc.engines.OXML.prototype._parseTextDocumentContent = function (params) {
 
         if (sectionProperties.localName === 'sectPr') {
             /**
-             * remove last iteration - iteration with sectionProperties
+             * @description remove last iteration - iteration with sectionProperties
              */
             lazyLoopOptions.len--;
             lazyLoopOptions.all = lazyLoopOptions.len;

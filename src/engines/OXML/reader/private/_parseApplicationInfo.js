@@ -1,6 +1,6 @@
 /**
  *
- * Parsing information about application
+ * @description Parsing information about application
  * @param xml
  * @private
  * @return {Object}

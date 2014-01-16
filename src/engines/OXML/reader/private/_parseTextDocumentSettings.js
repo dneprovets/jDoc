@@ -1,5 +1,5 @@
 /**
- * Parse document settings
+ * @description Parse document settings
  * @param xml
  * @return {Object}
  * @private
@@ -146,107 +146,107 @@ jDoc.engines.OXML.prototype._parseTextDocumentSettings = function (xml) {
 
             for (i = cachedArrayLength - 1; i >= 0; i--) {
                 switch (nodes[i].localName) {
-                    case "mathFont":
-                        result.mathProperties.mathFont = (
-                            nodes[i].attributes['m:val']
-                            ) ? nodes[i].attributes['m:val'].value || '' : '';
-                        break;
-                    case "brkBin":
-                        /**
-                         * Values : after, before, repeat
-                         * @type {String}
-                         */
-                        result.mathProperties.breakOnBinary = (
-                            nodes[i].attributes['m:val']
-                            ) ? nodes[i].attributes['m:val'].value || '' : '';
-                        break;
-                    case "brkBinSub":
-                        /**
-                         * Values : after, before, repeat
-                         * @type {String}
-                         */
-                        /**
-                         * Values : --, +-, -+
-                         * @type {String}
-                         */
-                        result.mathProperties.breakOnBinarySubtraction = (
-                            nodes[i].attributes['m:val']
-                            ) ? nodes[i].attributes['m:val'].value || '' : '';
-                        break;
-                    case "smallFrac":
-                        result.mathProperties.onSmallFraction = (
-                            !!nodes[i].attributes['m:val'] && (nodes[i].attributes['m:val'].value != '0')
-                            );
-                        break;
-                    case "dispDef":
-                        result.mathProperties.displayDefault = (
-                            !!nodes[i].attributes['m:val'] && (nodes[i].attributes['m:val'].value != '0')
-                            );
-                        break;
-                    case "lMargin":
-                        result.mathProperties.leftMargin = (
-                            nodes[i].attributes['m:val'] && !isNaN(nodes[i].attributes['m:val'].value)
-                            ) ? +nodes[i].attributes['m:val'].value : 0;
-                        break;
-                    case "rMargin":
-                        result.mathProperties.rightMargin = (
-                            nodes[i].attributes['m:val'] && !isNaN(nodes[i].attributes['m:val'].value)
-                            ) ? +nodes[i].attributes['m:val'].value : 0;
-                        break;
-                    case "defJc":
-                        result.mathProperties.align = nodes[i].attributes['m:val'] ? nodes[i].attributes['m:val'].value : 'left';
-                        if (result.mathProperties.align == 'centerGroup') {
-                            result.mathProperties.align = 'center';
-                        }
-                        break;
-                    case "preSp":
-                        result.mathProperties.preSpacing = (
-                            nodes[i].attributes['m:val'] && !isNaN(nodes[i].attributes['m:val'].value)
-                            ) ? +nodes[i].attributes['m:val'].value : 0;
-                        break;
-                    case "postSp":
-                        result.mathProperties.postSpacing = (
-                            nodes[i].attributes['m:val'] && !isNaN(nodes[i].attributes['m:val'].value)
-                            ) ? 0 : +nodes[i].attributes['m:val'].value;
-                        break;
-                    case "interSp":
-                        result.mathProperties.interSpacing = (
-                            nodes[i].attributes['m:val'] && !isNaN(nodes[i].attributes['m:val'].value)
-                            ) ? 0 : +nodes[i].attributes['m:val'].value;
-                        break;
-                    case "intraSp":
-                        result.mathProperties.intraSpacing = (
-                            nodes[i].attributes['m:val'] && !isNaN(nodes[i].attributes['m:val'].value)
-                            ) ? 0 : +nodes[i].attributes['m:val'].value;
-                        break;
-                    case "wrapIndent":
-                        result.mathProperties.wrapIndent = (
-                            nodes[i].attributes['m:val'] && !isNaN(nodes[i].attributes['m:val'].value)
-                            ) ? 0 : +nodes[i].attributes['m:val'].value;
-                        break;
-                    case "wrapRight":
-                        result.mathProperties.wrapRight = (
-                            nodes[i].attributes['m:val'] && !isNaN(nodes[i].attributes['m:val'].value)
-                            ) ? 0 : +nodes[i].attributes['m:val'].value;
-                        break;
-                    case "intLim":
-                        if (nodes[i].attributes['m:val'] && nodes[i].attributes['m:val'].value == 'undOvr') {
-                            result.mathProperties.intLimit = 'UnderOverLocation';
-                        } else if (nodes[i].attributes['m:val'] && nodes[i].attributes['m:val'].value == 'subSup') {
-                            result.mathProperties.intLimit = 'SubscriptSuperscriptLocation';
-                        } else {
-                            result.mathProperties.intLimit = '';
-                        }
-                        break;
-                    case "naryLim":
-                        if (nodes[i].attributes['m:val'] && nodes[i].attributes['m:val'].value == 'undOvr') {
-                            result.mathProperties.naryLimit = 'UnderOverLocation';
-                        } else if (nodes[i].attributes['m:val'] && nodes[i].attributes['m:val'].value == 'subSup') {
-                            result.mathProperties.naryLimit = 'SubscriptSuperscriptLocation';
-                        } else {
-                            result.mathProperties.naryLimit = '';
-                        }
-                        break;
+                case "mathFont":
+                    result.mathProperties.mathFont = (
+                        nodes[i].attributes['m:val']
+                    ) ? nodes[i].attributes['m:val'].value || '' : '';
+                    break;
+                case "brkBin":
+                    /**
+                     * @description Values : after, before, repeat
+                     * @type {String}
+                     */
+                    result.mathProperties.breakOnBinary = (
+                        nodes[i].attributes['m:val']
+                    ) ? nodes[i].attributes['m:val'].value || '' : '';
+                    break;
+                case "brkBinSub":
+                    /**
+                     * @description Values : after, before, repeat
+                     * @type {String}
+                     */
+                    /**
+                     * @description Values : --, +-, -+
+                     * @type {String}
+                     */
+                    result.mathProperties.breakOnBinarySubtraction = (
+                        nodes[i].attributes['m:val']
+                    ) ? nodes[i].attributes['m:val'].value || '' : '';
+                    break;
+                case "smallFrac":
+                    result.mathProperties.onSmallFraction = (
+                        !!nodes[i].attributes['m:val'] && (nodes[i].attributes['m:val'].value != '0')
+                    );
+                    break;
+                case "dispDef":
+                    result.mathProperties.displayDefault = (
+                        !!nodes[i].attributes['m:val'] && (nodes[i].attributes['m:val'].value != '0')
+                    );
+                    break;
+                case "lMargin":
+                    result.mathProperties.leftMargin = (
+                        nodes[i].attributes['m:val'] && !isNaN(nodes[i].attributes['m:val'].value)
+                    ) ? +nodes[i].attributes['m:val'].value : 0;
+                    break;
+                case "rMargin":
+                    result.mathProperties.rightMargin = (
+                        nodes[i].attributes['m:val'] && !isNaN(nodes[i].attributes['m:val'].value)
+                    ) ? +nodes[i].attributes['m:val'].value : 0;
+                    break;
+                case "defJc":
+                    result.mathProperties.align = nodes[i].attributes['m:val'] ? nodes[i].attributes['m:val'].value : 'left';
+                    if (result.mathProperties.align == 'centerGroup') {
+                        result.mathProperties.align = 'center';
+                    }
+                    break;
+                case "preSp":
+                    result.mathProperties.preSpacing = (
+                        nodes[i].attributes['m:val'] && !isNaN(nodes[i].attributes['m:val'].value)
+                        ) ? +nodes[i].attributes['m:val'].value : 0;
+                    break;
+                case "postSp":
+                    result.mathProperties.postSpacing = (
+                        nodes[i].attributes['m:val'] && !isNaN(nodes[i].attributes['m:val'].value)
+                    ) ? 0 : +nodes[i].attributes['m:val'].value;
+                    break;
+                case "interSp":
+                    result.mathProperties.interSpacing = (
+                        nodes[i].attributes['m:val'] && !isNaN(nodes[i].attributes['m:val'].value)
+                        ) ? 0 : +nodes[i].attributes['m:val'].value;
+                    break;
+                case "intraSp":
+                    result.mathProperties.intraSpacing = (
+                        nodes[i].attributes['m:val'] && !isNaN(nodes[i].attributes['m:val'].value)
+                    ) ? 0 : +nodes[i].attributes['m:val'].value;
+                    break;
+                case "wrapIndent":
+                    result.mathProperties.wrapIndent = (
+                        nodes[i].attributes['m:val'] && !isNaN(nodes[i].attributes['m:val'].value)
+                    ) ? 0 : +nodes[i].attributes['m:val'].value;
+                    break;
+                case "wrapRight":
+                    result.mathProperties.wrapRight = (
+                        nodes[i].attributes['m:val'] && !isNaN(nodes[i].attributes['m:val'].value)
+                        ) ? 0 : +nodes[i].attributes['m:val'].value;
+                    break;
+                case "intLim":
+                    if (nodes[i].attributes['m:val'] && nodes[i].attributes['m:val'].value == 'undOvr') {
+                        result.mathProperties.intLimit = 'UnderOverLocation';
+                    } else if (nodes[i].attributes['m:val'] && nodes[i].attributes['m:val'].value == 'subSup') {
+                        result.mathProperties.intLimit = 'SubscriptSuperscriptLocation';
+                    } else {
+                        result.mathProperties.intLimit = '';
+                    }
+                    break;
+                case "naryLim":
+                    if (nodes[i].attributes['m:val'] && nodes[i].attributes['m:val'].value == 'undOvr') {
+                        result.mathProperties.naryLimit = 'UnderOverLocation';
+                    } else if (nodes[i].attributes['m:val'] && nodes[i].attributes['m:val'].value == 'subSup') {
+                        result.mathProperties.naryLimit = 'SubscriptSuperscriptLocation';
+                    } else {
+                        result.mathProperties.naryLimit = '';
+                    }
+                    break;
                 }
             }
             break;

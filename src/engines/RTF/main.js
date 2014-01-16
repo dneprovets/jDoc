@@ -1,5 +1,4 @@
 /**
- * @constructor
  * @type {Object}
  */
 jDoc.engines.RTF = jDoc.Engine.extend(

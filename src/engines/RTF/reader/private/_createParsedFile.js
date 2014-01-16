@@ -82,9 +82,7 @@ jDoc.engines.RTF.prototype._createParsedFile = function (text, callback) {
                     margin: "0"
                 },
                 dimensionCSSRules: {
-                    /**
-                     * default font size
-                     */
+                    // default font size
                     fontSize: {
                         value: 14,
                         units: "pt"

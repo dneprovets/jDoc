@@ -20,7 +20,8 @@
         "grunt-contrib-clean": "~0.4.1",
         "grunt-jsbeautifier": "~0.2.2",
         "selenium-webdriver": "~2.35.2",
-        "mocha": "~1.13.0"
+        "mocha": "~1.13.0",
+        "jsdoc": "<=3.3.0"
     },
     "scripts": {
         "grunt": "node_modules/.bin/grunt"

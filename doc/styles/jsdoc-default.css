@@ -6,7 +6,7 @@ html
 
 body
 {
-	font: 14px "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans serif;
+	font: 14px "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
 	line-height: 130%;
 	color: #000;
 	background-color: #fff;
@@ -195,12 +195,14 @@ h6
 	font-family: Consolas, "Lucida Console", Monaco, monospace;
 }
 
-.details { margin-top: 14px; }
-.details dt { width:100px; float:left; border-left: 2px solid #DDD; padding-left: 10px;  padding-top: 6px; }
+.details { margin-top: 14px; border-left: 2px solid #DDD; }
+.details dt { width:100px; float:left; padding-left: 10px;  padding-top: 6px; }
 .details dd { margin-left: 50px; }
 .details ul { margin: 0; }
 .details ul { list-style-type: none; }
 .details li { margin-left: 30px; padding-top: 6px; }
+.details pre.prettyprint { margin: 0 }
+.details .object-value { padding-top: 0; }
 
 .description {
 	margin-bottom: 1em;
@@ -237,7 +239,44 @@ h6
 	margin: 0;
 	background-color: #fff;
 	color: #000;
-	border-left: 3px #ddd solid;
+}
+
+.prettyprint code span.line
+{
+  display: inline-block;
+}
+
+.prettyprint.linenums
+{
+  padding-left: 70px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.prettyprint.linenums ol
+{
+  padding-left: 0;
+}
+
+.prettyprint.linenums li
+{
+  border-left: 3px #ddd solid;
+}
+
+.prettyprint.linenums li.selected,
+.prettyprint.linenums li.selected *
+{
+  background-color: lightyellow;
+}
+
+.prettyprint.linenums li *
+{
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
 }
 
 .params, .props

@@ -1,5 +1,5 @@
 /**
- * namespace:attributeName => attributeName
+ * @description namespace:attributeName => attributeName
  * @param attributeName
  * @return {String}
  * @private

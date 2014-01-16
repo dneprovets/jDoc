@@ -103,9 +103,7 @@ var jDoc = {
             parse,
             engineObj;
 
-        /**
-         * Select engine for file
-         */
+        // Select engine for file
         this.currentEngine = null;
 
         for (engine in this.engines) {
