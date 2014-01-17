@@ -2,7 +2,7 @@ var ArrayPrototype = Array.prototype;
 
 /**
  * @description jDoc
- * @type {Object}
+ * @type {{engines: {}, currentEngine: null, _errors: {invalidReadFirstArgument: {message: string}, invalidFileType: {message: string}, invalidLoadFile: {message: string}, requiredTechnologies: {message: string}}, _validators: {email: RegExp, url: RegExp}, validateEmail: Function, validateURL: Function, _supportedFormats: Array, read: Function, _selectEngine: Function, getSupportedFormats: Function, testRequiredTechnologies: Function, getFileMimeType: Function}}
  */
 var jDoc = {
     engines: {},
@@ -11,7 +11,6 @@ var jDoc = {
 
     /**
      * @description error objects
-     * @private
      */
     _errors: {
         invalidReadFirstArgument: {
@@ -159,7 +158,7 @@ var jDoc = {
 
     /**
      *
-     * @return {Boolean}
+     * @returns {boolean}
      */
     testRequiredTechnologies: function () {
         var wnd = window;
@@ -177,9 +176,9 @@ var jDoc = {
     },
 
     /**
+     *
      * @param filename
-     * @return {String}
-     * @private
+     * @returns {string}
      */
     getFileMimeType: function (filename) {
         var extension = (/[A-Za-z]+$/).exec(filename),
