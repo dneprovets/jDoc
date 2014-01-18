@@ -2,7 +2,7 @@ var ArrayPrototype = Array.prototype;
 
 /**
  * @description jDoc
- * @type {Object}
+ * @type {{engines: {}, currentEngine: null, _errors: {invalidReadFirstArgument: {message: string}, invalidFileType: {message: string}, invalidLoadFile: {message: string}, requiredTechnologies: {message: string}}, _validators: {email: RegExp, url: RegExp}, validateEmail: Function, validateURL: Function, _supportedFormats: Array, read: Function, _selectEngine: Function, getSupportedFormats: Function, testRequiredTechnologies: Function, getFileMimeType: Function}}
  */
 var jDoc = {
     engines: {},
@@ -11,7 +11,6 @@ var jDoc = {
 
     /**
      * @description error objects
-     * @private
      */
     _errors: {
         invalidReadFirstArgument: {
@@ -69,13 +68,16 @@ var jDoc = {
         if (typeof options !== 'object') {
             options = {};
         }
-        if (typeof options.start === 'function') {
-            options.start();
+        if (typeof options.before === 'function') {
+            options.before();
         }
 
         if (!this.testRequiredTechnologies()) {
             if (typeof options.error === 'function') {
                 options.error(this._errors.requiredTechnologies);
+            }
+            if (typeof options.complete === 'function') {
+                options.complete();
             }
             return;
         }
@@ -103,9 +105,7 @@ var jDoc = {
             parse,
             engineObj;
 
-        /**
-         * Select engine for file
-         */
+        // Select engine for file
         this.currentEngine = null;
 
         for (engine in this.engines) {
@@ -132,21 +132,9 @@ var jDoc = {
             }
 
             parse.call(this.currentEngine, {
-                success: function (parsedFile) {
-                    if (typeof options.success === 'function') {
-                        options.success(parsedFile);
-                    }
-                },
-                error: function (error) {
-                    if (typeof options.error === 'function') {
-                        options.error(error);
-                    }
-                },
-                complete: function () {
-                    if (typeof options.complete === 'function') {
-                        options.complete();
-                    }
-                }
+                success: options.success,
+                error: options.error,
+                complete: options.complete
             });
         }
     },
@@ -161,7 +149,7 @@ var jDoc = {
 
     /**
      *
-     * @return {Boolean}
+     * @returns {boolean}
      */
     testRequiredTechnologies: function () {
         var wnd = window;
@@ -174,14 +162,13 @@ var jDoc = {
             wnd.ArrayBuffer &&
             wnd.Uint8Array &&
             wnd.DataView
-            //wnd.requestFileSystem
         );
     },
 
     /**
+     *
      * @param filename
-     * @return {String}
-     * @private
+     * @returns {string}
      */
     getFileMimeType: function (filename) {
         var extension = (/[A-Za-z]+$/).exec(filename),

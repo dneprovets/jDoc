@@ -1,14 +1,11 @@
 /**
- * Read files in Fiction Book Formal
+ * @description Read files in Fiction Book Formal
  * @param options
  * @public
  */
 jDoc.engines.FictionBook.prototype.parse = function (options) {
     var fileEntries;
 
-    if (typeof options.start === 'function') {
-        options.start();
-    }
     if (!this.validate()) {
         if (typeof options.error === 'function') {
             options.error({

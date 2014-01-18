@@ -1,5 +1,5 @@
 /**
- * get type of file
+ * @description get type of file
  * @param file
  * @return {null|String}
  * @private
@@ -31,9 +31,7 @@ jDoc.Engine.prototype._getFileType = function (file) {
             }
         }
 
-        /**
-         * if not found by mime type find by file extension
-         */
+        // if not found by mime type find by file extension
         if (!found && extension) {
             fileExtensions = this._fileTypeParsers[i].extension;
             if (!(fileExtensions instanceof Array)) {

@@ -6,7 +6,7 @@ jDoc.Engine.prototype = {
 };
 
 /**
- * Extend function
+ * @description Extend function
  * @param props
  * @return {Object}
  */

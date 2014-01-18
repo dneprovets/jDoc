@@ -17,7 +17,7 @@ jDoc.engines.ODF.prototype._createParsedFileFromTextDocument = function (filesEn
         };
 
     /**
-     * Reading files
+     * @description Reading files
      */
     this.readFilesEntries({
         entries: filesEntry,

@@ -3,132 +3,11 @@
     window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem || window.mozRequestFileSystem;
     window.URL = window.URL || window.webkitURL || window.mozURL;
     window.Blob = window.Blob || window.webkitBlob || window.mozBlob;
-    (function (window, navigator) {
-        "use strict";
-
-        var _browserInfo = (navigator.userAgent || "").toLowerCase(),
-
-            /**
-             * версии браузеров
-             */
-            _versions = {
-                "msie": ((/(?:msie\s([0-9a-z,.]+);)/).exec(_browserInfo) || [])[1] || '',
-                "opera": ((/(?:version\/([0-9a-z,.]+))$/).exec(_browserInfo) || [])[1] || '',
-                "chrome": ((/(?:chrome\/([0-9a-z,.]+)\s)/).exec(_browserInfo) || [])[1] || '',
-                "firefox": ((/(?:firefox\/([0-9a-z,.]+))$/).exec(_browserInfo) || [])[1] || '',
-                "safari": ((/(?:version\/([0-9a-z,.]+)\s)/).exec(_browserInfo) || [])[1] || ''
-            },
-
-            /**
-             * преобразуем в float
-             * может прити и с текстом (14.0b.1)
-             */
-            browser,
-            versionArr;
-
-        for (browser in _versions) {
-            if (_versions.hasOwnProperty(browser)) {
-                versionArr = _versions[browser].replace(/[^0-9\.,]/, '').split(/[\.,]/);
-                _versions[browser] = +(versionArr.shift() + '.' + versionArr.join('')) || 0;
-            }
-        }
-
-        window.browser = {
-            language: (navigator.systemLanguage || navigator.language.split('-')[0]).toLowerCase(),
-
-            isSupportHistoryAPI: function () {
-                return !!(window.history.pushState && window.history.replaceState);
-            },
-
-            /**
-             *
-             * @param container
-             * @returns {*}
-             */
-            setFieldsType: function (container) {
-                container = container || document;
-
-                var type,
-                    elements = container.getElementsByTagName('input'),
-                    i,
-                    len = elements ? elements.length : 0;
-
-                for (i = len - 1; i >= 0; i--) {
-                    type = elements[i].attributes['data-type'];
-
-                    if (type && type.value) {
-                        /**
-                         * в Safari возвращается не строка, а число, например, 01 -> 1, 09 -> 9  и т.д.
-                         */
-                        if (type.value == "number" && this.isIOSDevice()) {
-                            elements[i].pattern = '[0-9]*';
-                        } else {
-                            elements[i].type = type.value;
-                        }
-                    }
-                }
-
-                return container;
-            },
-
-            isIPhone: function () {
-                return (_browserInfo.indexOf("iphone") > -1);
-            },
-
-            isIPad: function () {
-                return (_browserInfo.indexOf("ipad") > -1);
-            },
-
-            isIPod: function () {
-                return (_browserInfo.indexOf("ipod") > -1);
-            },
-
-            isIPadWebView: function () {
-                return (_browserInfo.indexOf("applewebkit") > -1 && _browserInfo.indexOf("mobile") > -1);
-            },
-
-            isIOSDevice: function () {
-                return this.isIPad() || this.isIPod() || this.isIPhone() || this.isIPadWebView();
-            },
-
-            isAndroidDevice: function () {
-                return (_browserInfo.indexOf("android") > -1);
-            },
-
-            isWindowsMobileDevice: function () {
-                return (_browserInfo.indexOf("windows phone") > -1);
-            },
-
-            isMobileDevice: function () {
-                return this.isIOSDevice() || this.isAndroidDevice() || this.isWindowsMobileDevice();
-            },
-
-            isOpera: function () {
-                return (_browserInfo.indexOf('opera') > -1);
-            },
-
-            isChrome: function () {
-                return (_browserInfo.indexOf('chrome') > -1);
-            },
-
-            isFireFox: function () {
-                return (_browserInfo.indexOf('firefox') > -1);
-            },
-
-            isMSIE: function () {
-                return (_browserInfo.indexOf('msie') > -1);
-            },
-
-            isSafari: function () {
-                return (_browserInfo.indexOf('safari') > -1);
-            }
-        };
-    }(window, window.navigator));
     var ArrayPrototype = Array.prototype;
 
     /**
      * @description jDoc
-     * @type {Object}
+     * @type {{engines: {}, currentEngine: null, _errors: {invalidReadFirstArgument: {message: string}, invalidFileType: {message: string}, invalidLoadFile: {message: string}, requiredTechnologies: {message: string}}, _validators: {email: RegExp, url: RegExp}, validateEmail: Function, validateURL: Function, _supportedFormats: Array, read: Function, _selectEngine: Function, getSupportedFormats: Function, testRequiredTechnologies: Function, getFileMimeType: Function}}
      */
     var jDoc = {
         engines: {},
@@ -137,7 +16,6 @@
 
         /**
          * @description error objects
-         * @private
          */
         _errors: {
             invalidReadFirstArgument: {
@@ -195,13 +73,16 @@
             if (typeof options !== 'object') {
                 options = {};
             }
-            if (typeof options.start === 'function') {
-                options.start();
+            if (typeof options.before === 'function') {
+                options.before();
             }
 
             if (!this.testRequiredTechnologies()) {
                 if (typeof options.error === 'function') {
                     options.error(this._errors.requiredTechnologies);
+                }
+                if (typeof options.complete === 'function') {
+                    options.complete();
                 }
                 return;
             }
@@ -229,9 +110,7 @@
                 parse,
                 engineObj;
 
-            /**
-             * Select engine for file
-             */
+            // Select engine for file
             this.currentEngine = null;
 
             for (engine in this.engines) {
@@ -258,21 +137,9 @@
                 }
 
                 parse.call(this.currentEngine, {
-                    success: function (parsedFile) {
-                        if (typeof options.success === 'function') {
-                            options.success(parsedFile);
-                        }
-                    },
-                    error: function (error) {
-                        if (typeof options.error === 'function') {
-                            options.error(error);
-                        }
-                    },
-                    complete: function () {
-                        if (typeof options.complete === 'function') {
-                            options.complete();
-                        }
-                    }
+                    success: options.success,
+                    error: options.error,
+                    complete: options.complete
                 });
             }
         },
@@ -287,7 +154,7 @@
 
         /**
          *
-         * @return {Boolean}
+         * @returns {boolean}
          */
         testRequiredTechnologies: function () {
             var wnd = window;
@@ -300,14 +167,13 @@
                 wnd.ArrayBuffer &&
                 wnd.Uint8Array &&
                 wnd.DataView
-                //wnd.requestFileSystem
             );
         },
 
         /**
+         *
          * @param filename
-         * @return {String}
-         * @private
+         * @returns {string}
          */
         getFileMimeType: function (filename) {
             var extension = (/[A-Za-z]+$/).exec(filename),
@@ -947,7 +813,7 @@
     };
 
     /**
-     * @description 10pt = 13px, params = {value: 2, from: "px", to: "em"}
+     * @description 10pt = 13px
      * @param params
      * @return {Number}
      * @private
@@ -973,16 +839,13 @@
     /**
      *
      * @param blob
-     * @constructor
      */
     jDoc.Binary = function (blob) {
         this.blob = blob;
-        this.size = blob.size || 0
+        this.size = blob.size || 0;
     };
 
-    jDoc.Binary.prototype =
-    /** @lends jDoc.Binary.prototype */
-    {
+    jDoc.Binary.prototype = /** @lends jDoc.Binary.prototype */ {
         /**
          *
          * @param blob
@@ -992,7 +855,7 @@
          * @private
          */
         _blobSlice: function (blob, index, length) {
-            return blob.slice(index, index + length)
+            return blob.slice(index, index + length);
         },
 
         /**
@@ -1006,13 +869,13 @@
             dataBuffer = new ArrayBuffer(byteLength);
             dataArray = new Uint8Array(dataBuffer);
             if (bytes) {
-                dataArray.set(bytes, 0)
+                dataArray.set(bytes, 0);
             }
             return {
                 buffer: dataBuffer,
                 array: dataArray,
                 view: new DataView(dataBuffer)
-            }
+            };
         },
 
         /**
@@ -1028,9 +891,9 @@
 
             for (i = 0; i < len; i++) {
                 str = array[i].toString(16);
-                result += (str.length < 2 ? "0" + str : str)
+                result += (str.length < 2 ? "0" + str : str);
             }
-            return result.toUpperCase()
+            return result.toUpperCase();
         },
 
         /**
@@ -1041,10 +904,10 @@
             var reader = new FileReader();
 
             reader.onload = function (e) {
-                options.success(new Uint8Array(e.target.result))
+                options.success(new Uint8Array(e.target.result));
             };
             reader.onerror = options.onerror;
-            reader.readAsArrayBuffer(this._blobSlice(this.blob, options.index, options.length))
+            reader.readAsArrayBuffer(this._blobSlice(this.blob, options.index, options.length));
         },
 
         /**
@@ -1053,21 +916,22 @@
          * @returns {*}
          */
         reverseUintArray: function (array) {
-            var dataArray;
+            var dataArray,
+                len = array.length;
 
             if (array instanceof Uint16Array) {
-                dataArray = this.getUint16Array(array.length)
+                dataArray = this.getUint16Array(len);
             } else {
                 if (array instanceof Uint32Array) {
-                    dataArray = this.getUint32Array(array.length)
+                    dataArray = this.getUint32Array(len);
                 } else {
-                    dataArray = this.getUint8Array(array.length)
+                    dataArray = this.getUint8Array(len);
                 }
             }
 
             dataArray.set(Array.prototype.reverse.call(array), 0);
 
-            return dataArray
+            return dataArray;
         },
 
         /**
@@ -1076,7 +940,7 @@
          * @returns {Uint8Array}
          */
         getUint8Array: function (size) {
-            return new Uint8Array(new ArrayBuffer(size))
+            return new Uint8Array(new ArrayBuffer(size));
         },
 
         /**
@@ -1106,22 +970,22 @@
             var dataArray,
                 arr = [],
                 i,
-                len = options.index + options.length;
+                len = options.length;
 
             if (options.data instanceof Uint16Array) {
-                dataArray = this.getUint16Array(options.length)
+                dataArray = this.getUint16Array(len);
             } else {
                 if (options.data instanceof Uint32Array) {
-                    dataArray = this.getUint32Array(options.length)
+                    dataArray = this.getUint32Array(len);
                 } else {
-                    dataArray = this.getUint8Array(options.length)
+                    dataArray = this.getUint8Array(len);
                 }
             }
 
-            len = options.index + options.length;
+            len += options.index;
 
             for (i = options.index; i < len; i++) {
-                arr.push(options.data[i])
+                arr.push(options.data[i]);
             }
 
             dataArray.set(arr, 0);
@@ -1140,13 +1004,13 @@
 
             if (55296 <= code && code <= 56319) {
                 if (str.length === 1) {
-                    return code
+                    return code;
                 }
                 var low = str.charCodeAt(1);
-                return ((code - 55296) * 1024) + (low - 56320) + 65536
+                return ((code - 55296) * 1024) + (low - 56320) + 65536;
             }
             if (56320 <= code && code <= 57343) {
-                return code
+                return code;
             }
             return code;
         },
@@ -1183,12 +1047,130 @@
                     index: j,
                     length: (options.length > (len - options.length * i) ? (len - options.length * i) : options.length) - j
                 });
-                j += options.length
+                j += options.length;
             }
 
             return arr;
         }
     };
+    (function (window, navigator) {
+        "use strict";
+
+        var _browserInfo = (navigator.userAgent || "").toLowerCase(),
+            history = window.history,
+            /**
+             * @description версии браузеров
+             */
+            _versions = {
+                "msie": ((/(?:msie\s([0-9a-z,.]+);)/).exec(_browserInfo) || [])[1] || '',
+                "opera": ((/(?:version\/([0-9a-z,.]+))$/).exec(_browserInfo) || [])[1] || '',
+                "chrome": ((/(?:chrome\/([0-9a-z,.]+)\s)/).exec(_browserInfo) || [])[1] || '',
+                "firefox": ((/(?:firefox\/([0-9a-z,.]+))$/).exec(_browserInfo) || [])[1] || '',
+                "safari": ((/(?:version\/([0-9a-z,.]+)\s)/).exec(_browserInfo) || [])[1] || ''
+            },
+
+            /**
+             * @description может прити и с текстом (14.0b.1)
+             */
+            browser,
+            versionArr;
+
+        for (browser in _versions) {
+            if (_versions.hasOwnProperty(browser)) {
+                versionArr = _versions[browser].replace(/[^0-9\.,]/, '').split(/[\.,]/);
+                _versions[browser] = +(versionArr.shift() + '.' + versionArr.join('')) || 0;
+            }
+        }
+
+        jDoc.browser = {
+            language: (navigator.systemLanguage || navigator.language.split('-')[0]).toLowerCase(),
+
+            isSupportHistoryAPI: function () {
+                return !!(window.history.pushState && window.history.replaceState);
+            },
+
+            /**
+             *
+             * @param container
+             * @returns {*}
+             */
+            setFieldsType: function (container) {
+                container = container || document;
+
+                var type,
+                    elements = container.getElementsByTagName('input'),
+                    i,
+                    len = elements ? elements.length : 0;
+
+                for (i = len - 1; i >= 0; i--) {
+                    type = elements[i].attributes['data-type'];
+
+                    if (type && type.value) {
+                        // в Safari возвращается не строка, а число, например, 01 -> 1, 09 -> 9  и т.д.
+                        if (type.value == "number" && this.isIOSDevice()) {
+                            elements[i].pattern = '[0-9]*';
+                        } else {
+                            elements[i].type = type.value;
+                        }
+                    }
+                }
+
+                return container;
+            },
+
+            isIPhone: function () {
+                return (_browserInfo.indexOf("iphone") > -1);
+            },
+
+            isIPad: function () {
+                return (_browserInfo.indexOf("ipad") > -1);
+            },
+
+            isIPod: function () {
+                return (_browserInfo.indexOf("ipod") > -1);
+            },
+
+            isIPadWebView: function () {
+                return (_browserInfo.indexOf("applewebkit") > -1 && _browserInfo.indexOf("mobile") > -1);
+            },
+
+            isIOSDevice: function () {
+                return this.isIPad() || this.isIPod() || this.isIPhone() || this.isIPadWebView();
+            },
+
+            isAndroidDevice: function () {
+                return (_browserInfo.indexOf("android") > -1);
+            },
+
+            isWindowsMobileDevice: function () {
+                return (_browserInfo.indexOf("windows phone") > -1);
+            },
+
+            isMobileDevice: function () {
+                return this.isIOSDevice() || this.isAndroidDevice() || this.isWindowsMobileDevice();
+            },
+
+            isOpera: function () {
+                return (_browserInfo.indexOf('opera') > -1);
+            },
+
+            isChrome: function () {
+                return (_browserInfo.indexOf('chrome') > -1);
+            },
+
+            isFireFox: function () {
+                return (_browserInfo.indexOf('firefox') > -1);
+            },
+
+            isMSIE: function () {
+                return (_browserInfo.indexOf('msie') > -1);
+            },
+
+            isSafari: function () {
+                return (_browserInfo.indexOf('safari') > -1);
+            }
+        };
+    }(window, window.navigator));
     /**
      *
      * @param obj
@@ -8709,7 +8691,7 @@
             return (path || "").replace(/^.+\//, '') || path;
         },
         /**
-         * get type of file
+         * @description get type of file
          * @param file
          * @return {null|String}
          * @private
@@ -8741,9 +8723,7 @@
                     }
                 }
 
-                /**
-                 * if not found by mime type find by file extension
-                 */
+                // if not found by mime type find by file extension
                 if (!found && extension) {
                     fileExtensions = this._fileTypeParsers[i].extension;
                     if (!(fileExtensions instanceof Array)) {
@@ -8777,7 +8757,7 @@
             };
         },
         /**
-         * Return the error of file validation
+         * @description Return the error of file validation
          * @param file
          * @return {null|Object}
          */
@@ -8896,9 +8876,7 @@
                 data;
 
             if (str) {
-                /**
-                 * yyyy-mm-dd
-                 */
+                // yyyy-mm-dd
                 if ((/^[0-9]{4}-(0[1-9]|1[0-2])-([0-2][0-9]|3[01])$/).test(str)) {
                     data = str.split("-");
                     date = data[2] + "." + data[1] + "." + data[0];
@@ -9087,9 +9065,7 @@
 
                                 counter++;
 
-                                /**
-                                 * If all files was processed - run parser
-                                 */
+                                // If all files was processed - run parser
                                 if (counter == entriesCount) {
                                     if (typeof options.success === 'function') {
                                         options.success(fileEntries);
@@ -9110,7 +9086,7 @@
             });
         },
         /**
-         * namespace:attributeName => attributeName
+         * @description namespace:attributeName => attributeName
          * @param attributeName
          * @return {String}
          * @private
@@ -9151,9 +9127,7 @@
             return isNaN(height) ? 0 : Math.round(height);
         },
         /**
-         * Memory leak when using WebWorkers
-         *  https://code.google.com/p/chromium/issues/detail?id=39653
-         *  https://code.google.com/p/chromium/issues/detail?id=263289
+         * @description Memory leak when using WebWorkers (https://code.google.com/p/chromium/issues/detail?id=39653, https://code.google.com/p/chromium/issues/detail?id=263289)
          * @returns {number}
          */
         getMaxEntriesCountForWebWorker: function () {
@@ -9190,9 +9164,7 @@
          */
         parseFromArchive: function (options) {
             var self = this;
-            if (typeof options.start === 'function') {
-                options.start();
-            }
+
             if (!this.validate()) {
                 if (typeof options.error === 'function') {
                     options.error(this._errors.invalidFileType);
@@ -9202,6 +9174,7 @@
                 }
                 return false;
             }
+
             this._readFilesFromZIP({
                 success: function (fileEntries) {
                     self._createParsedFile(fileEntries, function (parsedFile) {
@@ -9226,9 +9199,6 @@
             return null;
         },
         parseFromSimpleFile: function (options) {
-            if (typeof options.start === 'function') {
-                options.start();
-            }
             if (!this.validate()) {
                 if (typeof options.error === 'function') {
                     options.error(this._errors.invalidFileType);
@@ -9261,12 +9231,12 @@
             options = options || {};
 
             /**
-             * 1. IE does not support creating files for worker "on the fly".
-             * 2. Memory leak when using WebWorkers
-             *  https://code.google.com/p/chromium/issues/detail?id=39653
-             *  https://code.google.com/p/chromium/issues/detail?id=263289
+             * @description 1. IE does not support creating files for worker "on the fly".
+             * @description 2. Memory leak when using WebWorkers
+             * @description https://code.google.com/p/chromium/issues/detail?id=39653
+             * @description https://code.google.com/p/chromium/issues/detail?id=263289
              */
-            if (Worker && URL && !browser.isMSIE() && options.entries.length <= this.getMaxEntriesCountForWebWorker()) {
+            if (Worker && URL && !jDoc.browser.isMSIE() && options.entries.length <= this.getMaxEntriesCountForWebWorker()) {
                 return this._readFilesEntriesWithWorkers(options);
             }
 
@@ -9343,7 +9313,7 @@
     };
 
     /**
-     * Extend function
+     * @description Extend function
      * @param props
      * @return {Object}
      */
@@ -9381,7 +9351,6 @@
     };
     /**
      * @description Delimiter-separated values. Delimiters: comma, tab
-     * @constructor
      * @type {Object}
      */
     jDoc.engines.DSV = jDoc.Engine.extend(
@@ -9530,7 +9499,6 @@
         }
     );
     /**
-     * @constructor
      * @type {Object}
      */
     jDoc.engines.FictionBook = jDoc.Engine.extend(
@@ -9625,10 +9593,7 @@
                     info = {};
 
                 for (i = len - 1; i >= 0; i--) {
-                    /**
-                     * firstName, middleName, lastName
-                     * @type {string}
-                     */
+                    // firstName, middleName, lastName
                     if (nodes[i].localName) {
                         info[nodes[i].localName.replace(/-\w+$/, '') + "Name"] = nodes[i].textContent || "";
                     }
@@ -10046,16 +10011,13 @@
                 return result;
             },
             /**
-             * Read files in Fiction Book Formal
+             * @description Read files in Fiction Book Formal
              * @param options
              * @public
              */
             parse: function (options) {
                 var fileEntries;
 
-                if (typeof options.start === 'function') {
-                    options.start();
-                }
                 if (!this.validate()) {
                     if (typeof options.error === 'function') {
                         options.error({
@@ -10158,7 +10120,7 @@
                     };
 
                 /**
-                 * Reading files
+                 * @description Reading files
                  */
                 this.readFilesEntries({
                     entries: filesEntry,
@@ -11867,7 +11829,6 @@
         }
     );
     /**
-     * @constructor
      * @type {Object}
      */
     jDoc.engines.OXML = jDoc.Engine.extend(
@@ -11911,8 +11872,7 @@
                 return options.pageLinesHeight;
             },
             /**
-             * 635 - OXML coef.
-             * 20 - 20th of a Point
+             * @description 635 - OXML coef. 20 - 20th of a Point
              * @param val
              * @return {*}
              * @private
@@ -12488,7 +12448,7 @@
             },
             /**
              *
-             * Parsing information about application
+             * @description Parsing information about application
              * @param xml
              * @private
              * @return {Object}
@@ -12568,7 +12528,7 @@
             },
             /**
              *
-             * Parsing information about document
+             * @description Parsing information about document
              * @param xml
              * @private
              * @return {Object}
@@ -12928,9 +12888,7 @@
                                     };
                                     partInfo.css.borderColor = "#000000";
 
-                                    /**
-                                     * in pt
-                                     */
+                                    // in pt
                                     if (partInfo.dimensionCSSRules.height) {
                                         partInfo.dimensionCSSRules.height.value -= 1.45;
                                     }
@@ -13231,7 +13189,7 @@
                 return result;
             },
             /**
-             * Parse boxShadow style from property node
+             * @description Parse boxShadow style from property node
              * @param node
              * @return {String}
              * @private
@@ -13460,7 +13418,7 @@
 
                     if (sectionProperties.localName === 'sectPr') {
                         /**
-                         * remove last iteration - iteration with sectionProperties
+                         * @description remove last iteration - iteration with sectionProperties
                          */
                         lazyLoopOptions.len--;
                         lazyLoopOptions.all = lazyLoopOptions.len;
@@ -13817,8 +13775,8 @@
                             elementInfo.options.isParagraph = false;
                             elementInfo.options.isListItem = true;
                             /**
-                             * Clear default styles for paragraph
-                             * @type {{}}
+                             * @description Clear default styles for paragraph
+                             * @type {*}
                              */
                             elementInfo.css = {};
                             elementInfo.dimensionCSSRules = {};
@@ -14007,7 +13965,7 @@
                 return result;
             },
             /**
-             * Parse document settings
+             * @description Parse document settings
              * @param xml
              * @return {Object}
              * @private
@@ -14159,7 +14117,7 @@
                                 break;
                             case "brkBin":
                                 /**
-                                 * Values : after, before, repeat
+                                 * @description Values : after, before, repeat
                                  * @type {String}
                                  */
                                 result.mathProperties.breakOnBinary = (
@@ -14168,11 +14126,11 @@
                                 break;
                             case "brkBinSub":
                                 /**
-                                 * Values : after, before, repeat
+                                 * @description Values : after, before, repeat
                                  * @type {String}
                                  */
                                 /**
-                                 * Values : --, +-, -+
+                                 * @description Values : --, +-, -+
                                  * @type {String}
                                  */
                                 result.mathProperties.breakOnBinarySubtraction = (
@@ -14662,7 +14620,7 @@
                 return true;
             },
             /**
-             * Parsing document web settings
+             * @description Parsing document web settings
              * @param xml
              * @return {Object}
              * @private
@@ -14953,7 +14911,6 @@
         }
     );
     /**
-     * @constructor
      * @type {Object}
      */
     jDoc.engines.RTF = jDoc.Engine.extend(
@@ -15072,9 +15029,7 @@
                                 margin: "0"
                             },
                             dimensionCSSRules: {
-                                /**
-                                 * default font size
-                                 */
+                                // default font size
                                 fontSize: {
                                     value: 14,
                                     units: "pt"
@@ -16529,9 +16484,7 @@
                             width: parseParams.pageWidth
                         });
 
-                        /**
-                         * divide into several parts
-                         */
+                        // divide into several parts
                         if (paragraphHeight > parseParams.pageHeight) {
                             parts = [];
                             elements = parseParams.currentTextElementParent.elements;
@@ -16603,7 +16556,7 @@
                     parseParams.currentElementIndex++;
 
                     /**
-                     * inherit previous paragraph
+                     * @description inherit previous paragraph
                      * @type {*}
                      */
 
@@ -17341,7 +17294,6 @@
         }
     );
     /**
-     * @constructor
      * @type {Object}
      */
     jDoc.engines.Simple = jDoc.Engine.extend(

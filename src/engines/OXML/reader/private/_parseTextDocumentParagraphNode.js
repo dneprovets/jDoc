@@ -81,8 +81,8 @@ jDoc.engines.OXML.prototype._parseTextDocumentParagraphNode = function (params) 
                 elementInfo.options.isParagraph = false;
                 elementInfo.options.isListItem = true;
                 /**
-                 * Clear default styles for paragraph
-                 * @type {{}}
+                 * @description Clear default styles for paragraph
+                 * @type {*}
                  */
                 elementInfo.css = {};
                 elementInfo.dimensionCSSRules = {};

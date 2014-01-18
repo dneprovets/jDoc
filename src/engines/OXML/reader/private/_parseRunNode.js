@@ -133,9 +133,7 @@ jDoc.engines.OXML.prototype._parseRunNode = function (data) {
                         };
                         partInfo.css.borderColor = "#000000";
 
-                        /**
-                         * in pt
-                         */
+                        // in pt
                         if (partInfo.dimensionCSSRules.height) {
                             partInfo.dimensionCSSRules.height.value -= 1.45;
                         }

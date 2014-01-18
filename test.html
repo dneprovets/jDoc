@@ -11,7 +11,7 @@
             margin: auto;
         }
     </style>
-    <script src="src/build/jdoc.0.3.0.js"></script>
+    <script src="src/build/jdoc.0.3.1.js"></script>
     <script>
         window.onload = function () {
             var field = document.getElementById('file-field');
@@ -21,7 +21,14 @@
                 canvas.innerHTML = "";
 
                 jDoc.read(event.target.files[0], {
+                    before: function () {
+                        console.log("BEFORE ", arguments);
+                    },
+                    complete: function () {
+                        console.log("COMPLETE ", arguments);
+                    },
                     success: function (parsedFile) {
+                        console.log("SUCCESS ", arguments);
                         canvas.appendChild(parsedFile.html());
                     },
 

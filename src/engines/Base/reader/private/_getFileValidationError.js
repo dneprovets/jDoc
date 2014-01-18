@@ -1,5 +1,5 @@
 /**
- * Return the error of file validation
+ * @description Return the error of file validation
  * @param file
  * @return {null|Object}
  */

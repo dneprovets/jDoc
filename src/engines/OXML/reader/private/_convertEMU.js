@@ -1,6 +1,5 @@
 /**
- * 635 - OXML coef.
- * 20 - 20th of a Point
+ * @description 635 - OXML coef. 20 - 20th of a Point
  * @param val
  * @return {*}
  * @private

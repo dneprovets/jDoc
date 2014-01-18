@@ -2,5 +2,5 @@
 .git
 node_modules/*
 node_modules
-!node_modules/grunt-jdoc-engines-concat/tasks
+!node_modules/grunt-jdoc-engines-concat
 files

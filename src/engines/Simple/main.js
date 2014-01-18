@@ -1,5 +1,4 @@
 /**
- * @constructor
  * @type {Object}
  */
 jDoc.engines.Simple = jDoc.Engine.extend(

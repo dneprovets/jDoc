@@ -11,8 +11,6 @@ module.exports = function () {
                         "}(window, document));"
             },
             src: [
-                'src/browser.js',
-
                 'src/main.js',
                 'src/parsedFile.js',
 

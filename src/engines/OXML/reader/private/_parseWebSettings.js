@@ -1,5 +1,5 @@
 /**
- * Parsing document web settings
+ * @description Parsing document web settings
  * @param xml
  * @return {Object}
  * @private

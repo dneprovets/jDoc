@@ -1,7 +1,4 @@
 jDoc.Engine.prototype.parseFromSimpleFile = function (options) {
-    if (typeof options.start === 'function') {
-        options.start();
-    }
     if (!this.validate()) {
         if (typeof options.error === 'function') {
             options.error(this._errors.invalidFileType);

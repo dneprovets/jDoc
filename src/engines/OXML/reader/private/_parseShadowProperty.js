@@ -1,5 +1,5 @@
 /**
- * Parse boxShadow style from property node
+ * @description Parse boxShadow style from property node
  * @param node
  * @return {String}
  * @private

@@ -11,10 +11,7 @@ jDoc.engines.FictionBook.prototype._getPersonInfo = function (xml) {
         info = {};
 
     for (i = len - 1; i >= 0; i--) {
-        /**
-         * firstName, middleName, lastName
-         * @type {string}
-         */
+        // firstName, middleName, lastName
         if (nodes[i].localName) {
             info[nodes[i].localName.replace(/-\w+$/, '') + "Name"] = nodes[i].textContent || "";
         }
