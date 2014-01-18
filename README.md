@@ -41,13 +41,15 @@ Example:
 
 ```js
 jDoc.read(file, {
+    before: function () {},
     success: function (parsedFile) {
 
     },
 
     error: function (error) {
 
-    }
+    },
+    complete: function () {}
 });
 ```
 

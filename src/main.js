@@ -68,13 +68,16 @@ var jDoc = {
         if (typeof options !== 'object') {
             options = {};
         }
-        if (typeof options.start === 'function') {
-            options.start();
+        if (typeof options.before === 'function') {
+            options.before();
         }
 
         if (!this.testRequiredTechnologies()) {
             if (typeof options.error === 'function') {
                 options.error(this._errors.requiredTechnologies);
+            }
+            if (typeof options.complete === 'function') {
+                options.complete();
             }
             return;
         }
@@ -129,21 +132,9 @@ var jDoc = {
             }
 
             parse.call(this.currentEngine, {
-                success: function (parsedFile) {
-                    if (typeof options.success === 'function') {
-                        options.success(parsedFile);
-                    }
-                },
-                error: function (error) {
-                    if (typeof options.error === 'function') {
-                        options.error(error);
-                    }
-                },
-                complete: function () {
-                    if (typeof options.complete === 'function') {
-                        options.complete();
-                    }
-                }
+                success: options.success,
+                error: options.error,
+                complete: options.complete
             });
         }
     },
@@ -171,7 +162,6 @@ var jDoc = {
             wnd.ArrayBuffer &&
             wnd.Uint8Array &&
             wnd.DataView
-            //wnd.requestFileSystem
         );
     },
 

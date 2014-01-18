@@ -5,9 +5,7 @@
  */
 jDoc.Engine.prototype.parseFromArchive = function (options) {
     var self = this;
-    if (typeof options.start === 'function') {
-        options.start();
-    }
+
     if (!this.validate()) {
         if (typeof options.error === 'function') {
             options.error(this._errors.invalidFileType);
@@ -17,6 +15,7 @@ jDoc.Engine.prototype.parseFromArchive = function (options) {
         }
         return false;
     }
+
     this._readFilesFromZIP({
         success: function (fileEntries) {
             self._createParsedFile(fileEntries, function (parsedFile) {

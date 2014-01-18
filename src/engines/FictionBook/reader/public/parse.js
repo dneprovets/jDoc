@@ -6,9 +6,6 @@
 jDoc.engines.FictionBook.prototype.parse = function (options) {
     var fileEntries;
 
-    if (typeof options.start === 'function') {
-        options.start();
-    }
     if (!this.validate()) {
         if (typeof options.error === 'function') {
             options.error({

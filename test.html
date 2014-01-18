@@ -21,7 +21,14 @@
                 canvas.innerHTML = "";
 
                 jDoc.read(event.target.files[0], {
+                    before: function () {
+                        console.log("BEFORE ", arguments);
+                    },
+                    complete: function () {
+                        console.log("COMPLETE ", arguments);
+                    },
                     success: function (parsedFile) {
+                        console.log("SUCCESS ", arguments);
                         canvas.appendChild(parsedFile.html());
                     },
 

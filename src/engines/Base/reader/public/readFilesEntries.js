@@ -7,7 +7,7 @@ jDoc.Engine.prototype.readFilesEntries = function (options) {
      * @description https://code.google.com/p/chromium/issues/detail?id=39653
      * @description https://code.google.com/p/chromium/issues/detail?id=263289
      */
-    if (Worker && URL && !browser.isMSIE() && options.entries.length <= this.getMaxEntriesCountForWebWorker()) {
+    if (Worker && URL && !jDoc.browser.isMSIE() && options.entries.length <= this.getMaxEntriesCountForWebWorker()) {
         return this._readFilesEntriesWithWorkers(options);
     }
 

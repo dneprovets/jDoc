@@ -27,7 +27,7 @@
         }
     }
 
-    jDoc.utils.browser = {
+    jDoc.browser = {
         language: (navigator.systemLanguage || navigator.language.split('-')[0]).toLowerCase(),
 
         isSupportHistoryAPI: function () {
