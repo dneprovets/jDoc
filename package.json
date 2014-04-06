@@ -6,9 +6,6 @@
         "name": "Denis Knyazevich",
         "email": "webschik@gmail.com"
     },
-    "dependencies": {
-        "express": "3.0.x"
-    },
     "devDependencies": {
         "grunt": "~0.4.0",
         "grunt-config-dir": "~0.3.0",

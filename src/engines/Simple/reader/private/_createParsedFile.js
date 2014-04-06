@@ -49,6 +49,7 @@ jDoc.engines.Simple.prototype._createParsedFile = function (text, callback) {
                 pages: [{
                     options: {},
                     css: {},
+                    dimensionCSSRules: jDoc._getA4DimensionCSSRules(),
                     elements: [{
                         options: {
                             isParagraph: true

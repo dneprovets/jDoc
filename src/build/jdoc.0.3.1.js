@@ -740,6 +740,18 @@
             return this._clonedData.pages[index];
         }
     };
+    jDoc._getA4DimensionCSSRules = function () {
+        return {
+            width: {
+                value: 792,
+                units: "pt"
+            },
+            height: {
+                value: 612,
+                units: "pt"
+            }
+        };
+    };
     /**
      *
      * @private
@@ -1302,7 +1314,6 @@
         }
 
         // Readers
-
         function Reader() {}
 
         function BlobReader(blob) {
@@ -1331,7 +1342,6 @@
         BlobReader.prototype.constructor = BlobReader;
 
         // Writers
-
         function Writer() {}
 
         Writer.prototype.getData = function (callback) {
@@ -1451,7 +1461,6 @@
         }
 
         // ZipReader
-
         function decodeASCII(str) {
             var i, out = "",
                 charCode, extendedASCII = ['\u00C7', '\u00FC', '\u00E9', '\u00E2', '\u00E4', '\u00E0', '\u00E5', '\u00E7', '\u00EA', '\u00EB',
@@ -1791,7 +1800,6 @@
             // array bl_count contains the frequencies for each bit length.
             // The length opt_len is updated; static_len is also updated if stree is
             // not null.
-
             function gen_bitlen(s) {
                 var tree = that.dyn_tree;
                 var stree = that.stat_desc.static_tree;
@@ -1875,7 +1883,6 @@
             // faster
             // method would use a table)
             // IN assertion: 1 <= len <= 15
-
             function bi_reverse(code, // the value to invert
                 len // its bit length
             ) {
@@ -1894,7 +1901,6 @@
             // the given tree and the field len is set for all tree elements.
             // OUT assertion: the field code is set for all tree elements of non
             // zero code length.
-
             function gen_codes(tree, // the tree to decorate
                 max_code, // largest code with non zero frequency
                 bl_count // number of codes at each bit length
@@ -2357,7 +2363,6 @@
             }
 
             // Initialize the tree data structures for a new zlib stream.
-
             function tr_init() {
 
                 l_desc.dyn_tree = dyn_ltree;
@@ -2409,7 +2414,6 @@
 
             // Scan a literal or distance tree to determine the frequencies of the codes
             // in the bit length tree.
-
             function scan_tree(tree, // the tree to be scanned
                 max_code // and its largest code of non zero frequency
             ) {
@@ -2461,7 +2465,6 @@
 
             // Construct the Huffman tree for the bit lengths and return the index in
             // bl_order of the last bit length code to send.
-
             function build_bl_tree() {
                 var max_blindex; // index of last bit length code of non zero freq
 
@@ -2491,7 +2494,6 @@
 
             // Output a byte on the stream.
             // IN assertion: there is enough room in pending_buf.
-
             function put_byte(p) {
                 that.pending_buf[that.pending++] = p;
             }
@@ -2529,7 +2531,6 @@
 
             // Send a literal or distance tree in compressed form, using the codes in
             // bl_tree.
-
             function send_tree(tree, // the tree to be sent
                 max_code // and its largest code of non zero frequency
             ) {
@@ -2587,7 +2588,6 @@
             // Send the header for a block using dynamic Huffman trees: the counts, the
             // lengths of the bit length codes, the literal tree and the distance tree.
             // IN assertion: lcodes >= 257, dcodes >= 1, blcodes >= 4.
-
             function send_all_trees(lcodes, dcodes, blcodes) {
                 var rank; // index in bl_order
 
@@ -2602,7 +2602,6 @@
             }
 
             // Flush the bit buffer, keeping at most 7 bits in it.
-
             function bi_flush() {
                 if (bi_valid == 16) {
                     put_short(bi_buf);
@@ -2624,7 +2623,6 @@
             // of one. (There are no problems if the previous block is stored or fixed.)
             // To simplify the code, we assume the worst case of last real code encoded
             // on one bit only.
-
             function _tr_align() {
                 send_bits(STATIC_TREES << 1, 3);
                 send_code(END_BLOCK, StaticTree.static_ltree);
@@ -2645,7 +2643,6 @@
 
             // Save the match info and tally the frequency counts. Return true if
             // the current block must be flushed.
-
             function _tr_tally(dist, // distance of matched string
                 lc // match length-MIN_MATCH or unmatched char (if dist==0)
             ) {
@@ -2687,7 +2684,6 @@
             }
 
             // Send the block data compressed using the given Huffman trees
-
             function compress_block(ltree, dtree) {
                 var dist; // distance of matched string
                 var lc; // match length or unmatched char (if dist === 0)
@@ -2738,7 +2734,6 @@
             // binary if more than 20% of the bytes are <= 6 or >= 128, ascii otherwise.
             // IN assertion: the fields freq of dyn_ltree are set and the total of all
             // frequencies does not exceed 64K (to fit in an int on 16 bit machines).
-
             function set_data_type() {
                 var n = 0;
                 var ascii_freq = 0;
@@ -2759,7 +2754,6 @@
             }
 
             // Flush the bit buffer and align the output on a byte boundary
-
             function bi_windup() {
                 if (bi_valid > 8) {
                     put_short(bi_buf);
@@ -2772,7 +2766,6 @@
 
             // Copy a stored block, storing first the length and its
             // one's complement if requested.
-
             function copy_block(buf, // the input data
                 len, // its length
                 header // true if block header must be written
@@ -2791,7 +2784,6 @@
             }
 
             // Send a stored block
-
             function _tr_stored_block(buf, // input block
                 stored_len, // length of input block
                 eof // true if this is the last block for a file
@@ -2802,7 +2794,6 @@
 
             // Determine the best encoding for the current block: dynamic trees, static
             // trees or store, and output the encoded block to the zip file.
-
             function _tr_flush_block(buf, // input block, or NULL if too old
                 stored_len, // length of input block
                 eof // true if this is the last block for a file
@@ -2885,7 +2876,6 @@
             // At least one byte has been read, or avail_in === 0; reads are
             // performed for at least two bytes (required for the zip translate_eol
             // option -- not supported here).
-
             function fill_window() {
                 var n, m;
                 var p;
@@ -2978,7 +2968,6 @@
             // only for the level=0 compression option.
             // NOTE: this function should be optimized to avoid extra copying from
             // window to pending_buf.
-
             function deflate_stored(flush) {
                 // Stored blocks are limited to 0xffff bytes, pending_buf is limited
                 // to pending_buf_size, and each stored block has a 5 byte header:
@@ -3119,7 +3108,6 @@
             // This function does not perform lazy evaluation of matches and inserts
             // new strings in the dictionary only for unmatched strings or for short
             // matches. It is used only for the fast compression options.
-
             function deflate_fast(flush) {
                 // short hash_head = 0; // head of the hash chain
                 var hash_head = 0; // head of the hash chain
@@ -3227,7 +3215,6 @@
             // Same as above, but achieves better compression. We use a lazy
             // evaluation for matches: a match is finally adopted only if there is
             // no better match at the next window position.
-
             function deflate_slow(flush) {
                 // short hash_head = 0; // head of hash chain
                 var hash_head = 0; // head of hash chain
@@ -13705,7 +13692,8 @@
                         isParagraph: true,
                         pageBreak: false,
                         elementHeight: {
-                            value: params.documentData.styles.defaults.options.linePitch ? params.documentData.styles.defaults.options.linePitch.value : 0,
+                            value: params.documentData.styles.defaults.options.linePitch ?
+                                params.documentData.styles.defaults.options.linePitch.value : 0,
                             units: "pt"
                         }
                     },
@@ -17350,6 +17338,7 @@
                             pages: [{
                                 options: {},
                                 css: {},
+                                dimensionCSSRules: jDoc._getA4DimensionCSSRules(),
                                 elements: [{
                                     options: {
                                         isParagraph: true
