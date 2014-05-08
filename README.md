@@ -75,6 +75,7 @@ Build a library:
 * `grunt readers:exclude` - exclude all engines from build
 * `grunt readers:exclude --rtf --oxml` - build all engines for supported formats except `rtf` and `oxml` engines
 
+## Help
 [Small donations are welcomed](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=HS9E9QGBFDB9U)
 
 ## Release History
