@@ -31,8 +31,8 @@ jDoc.engines.ODF.prototype._parseTextDocumentParagraphNodeTextSection = function
     }
 
     for (i = 0; i < len; i++) {
-        params.properties.textContent += children[i].textContent;
+        result.properties.textContent += children[i].textContent;
     }
 
-    return data;
+    return result;
 };
