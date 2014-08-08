@@ -1,0 +1,7 @@
+body {
+    background-color: #ccc;
+}
+.pages-container > div {
+    background-color: #fff;
+    margin: auto;
+}
