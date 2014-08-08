@@ -1,11 +1,34 @@
 module.exports = function (grunt) {
     var config = {
-        beginBanner: {
-            src: "function"
-        },
+            beginBanner: {
+                src: "function"
+            },
 
-        version: JSON.parse(grunt.file.read("package.json")).version
-    };
+            delete_tmp_files: {
+                src: ['src/build/engines/']
+            },
+
+            version: JSON.parse(grunt.file.read("package.json")).version
+        },
+        startCoreTasks = [
+            'clean:start'
+        ],
+        mainCoreTasks = [
+            'build_test_docs_list',
+            'define_properties:events',
+            'define_properties:main',
+            'define_properties:unit',
+            'define_properties:fileData',
+            'define_properties:engine',
+            'define_properties:dom'
+        ],
+        endCoreTasks = [
+            'concat:app',
+            'clean:engines',
+            'jsbeautifier',
+            'uglify',
+            'delete_tmp_files'
+        ];
 
     grunt.initConfig(config);
 
@@ -13,7 +36,7 @@ module.exports = function (grunt) {
      * include tasks
      */
     require('grunt-config-dir')(grunt, {
-        configDir: require('path').resolve(__dirname + '/grunt_tasks'),
+        configDir: require('path').resolve(__dirname + '/grunt_tasks_config'),
         fileExtensions: ['js']
     }, function (err) {
         grunt.log.error(err);
@@ -21,114 +44,105 @@ module.exports = function (grunt) {
 
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-contrib-jade');
     grunt.loadNpmTasks('grunt-contrib-clean');
-    grunt.loadNpmTasks('grunt-jdoc-engines-concat');
-    grunt.loadNpmTasks('grunt-jsdoc');
+    grunt.loadNpmTasks('grunt-contrib-connect');
     grunt.loadNpmTasks('grunt-jsbeautifier');
+    grunt.loadNpmTasks('grunt-define-properties');
 
-    var enginesConcatTaskName = "engines_concat",
-        /**
-         *
-         * @param list {Array}
-         * @param type {"reader"|"writer"}
-         */
-        concatEngines = function (list, type, isExclude) {
-            list = list || [];
+    grunt.registerMultiTask('build_test_docs_list', ' ', function() {
+        var options = this.options({
+            name: "",
+            prefix: ""
+        });
 
-            isExclude = (isExclude == null) ? true : isExclude;
+        this.files.forEach(function(f) {
+            var src = "window['" + options.name + "'] = [\n";
 
-            var len = list.length,
-                engineName,
-                baseEngineName = "base",
-                isNeedInclude,
-                tasksList = [],
-                enginesConcatTaskList = grunt.config.data[enginesConcatTaskName];
-
-            for (engineName in enginesConcatTaskList) {
-                isNeedInclude = false;
-
-                if (engineName === baseEngineName && (list.indexOf(baseEngineName) < 0 || isExclude)) {
-                    isNeedInclude = true;
-                } else if (isExclude) {
-                    if (len && list.indexOf(engineName) < 0) {
-                        isNeedInclude = true;
-                    }
-                } else {
-                    if (!len || list.indexOf(engineName) >= 0) {
-                        isNeedInclude = true;
-                    }
+            f.src.filter(function(filepath) {
+                // Warn on and remove invalid source files (if nonull was set).
+                if (!grunt.file.exists(filepath)) {
+                    grunt.log.warn('Source file "' + filepath + '" not found.');
+                    return false;
                 }
 
-                if (
-                    enginesConcatTaskList.hasOwnProperty(engineName) && isNeedInclude &&
-                        enginesConcatTaskList[engineName][type]
-                ) {
-                    tasksList.push(enginesConcatTaskName + ":" + engineName + ":" + type);
+                return true;
+            }).forEach(function (filepath) {
+                src += '    "' + options.prefix + filepath + '",\n';
+            });
+
+            src = src.replace(/\,\s+$/, '\n') + "];";
+
+            grunt.file.write(f.dest, src);
+        });
+    });
+
+    grunt.registerMultiTask('delete_tmp_files', ' ', function() {
+        var options = this.options({});
+
+        this.files.forEach(function(f) {
+            f.src.filter(function(filepath) {
+                // Warn on and remove invalid source files (if nonull was set).
+                if (!grunt.file.exists(filepath)) {
+                    grunt.log.warn('Source file "' + filepath + '" not found.');
+                    return false;
                 }
-            }
 
-            tasksList = [
-                'clean:start'
-            ].concat(
-                tasksList.concat([
-                    'concat:app',
-                    'clean:engines',
-                    'jsbeautifier',
-                    'uglify'
-                ])
-            );
+                return true;
+            }).forEach(function (filepath) {
+                grunt.file.delete(filepath, options);
+            });
+        });
+    });
 
-            grunt.task.run(tasksList);
-        },
-        /**
-         * @param type {"reader"|"writer"}
-         * @returns {Array}
-         */
-        getEnginesList = function (type) {
-            var flags = grunt.option.flags().join('').replace(/[=]/g, '').split('--'),
-                i,
-                flag,
-                enginesConcatTaskList = grunt.config.data[enginesConcatTaskName] || {},
-                engines = [],
-                len = flags.length;
-
-            for (i = len - 1; i >= 0; i--) {
-                flag = flags[i].replace(/^\-*/, '').toLowerCase();
-
-                if (enginesConcatTaskList[flag] && enginesConcatTaskList[flag][type]) {
-                    engines.push(flag);
-                }
-            }
-
-            return engines;
-        };
-
+    grunt.registerTask('core', startCoreTasks.concat(mainCoreTasks).concat(endCoreTasks));
+    grunt.registerTask('default', function () {
+        concatEngines({
+            isReaders: true,
+            isWriters: true
+        });
+    });
     grunt.registerTask('readers', function () {
-        var type = "reader";
-        concatEngines(getEnginesList(type), type, false);
+        concatEngines({
+            isReaders: true
+        });
     });
     grunt.registerTask('readers:include', function () {
-        var type = "reader";
-        concatEngines(getEnginesList(type), type, false);
+        concatEngines();
     });
     grunt.registerTask('readers:exclude', function () {
-        var type = "reader";
-        concatEngines(getEnginesList(type), type, true);
+        concatEngines();
     });
     grunt.registerTask('writers', function () {
-        var type = "writer";
-        concatEngines(getEnginesList(type), type, false);
+        concatEngines({
+            isWriters: true
+        });
     });
     grunt.registerTask('writers:include', function () {
-        var type = "writer";
-        concatEngines(getEnginesList(type), type, false);
+        concatEngines();
     });
     grunt.registerTask('writers:exclude', function () {
-        var type = "writer";
-        concatEngines(getEnginesList(type), type, true);
+        concatEngines();
     });
-    grunt.registerTask('default', [
-        'readers',
-        'writers'
-    ]);
+
+    function concatEngines (options) {
+        options = options || {};
+
+        var taskName = 'define_properties',
+            taskConfig = grunt.config.get(taskName),
+            readersPattern = /\-reader/,
+            writersPattern = /\-writer/,
+            tasksList = [],
+            k;
+
+        for (k in taskConfig) {
+            if (taskConfig.hasOwnProperty(k)) {
+                if ((options.isReaders && readersPattern.test(k)) || (options.isWriters && writersPattern.test(k))) {
+                    tasksList.push(taskName + ':' + k);
+                }
+            }
+        }
+
+        grunt.task.run(startCoreTasks.concat(mainCoreTasks).concat(tasksList).concat(endCoreTasks));
+    }
 };

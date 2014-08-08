@@ -1,76 +1,67 @@
-var assert = require('assert'),
-    fs = require('fs'),
-    webdriver = require('selenium-webdriver'),
-    test = require('selenium-webdriver/testing'),
-    remote = require('selenium-webdriver/remote'),
-    URL = "file:///var/projects/jDoc/test.html",
-    locators = {
-        fileField: {
-            css: '[type="file"]'
-        },
-        pages: {
-            css: '#pages-container'
-        }
-    },
-    testFiles = {
-        dsv: ["/var/projects/jDoc/files/DSV/transaction.csv"],
-        fictionBook: ["/var/projects/jDoc/files/FictionBook/«Об интеллекте».fb2"],
-        odt: ["/var/projects/jDoc/files/ODT/file1.odt"],
-        oxml: [
-            "/var/projects/jDoc/files/OXML/Collection_and_Map.docx",
-            "/var/projects/jDoc/files/OXML/ПДР-2013.doc"
-        ],
-        rtf: [
-            "/var/projects/jDoc/files/RTF/Collection_and_Map2.rtf",
-            '/var/projects/jDoc/files/RTF/my_people.rtf'
-        ]
-    },
-    capabilities = {
-        'browserName': 'firefox'
+window.onload = function () {
+    var jD = new jDoc(),
+        option,
+        field = document.getElementById('localFileField'),
+        list = document.getElementById('remoteFileField'),
+        canvas = document.getElementById("pages-container");
+
+    jD.once('readstart', function () {
+        canvas.innerHTML = "";
+        console.log("START ", arguments);
+    });
+    jD.once('readend', function () {
+        console.log("END ", arguments);
+    });
+    jD.once('read', function (fileData) {
+        console.log("READ ", arguments);
+        canvas.appendChild(fileData.html());
+
+        Array.prototype.forEach.call(document.querySelectorAll('.pages-container > div'), function (page) {
+            if (page.scrollHeight > page.offsetHeight) {
+                console.log('Invalid page', {
+                    page: page,
+                    pageHeight: page.offsetHeight,
+                    contentHeight: page.scrollHeight
+                });
+            }
+        })
+    });
+    jD.once('error', function () {
+        console.log("ERROR ", arguments);
+    });
+
+
+
+    option = document.createElement('option');
+    option.appendChild(document.createTextNode('Select doc'));
+    option.disabled = true;
+    option.selected = true;
+    list.appendChild(option);
+
+    testDocsList.forEach(function (d) {
+        option = document.createElement('option');
+        option.setAttribute('value', d);
+        option.appendChild(document.createTextNode(d));
+        list.appendChild(option);
+    });
+
+
+
+    field.onchange = function (e) {
+        jD.read(e.target.files[0]);
     };
 
-test.describe('jDoc', function () {
-    var driver, server;
+    list.onchange = function (e) {
+        var oReq = new XMLHttpRequest();
+        oReq.open("GET", e.target.value, true);
+        oReq.responseType = "blob";
 
-    test.before(function () {
-        var jar = process.env.SELENIUM;
-        assert.ok(!!jar, 'SELENIUM environment variable not set');
-        assert.ok(fs.existsSync(jar), 'The specified jar does not exist: ' + jar);
+        oReq.onload = function() {
+            var blob = oReq.response;
 
-        server = new remote.SeleniumServer(jar, {port: 4444});
-        server.start();
+            jD.read(blob);
+        };
 
-        driver = new webdriver.Builder().
-            usingServer(server.address()).
-            withCapabilities(capabilities).
-            build();
-    });
-
-    test.it('Read file', function () {
-        driver.get(URL);
-        driver.wait(function () {
-            return driver.isElementPresent(locators.fileField);
-        }, 1000)
-            .then(function () {
-                var key,
-                    i;
-
-                for (key in testFiles) {
-                    if (testFiles.hasOwnProperty(key)) {
-                        for (i = testFiles[key].length - 1; i >= 0; i--) {
-                            driver.findElement(locators.fileField).sendKeys(testFiles[key][i]);
-                            driver.sleep(5000);
-                            driver.findElement(locators.pages);
-                        }
-                    }
-                }
-            });
-    });
-
-    test.after(function () {
-        driver.quit();
-    });
-    test.after(function () {
-        server.stop();
-    });
-});
+        oReq.send();
+    }
+};
