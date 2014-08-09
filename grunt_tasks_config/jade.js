@@ -8,7 +8,7 @@ module.exports = function () {
                 }
             },
             files: {
-                "run/test.html": ["run/test.jade"]
+                "tests/test.html": ["tests/test.jade"]
             }
         }
     };
