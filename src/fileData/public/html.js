@@ -16,6 +16,7 @@ jDoc.FileData.prototype.html = function (options) {
 
     for (i = 0; i < pagesCount; i++) {
         pageEl = document.createElement('div');
+        pageEl.setAttribute('class', fileDataClasses.page);
 
         if (pages[i].dimensionCSSRules && i < pagesCount - 1 && !pages[i].dimensionCSSRules.marginBottom) {
             pages[i].dimensionCSSRules.marginBottom = {

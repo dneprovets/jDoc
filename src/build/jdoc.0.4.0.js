@@ -7754,6 +7754,9 @@
 
         return el;
     }
+    var fileDataClasses = {
+        page: "jdoc-page"
+    };
 
     function setHTMLOptions(options) {
         this._htmlOptions = copy({}, options, {
@@ -8471,6 +8474,7 @@
 
             for (i = 0; i < pagesCount; i++) {
                 pageEl = document.createElement('div');
+                pageEl.setAttribute('class', fileDataClasses.page);
 
                 if (pages[i].dimensionCSSRules && i < pagesCount - 1 && !pages[i].dimensionCSSRules.marginBottom) {
                     pages[i].dimensionCSSRules.marginBottom = {
