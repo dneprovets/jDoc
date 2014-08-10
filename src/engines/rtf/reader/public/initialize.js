@@ -5,7 +5,7 @@ RTF.prototype.initialize = function () {
     this.on('parsefromsimplefile', function (fileData) {
         this.trigger('parse', fileData);
     }.bind(this));
-    this.on('parsefromsimpleend', function () {
+    this.on('parsefromsimplefileend', function () {
         this.trigger('parseend');
     }.bind(this));
 };

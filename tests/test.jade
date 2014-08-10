@@ -3,8 +3,10 @@ html
     head
         title
         script(src='../src/build/jdoc.#{version}.js')
+        script(src='testDocsList.js')
         script(src='index.js')
         link(rel='stylesheet', href='index.css')
     body
-        input#file-field(type='file')
+        input#localFileField(type='file')
+        select#remoteFileField
         #pages-container.pages-container
