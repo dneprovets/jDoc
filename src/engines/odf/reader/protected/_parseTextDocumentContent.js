@@ -5,7 +5,10 @@
  * @private
  */
 ODF.prototype._parseTextDocumentContent = function (params, callback) {
-    var result = {
+    var documentData = params.documentData,
+        result = {
+            name: this.getFileName(),
+            wordsCount: (documentData.documentInfo && documentData.documentInfo.wordsCount) || null,
             pages: []
         },
         lazyLoopOptions = {
@@ -23,7 +26,7 @@ ODF.prototype._parseTextDocumentContent = function (params, callback) {
         node = params.xml.querySelector('body'),
         parsedLine,
         pageParams = {
-            layout: params.documentData.styles.automatic.layouts[params.documentData.styles.pageLayout]
+            layout: documentData.styles.automatic.layouts[documentData.styles.pageLayout]
         },
         page;
 
@@ -31,7 +34,7 @@ ODF.prototype._parseTextDocumentContent = function (params, callback) {
 
     this._parseTextDocumentStylesNode(params.xml.querySelector('automatic-styles'), function (styles) {
         node = node ? node.querySelector('text') : null;
-        params.documentData._heading = [];
+        documentData._heading = [];
 
         if (node) {
             lazyMethods++;
@@ -48,7 +51,7 @@ ODF.prototype._parseTextDocumentContent = function (params, callback) {
                             parsedLine = self._parseTextDocumentParagraphNode({
                                 node: options.data[options.index],
                                 styles: styles,
-                                documentData: params.documentData
+                                documentData: documentData
                             });
                             if (parsedLine.options.pageBreak) {
                                 result.pages.push(page);
@@ -60,7 +63,7 @@ ODF.prototype._parseTextDocumentContent = function (params, callback) {
                             parsedLine = self._parseTextDocumentListNode({
                                 node: options.data[options.index],
                                 styles: styles,
-                                documentData: params.documentData
+                                documentData: documentData
                             });
                             if (parsedLine.options.pageBreak) {
                                 result.pages.push(page);
@@ -72,7 +75,7 @@ ODF.prototype._parseTextDocumentContent = function (params, callback) {
                             parsedLine = self._parseTextDocumentTableNode({
                                 node: options.data[options.index],
                                 styles: styles,
-                                documentData: params.documentData
+                                documentData: documentData
                             });
                             if (parsedLine.options.pageBreak) {
                                 result.pages.push(page);

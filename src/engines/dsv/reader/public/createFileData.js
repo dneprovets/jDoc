@@ -115,6 +115,7 @@ DSV.prototype.createFileData = function (text, callback) {
         callback.call(
             this,
             new jDoc.FileData({
+                name: this.getFileName(),
                 pages: [{
                     options: {},
                     css: {},

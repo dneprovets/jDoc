@@ -5,18 +5,13 @@
 jDoc.FileData = function (attrs) {
     attrs = attrs || {};
 
-    this._data = {
+    this._data = copy({
         name: "",
         language: "",
-        isTextDocument: false,
         wordsCount: 0,
         zoom: 100,
         pages: []
-    };
-
-    if (Array.isArray(attrs.pages)) {
-        this._data.pages = attrs.pages.slice(0);
-    }
+    }, attrs);
 
     this._clonedData = clone(this._data);
     this._htmlOptions = {};

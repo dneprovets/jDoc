@@ -24,7 +24,7 @@ OOXML.prototype._parseApplicationInfo = function (xml) {
             version: '',
             isShared: false
         },
-        children = $.children(xml);
+        children = $.children($.children(xml)[0]);
 
     for (i = children.length - 1; i >= 0; i--) {
         switch (children[i].localName) {

@@ -4,7 +4,7 @@ RTF.prototype._controlWordsParsers.viewscale = function (options) {
         param = options.param;
 
     if (param) {
-        parseResult.options.zoom = param;
+        parseResult.zoom = param;
     }
 
     return {

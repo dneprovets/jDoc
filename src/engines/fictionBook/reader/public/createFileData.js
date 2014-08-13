@@ -12,15 +12,13 @@ FictionBook.prototype.createFileData = function (xml, callback) {
             binaryItems: this._parseBinaryItems(xml.querySelectorAll('binary'))
         },
         result = {
+            name: this.getFileName(),
             pages: [{
                 options: {},
                 css: {},
                 dimensionCSSRules: {},
                 children: []
-            }],
-            options: {},
-            css: {},
-            dimensionCSSRules: {}
+            }]
         };
 
     nodes = $.children(xml.querySelector('FictionBook'));

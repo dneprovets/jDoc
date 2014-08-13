@@ -44,7 +44,7 @@ OOXML.prototype._parseTextDocumentSettings = function (xml) {
         case "zoom":
             result.zoom = (
                 !children[i].attributes['w:percent'] || isNaN(children[i].attributes['w:percent'].value)
-                ) ? 100 : +children[i].attributes['w:percent'].value;
+            ) ? 100 : +children[i].attributes['w:percent'].value;
             break;
         case "proofState":
             result.checkSpelling = (children[i].attributes['w:spelling'] && children[i].attributes['w:spelling'].value == 'clean');

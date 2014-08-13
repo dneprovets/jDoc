@@ -102,9 +102,6 @@ RTF.prototype.createFileData = function (text, callback) {
             braceCounter: 0
         },
         parseResult = {
-            options: {
-                zoom: 100
-            },
             pages: [copy(parseParams.pageData, {
                 children: [copy(parseParams.paragraphData, {
                     children: [{

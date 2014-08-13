@@ -14,6 +14,9 @@ window.onload = function () {
     });
     jD.once('read', function (fileData) {
         console.log("READ ", arguments);
+        console.log("File name -", fileData.getName());
+        console.log("Words count -", fileData.getWordsCount());
+        console.log("Pages count -", fileData.getPagesCount());
         canvas.appendChild(fileData.html());
 
         Array.prototype.forEach.call(document.querySelectorAll('.pages-container > div'), function (page) {

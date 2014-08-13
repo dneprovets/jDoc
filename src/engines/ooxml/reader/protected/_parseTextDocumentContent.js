@@ -6,9 +6,14 @@
  */
 OOXML.prototype._parseTextDocumentContent = function (params) {
     params.documentData._heading = [];
-    var result = {
-        pages: []
-    },
+
+    var documentData = params.documentData,
+        result = {
+            name: this.getFileName(),
+            wordsCount: (documentData.applicationInfo && documentData.applicationInfo.wordsCount) || null,
+            zoom: (documentData.settings && documentData.settings.zoom) || 100,
+            pages: []
+        },
         pageOptions = {
             css: {},
             dimensionCSSRules: {},

@@ -8425,18 +8425,13 @@
     jDoc.FileData = function (attrs) {
         attrs = attrs || {};
 
-        this._data = {
+        this._data = copy({
             name: "",
             language: "",
-            isTextDocument: false,
             wordsCount: 0,
             zoom: 100,
             pages: []
-        };
-
-        if (Array.isArray(attrs.pages)) {
-            this._data.pages = attrs.pages.slice(0);
-        }
+        }, attrs);
 
         this._clonedData = clone(this._data);
         this._htmlOptions = {};
@@ -8446,6 +8441,9 @@
         data: function () {
             return this._clonedData;
         },
+        getExtension: function () {
+            return "";
+        },
         getLanguage: function () {
             return this._data.language;
         },
@@ -8454,6 +8452,9 @@
         },
         getPage: function (index) {
             return this._data.pages[index];
+        },
+        getPagesCount: function () {
+            return this._data.pages.length;
         },
         getWordsCount: function () {
             return this._data.wordsCount;
@@ -8681,6 +8682,11 @@
         },
         getEnDash: function () {
             return "–";
+        },
+        getFileName: function () {
+            var name = (this.file && this.file.name) || "";
+
+            return name.replace(/\.[^.]+$/, '');
         },
         getFileType: function (file) {
             var result = null,
@@ -9179,6 +9185,7 @@
                     callback.call(
                         this,
                         new jDoc.FileData({
+                            name: this.getFileName(),
                             pages: [{
                                 options: {},
                                 css: {},
@@ -9598,15 +9605,13 @@
                         binaryItems: this._parseBinaryItems(xml.querySelectorAll('binary'))
                     },
                     result = {
+                        name: this.getFileName(),
                         pages: [{
                             options: {},
                             css: {},
                             dimensionCSSRules: {},
                             children: []
-                        }],
-                        options: {},
-                        css: {},
-                        dimensionCSSRules: {}
+                        }]
                     };
 
                 nodes = $.children(xml.querySelector('FictionBook'));
@@ -10055,9 +10060,12 @@
                 return result;
             },
             _parseTextDocumentContent: function (params, callback) {
-                var result = {
-                    pages: []
-                },
+                var documentData = params.documentData,
+                    result = {
+                        name: this.getFileName(),
+                        wordsCount: (documentData.documentInfo && documentData.documentInfo.wordsCount) || null,
+                        pages: []
+                    },
                     lazyLoopOptions = {
                         chunk: 20,
                         time: 0,
@@ -10073,7 +10081,7 @@
                     node = params.xml.querySelector('body'),
                     parsedLine,
                     pageParams = {
-                        layout: params.documentData.styles.automatic.layouts[params.documentData.styles.pageLayout]
+                        layout: documentData.styles.automatic.layouts[documentData.styles.pageLayout]
                     },
                     page;
 
@@ -10081,7 +10089,7 @@
 
                 this._parseTextDocumentStylesNode(params.xml.querySelector('automatic-styles'), function (styles) {
                     node = node ? node.querySelector('text') : null;
-                    params.documentData._heading = [];
+                    documentData._heading = [];
 
                     if (node) {
                         lazyMethods++;
@@ -10098,7 +10106,7 @@
                                         parsedLine = self._parseTextDocumentParagraphNode({
                                             node: options.data[options.index],
                                             styles: styles,
-                                            documentData: params.documentData
+                                            documentData: documentData
                                         });
                                         if (parsedLine.options.pageBreak) {
                                             result.pages.push(page);
@@ -10110,7 +10118,7 @@
                                         parsedLine = self._parseTextDocumentListNode({
                                             node: options.data[options.index],
                                             styles: styles,
-                                            documentData: params.documentData
+                                            documentData: documentData
                                         });
                                         if (parsedLine.options.pageBreak) {
                                             result.pages.push(page);
@@ -10122,7 +10130,7 @@
                                         parsedLine = self._parseTextDocumentTableNode({
                                             node: options.data[options.index],
                                             styles: styles,
-                                            documentData: params.documentData
+                                            documentData: documentData
                                         });
                                         if (parsedLine.options.pageBreak) {
                                             result.pages.push(page);
@@ -11921,7 +11929,7 @@
                         version: '',
                         isShared: false
                     },
-                    children = $.children(xml);
+                    children = $.children($.children(xml)[0]);
 
                 for (i = children.length - 1; i >= 0; i--) {
                     switch (children[i].localName) {
@@ -12724,9 +12732,14 @@
             },
             _parseTextDocumentContent: function (params) {
                 params.documentData._heading = [];
-                var result = {
-                    pages: []
-                },
+
+                var documentData = params.documentData,
+                    result = {
+                        name: this.getFileName(),
+                        wordsCount: (documentData.applicationInfo && documentData.applicationInfo.wordsCount) || null,
+                        zoom: (documentData.settings && documentData.settings.zoom) || 100,
+                        pages: []
+                    },
                     pageOptions = {
                         css: {},
                         dimensionCSSRules: {},
@@ -15136,7 +15149,7 @@
                         param = options.param;
 
                     if (param) {
-                        parseResult.options.zoom = param;
+                        parseResult.zoom = param;
                     }
 
                     return {
@@ -16420,9 +16433,6 @@
                         braceCounter: 0
                     },
                     parseResult = {
-                        options: {
-                            zoom: 100
-                        },
                         pages: [copy(parseParams.pageData, {
                             children: [copy(parseParams.paragraphData, {
                                 children: [{
@@ -16620,6 +16630,7 @@
                 if (typeof callback === 'function') {
                     callback(
                         new jDoc.FileData({
+                            name: this.getFileName(),
                             pages: [{
                                 options: {},
                                 css: {},
