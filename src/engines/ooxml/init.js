@@ -9,4 +9,6 @@ var OOXML = jDoc.Engine.extend(
     }
 );
 
-jDoc.defineEngine('OOXML', ['.docx'], OOXML);
+jDoc.defineEngine('OOXML', [
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+], OOXML);

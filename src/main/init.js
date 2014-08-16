@@ -56,7 +56,7 @@ copy(jDoc, {
             formats &&
             engine &&
             typeof engine.prototype.validate === "function"
-            ) {
+        ) {
             if (!Array.isArray(formats)) {
                 formats = [String(formats).toLowerCase()];
             }

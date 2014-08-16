@@ -124,7 +124,7 @@ Return true/false;
 Return Array with supported document formats.
 #### jDoc.defineEngine(name, formats, engine)
 * `name` - custom name of engine. F.e. "ODF" for ODF document format
-* `formats` - array with supported document formats. F.e. ['.odt', '.ott', '.odg', '.otg']
+* `formats` - array with supported document formats as MIME types. F.e. ['text/csv', 'text/tab-separated-values']
 * `engine` - object inherited from jDoc.Engine
 
 #### jDoc.Engine.extend(protoProperties)

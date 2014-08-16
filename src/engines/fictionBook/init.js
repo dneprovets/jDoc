@@ -9,4 +9,4 @@ var FictionBook = jDoc.Engine.extend(
     }
 );
 
-jDoc.defineEngine('FictionBook', ['.fb2'], FictionBook);
+jDoc.defineEngine('FictionBook', ['text/xml'], FictionBook);

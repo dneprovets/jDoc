@@ -9221,7 +9221,10 @@
         }
     );
 
-    jDoc.defineEngine('DSV', ['.csv', '.tsv', '.tab'], DSV);
+    jDoc.defineEngine('DSV', [
+        'text/csv',
+        'text/tab-separated-values'
+    ], DSV);
     /**
      *
      * @type {Object}
@@ -9709,7 +9712,7 @@
         }
     );
 
-    jDoc.defineEngine('FictionBook', ['.fb2'], FictionBook);
+    jDoc.defineEngine('FictionBook', ['text/xml'], FictionBook);
     /**
      *
      * @type {Object}
@@ -11362,15 +11365,22 @@
     );
 
     jDoc.defineEngine('ODF', [
-        '.odt', '.ott',
-        '.odg', '.otg',
-        '.odp', '.otp',
-        '.ods', '.ots',
-        '.odc', '.otc',
-        '.odi', '.oti',
-        '.odf', '.otf',
-        '.odm',
-        '.oth'
+        "application/vnd.oasis.opendocument.text",
+        "application/vnd.oasis.opendocument.text-template",
+        "application/vnd.oasis.opendocument.graphics",
+        "application/vnd.oasis.opendocument.graphics-template",
+        "application/vnd.oasis.opendocument.presentation",
+        "application/vnd.oasis.opendocument.presentation-template",
+        "application/vnd.oasis.opendocument.spreadsheet",
+        "application/vnd.oasis.opendocument.spreadsheet-template",
+        "application/vnd.oasis.opendocument.chart",
+        "application/vnd.oasis.opendocument.chart-template",
+        "application/vnd.oasis.opendocument.image",
+        "application/vnd.oasis.opendocument.image-template",
+        "application/vnd.oasis.opendocument.formula",
+        "application/vnd.oasis.opendocument.formula-template",
+        "application/vnd.oasis.opendocument.text-master",
+        "application/vnd.oasis.opendocument.text-web"
     ], ODF);
     /**
      *
@@ -14269,7 +14279,9 @@
         }
     );
 
-    jDoc.defineEngine('OOXML', ['.docx'], OOXML);
+    jDoc.defineEngine('OOXML', [
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ], OOXML);
     /**
      *
      * @type {Object}
@@ -16431,6 +16443,7 @@
                         braceCounter: 0
                     },
                     parseResult = {
+                        name: this.getFileName(),
                         pages: [copy(parseParams.pageData, {
                             children: [copy(parseParams.paragraphData, {
                                 children: [{
@@ -16579,7 +16592,10 @@
         }
     );
 
-    jDoc.defineEngine('RTF', ['.rtf'], RTF);
+    jDoc.defineEngine('RTF', [
+        "text/rtf",
+        "application/rtf"
+    ], RTF);
     /**
      *
      */
@@ -16674,7 +16690,7 @@
     /**
      * @type {Object}
      */
-    jDoc.defineEngine('Simple', ['.txt'], Simple);
+    jDoc.defineEngine('Simple', ['text/plain'], Simple);
     if (typeof define === "function" && define.amd) {
         define("jDoc", [], function () {
             return jDoc;

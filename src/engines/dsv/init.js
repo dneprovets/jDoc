@@ -10,4 +10,7 @@ var DSV = jDoc.Engine.extend(
     }
 );
 
-jDoc.defineEngine('DSV', ['.csv', '.tsv', '.tab'], DSV);
+jDoc.defineEngine('DSV', [
+    'text/csv',
+    'text/tab-separated-values'
+], DSV);

@@ -11,4 +11,4 @@ var Simple = jDoc.Engine.extend(
 /**
  * @type {Object}
  */
-jDoc.defineEngine('Simple', ['.txt'], Simple);
+jDoc.defineEngine('Simple', ['text/plain'], Simple);

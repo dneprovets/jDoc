@@ -9,4 +9,7 @@ var RTF = jDoc.Engine.extend(
     }
 );
 
-jDoc.defineEngine('RTF', ['.rtf'], RTF);
+jDoc.defineEngine('RTF', [
+    "text/rtf",
+    "application/rtf"
+], RTF);
