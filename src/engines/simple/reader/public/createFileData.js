@@ -50,7 +50,6 @@ Simple.prototype.createFileData = function (text, callback) {
                 pages: [{
                     options: {},
                     css: {},
-                    dimensionCSSRules: jDoc.getA4DimensionCSSRules(),
                     children: [{
                         options: {
                             isParagraph: true

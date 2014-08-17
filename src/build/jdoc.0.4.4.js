@@ -16648,7 +16648,6 @@
                             pages: [{
                                 options: {},
                                 css: {},
-                                dimensionCSSRules: jDoc.getA4DimensionCSSRules(),
                                 children: [{
                                     options: {
                                         isParagraph: true
