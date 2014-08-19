@@ -17,6 +17,15 @@ This library depends on [zip.js](http://gildas-lormeau.github.io/zip.js/) librar
 * `csv`
 * `tsv`
 * `rtf`
+* `gif`
+* `jpg`
+* `jpeg`
+* `pjpeg`
+* `png`
+* `svg`
+* `tiff`
+* `icon`
+* `wbmp`
 
 ## Getting Started
 Include script on your page:
@@ -147,7 +156,7 @@ Build a library:
  * 2013-11-10   v0.2.0   Support of RTF format.
  * 2014-01-12   v0.3.0   Add web workers support.
  * 2014-08-01   v0.4.0   New architecture of jDoc and new features. **NEW VERSION ISN'T COMPATIBLE WITH 0.3.***
-
+ * 2014-08-19   v0.5.0   Add images engine support. Bug fix.
 ---
 
 Library submitted by ["webschik" Knyazevich Denis](https://github.com/webschik)

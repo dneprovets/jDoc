@@ -5,12 +5,12 @@ jDoc.Engine.prototype._readFilesEntriesWithoutWorkers = function (options) {
         len = entries.length,
         counter = 0,
         results = [],
+        method = options.method || "readAsText",
         i;
 
     for (i = len - 1; i >= 0; i--) {
         (function (entry, read, success) {
-            var method = "readAsText",
-                reader = new FileReader(),
+            var reader = new FileReader(),
                 filename = entries[i].entry.filename,
                 file = entries[i].file;
 

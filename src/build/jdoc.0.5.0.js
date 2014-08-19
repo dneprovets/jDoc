@@ -8552,15 +8552,15 @@
                 counter = 0,
                 i,
                 onError = function () {
-
-                };
+                    this.trigger('error', this.errors.invalidReadFile);
+                }.bind(this);
 
             if (!this._workerFileForReading) {
                 this._workerFileForReading = this.createWorkerFile(function () {
                     self.addEventListener('message', function (e) {
                         var data = e.data,
+                            method = data.method || "readAsText",
                             filename = data.filename,
-                            method = "readAsText",
                             file = data.file;
 
                         var reader = new FileReaderSync();
@@ -8579,29 +8579,30 @@
             for (i = len - 1; i >= 0; i--) {
                 worker = new Worker(path);
 
-                (function (entry, read, success) {
+                (function (entry, options) {
                     worker.addEventListener('message', function (e) {
                         var data = e.data;
 
                         results.push(data);
 
-                        if (read && typeof read === "function") {
-                            read(data, entry);
+                        if (options.read && typeof options.read === "function") {
+                            options.read(data, entry);
                         }
                         counter++;
 
-                        if (counter === len && success && typeof success === "function") {
-                            success(results, entries, len);
+                        if (counter === len && options.success && typeof options.success === "function") {
+                            options.success(results, entries, len);
                         }
                     }, false);
 
                     worker.addEventListener('error', onError, false);
 
                     worker.postMessage({
+                        method: options.method,
                         filename: entry.entry.filename,
                         file: entry.file
                     });
-                }(entries[i], options.read, options.success));
+                }(entries[i], options));
             }
         },
         _readFilesEntriesWithoutWorkers: function (options) {
@@ -8611,12 +8612,12 @@
                 len = entries.length,
                 counter = 0,
                 results = [],
+                method = options.method || "readAsText",
                 i;
 
             for (i = len - 1; i >= 0; i--) {
                 (function (entry, read, success) {
-                    var method = "readAsText",
-                        reader = new FileReader(),
+                    var reader = new FileReader(),
                         filename = entries[i].entry.filename,
                         file = entries[i].file;
 
@@ -9713,6 +9714,102 @@
     );
 
     jDoc.defineEngine('FictionBook', ['text/xml'], FictionBook);
+    /**
+     *
+     * @type {Object}
+     */
+    var ImageEngine = jDoc.Engine.extend(
+        /** @lends ImageEngine.prototype */
+        {
+            _parseImageFile: function () {
+                this.trigger('parsestart');
+
+                if (!this.validate()) {
+                    this.trigger('error', this.errors.invalidFileType);
+                    this.trigger('parseeend');
+
+                    return null;
+                }
+
+                this.readFilesEntries({
+                    method: "readAsDataURL",
+                    error: function () {
+                        this.trigger('error', this.errors.invalidFileType);
+                        this.trigger('parseend');
+                    }.bind(this),
+                    entries: [{
+                        file: this.file,
+                        entry: {}
+                    }],
+                    read: function (result) {
+                        if (typeof this.createFileData !== 'function') {
+                            this.trigger('error', this.errors.notFoundMethodCreateFileData);
+                            return;
+                        }
+
+                        this.createFileData(result, function (fileData) {
+                            this.trigger('parse', fileData);
+                            this.trigger('parseend');
+                        }.bind(this));
+                    }.bind(this)
+                });
+
+                return null;
+            },
+            createFileData: function (data, callback) {
+                if (typeof callback === 'function') {
+                    callback(
+                        new jDoc.FileData({
+                            name: this.getFileName(),
+                            pages: [{
+                                options: {},
+                                css: {},
+                                children: [{
+                                    options: {
+                                        isImage: true
+                                    },
+                                    css: {},
+                                    properties: {
+                                        src: data
+                                    }
+                                }]
+                            }]
+                        })
+                    );
+                }
+            },
+            fileTypeParsers: [{
+                extension: [],
+                mime: [
+                    "image/gif",
+                    "image/jpg",
+                    "image/jpeg",
+                    "image/pjpeg",
+                    "image/png",
+                    "image/svg+xml",
+                    "image/tiff",
+                    "image/vnd.microsoft.icon",
+                    "image/vnd.wap.wbmp"
+                ],
+                isTextDocument: false
+            }],
+            options: {
+                parseMethod: "_parseImageFile"
+            }
+        }
+    );
+
+    jDoc.defineEngine('Image', [
+        "image/gif",
+        "image/jpg",
+        "image/jpeg",
+        "image/pjpeg",
+        "image/png",
+        "image/svg+xml",
+        "image/tiff",
+        "image/vnd.microsoft.icon",
+        "image/vnd.wap.wbmp"
+    ], ImageEngine);
     /**
      *
      * @type {Object}

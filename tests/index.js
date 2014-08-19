@@ -5,14 +5,14 @@ window.onload = function () {
         list = document.getElementById('remoteFileField'),
         canvas = document.getElementById("pages-container");
 
-    jD.once('readstart', function () {
+    jD.on('readstart', function () {
         canvas.innerHTML = "";
         console.log("START ", arguments);
     });
-    jD.once('readend', function () {
+    jD.on('readend', function () {
         console.log("END ", arguments);
     });
-    jD.once('read', function (fileData) {
+    jD.on('read', function (fileData) {
         console.log("READ ", arguments);
         console.log("File name -", fileData.getName());
         console.log("Words count -", fileData.getWordsCount());
@@ -29,7 +29,7 @@ window.onload = function () {
             }
         })
     });
-    jD.once('error', function () {
+    jD.on('error', function () {
         console.log("ERROR ", arguments);
     });
 

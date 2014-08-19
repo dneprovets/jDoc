@@ -139,6 +139,18 @@ module.exports = function () {
             ],
 
             dest: 'src/build/engines/ooxml_reader.js'
+        },
+
+        "image-reader": {
+            options: {
+                initFile: 'src/engines/image/init.js'
+            },
+            src: [
+                'src/engines/image/reader/{**/,}*.js',
+                '!src/engines/image/reader/private/{**/,}*.js'
+            ],
+
+            dest: 'src/build/engines/image_reader.js'
         }
     }
 };
