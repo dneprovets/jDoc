@@ -67,5 +67,11 @@ var unitRatio = {
 
             return res;
         }
+    },
+    "emu": {
+        "px": function (val) {
+            // 1inch = 914400 EMUs
+            return unitRatio['in'].px(val / 914400);
+        }
     }
 };

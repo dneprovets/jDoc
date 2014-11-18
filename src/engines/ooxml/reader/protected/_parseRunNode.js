@@ -44,6 +44,7 @@ OOXML.prototype._parseRunNode = function (data) {
         textBoxContent,
         styleProperties,
         pictureNodeChildren,
+        h,
         k,
         j;
 
@@ -298,15 +299,17 @@ OOXML.prototype._parseRunNode = function (data) {
         }
         if (horizontalPositionNode) {
             offset = horizontalPositionNode.querySelector('posOffset');
-            result.css.position = "absolute";
+            result.css.position = "relative";
             if (
                 horizontalPositionNode.attributes['relativeFrom'] &&
                     (
                         horizontalPositionNode.attributes['relativeFrom'].value == 'column' ||
                             horizontalPositionNode.attributes['relativeFrom'].value == 'character'
                         )
-                ) {
-                result.options.relativeParentPosition = true;
+                )
+            {
+                result.options.parentCss = result.options.parentCss || {};
+                result.options.parentCss.position = "relative";
             }
             if (offset && offset.textContent) {
                 result.dimensionCSSRules.left = this._convertEMU(offset.textContent);
@@ -314,15 +317,17 @@ OOXML.prototype._parseRunNode = function (data) {
         }
         if (verticalPositionNode) {
             offset = verticalPositionNode.querySelector('posOffset');
-            result.css.position = "absolute";
+            result.css.position = "relative";
             if (
                 verticalPositionNode.attributes['relativeFrom'] &&
                     (
                         verticalPositionNode.attributes['relativeFrom'].value == 'column' ||
                             verticalPositionNode.attributes['relativeFrom'].value == 'character'
                         )
-                ) {
-                result.options.relativeParentPosition = true;
+                )
+            {
+                result.options.parentCss = result.options.parentCss || {};
+                result.options.parentCss.position = "relative";
             }
             if (offset && offset.textContent) {
                 result.dimensionCSSRules.top = this._convertEMU(offset.textContent);
@@ -361,15 +366,21 @@ OOXML.prototype._parseRunNode = function (data) {
             ) || result.attributes.id;
             result.attributes.name = (
                 optionsNode.attributes['name'] && optionsNode.attributes['name'].value
-            ) || result.attributes.name;
+            ) || result.attributes.name || '';
             result.options.isHidden = this.attributeToBoolean(optionsNode.attributes['descr']);
             result.attributes.alt = (
                 optionsNode.attributes['descr'] && optionsNode.attributes['descr'].value
-            ) || result.attributes.alt;
+            ) || result.attributes.alt || result.attributes.name;
         }
         if (extentNode) {
             if (extentNode.attributes['cy'] && !isNaN(extentNode.attributes['cy'].value)) {
-                result.dimensionCSSRules.height = this._convertEMU(extentNode.attributes['cy'].value);
+                h = this._convertEMU(extentNode.attributes['cy'].value);
+
+                result.options.parentDimensionCSSRules = result.options.parentDimensionCSSRules || {};
+                result.options.parentDimensionCSSRules.height = h;
+
+                result.options.parentCss = result.options.parentCss || {};
+                result.options.parentCss.overflowY = 'hidden';
             }
             if (extentNode.attributes['cx'] && !isNaN(extentNode.attributes['cx'].value)) {
                 result.dimensionCSSRules.width = this._convertEMU(extentNode.attributes['cx'].value);
@@ -384,33 +395,33 @@ OOXML.prototype._parseRunNode = function (data) {
                     switch (attrName) {
                         case "l":
                             if (!isNaN(effectExtentNode.attributes[k].value)) {
-                                result.options.inline.effectExtent.left = {
+                                result.dimensionCSSRules.left = {
                                     value: +effectExtentNode.attributes[k].value,
-                                    unit: "pt"
+                                    unit: "emu"
                                 };
                             }
                             break;
                         case "r":
                             if (!isNaN(effectExtentNode.attributes[k].value)) {
-                                result.options.inline.effectExtent.right = {
+                                result.dimensionCSSRules.right = {
                                     value: +effectExtentNode.attributes[k].value,
-                                    unit: "pt"
+                                    unit: "emu"
                                 };
                             }
                             break;
                         case "b":
                             if (!isNaN(effectExtentNode.attributes[k].value)) {
-                                result.options.inline.effectExtent.bottom = {
+                                result.dimensionCSSRules.bottom = {
                                     value: +effectExtentNode.attributes[k].value,
-                                    unit: "pt"
+                                    unit: "emu"
                                 };
                             }
                             break;
                         case "top":
                             if (!isNaN(effectExtentNode.attributes[k].value)) {
-                                result.options.inline.effectExtent.bottom = {
+                                result.dimensionCSSRules.bottom = {
                                     value: +effectExtentNode.attributes[k].value,
-                                    unit: "pt"
+                                    unit: "emu"
                                 };
                             }
                             break;

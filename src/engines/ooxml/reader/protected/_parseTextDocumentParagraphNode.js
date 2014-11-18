@@ -197,11 +197,19 @@ OOXML.prototype._parseTextDocumentParagraphNode = function (params) {
         }
     }
 
-    /**
-     * Align image on center
-     */
-    if (elementInfo.children[0] && elementInfo.children[0].options.isImage &&!elementInfo.children[1] && !elementInfo.css.textAlign){
-        elementInfo.css.textAlign = "center";
+    if (elementInfo.children[0] && elementInfo.children[0].options.isImage) {
+        /**
+         * Align image on center
+         */
+        if (!elementInfo.children[1] && !elementInfo.css.textAlign){
+            elementInfo.css.textAlign = "center";
+        }
+        if (elementInfo.children[0].options.parentCss) {
+            copy(elementInfo.css, elementInfo.children[0].options.parentCss);
+        }
+        if (elementInfo.children[0].options.parentDimensionCSSRules) {
+            copy(elementInfo.dimensionCSSRules, elementInfo.children[0].options.parentDimensionCSSRules);
+        }
     }
 
     linesCount = Math.ceil(

@@ -29,7 +29,7 @@ OOXML.prototype._createFileDataFromTextDocument = function (filesEntry, callback
             if (filename.indexOf('media/') >= 0) {
                 documentData.media[filename] = {
                     fileData: fileEntry,
-                    data: this._normalizeDataURI(result, filename)
+                    data: this.normalizeDataURI(result, filename)
                 };
             } else {
                 xml = domParser.parseFromString(result, "application/xml");

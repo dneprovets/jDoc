@@ -123,16 +123,21 @@
         callback(this.data);
     };
     function BlobWriter(contentType) {
-        var blob, that = this;
+        var blob,
+            that = this;
 
         function init(callback) {
             callback();
         }
 
         function writeUint8Array(array, callback) {
-            blob = new Blob([isAppendABViewSupported() ? array : array.buffer], {
-                type: contentType
-            });
+            var blobOptions = {};
+
+            if (contentType) {
+                blobOptions.type = contentType;
+            }
+
+            blob = new Blob([isAppendABViewSupported() ? array : array.buffer], blobOptions);
             callback();
         }
 

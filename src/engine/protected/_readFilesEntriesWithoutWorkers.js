@@ -5,11 +5,11 @@ jDoc.Engine.prototype._readFilesEntriesWithoutWorkers = function (options) {
         len = entries.length,
         counter = 0,
         results = [],
-        method = options.method || "readAsText",
+        readerMethod = options.method || "readAsText",
         i;
 
     for (i = len - 1; i >= 0; i--) {
-        (function (entry, read, success) {
+        (function (entry, method, read, success) {
             var reader = new FileReader(),
                 filename = entries[i].entry.filename,
                 file = entries[i].file;
@@ -34,6 +34,6 @@ jDoc.Engine.prototype._readFilesEntriesWithoutWorkers = function (options) {
             }
 
             reader[method](file);
-        }(entries[i], options.read, options.success));
+        }(entries[i], readerMethod, options.read, options.success));
     }
 };

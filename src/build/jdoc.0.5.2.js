@@ -387,16 +387,21 @@
         };
 
         function BlobWriter(contentType) {
-            var blob, that = this;
+            var blob,
+                that = this;
 
             function init(callback) {
                 callback();
             }
 
             function writeUint8Array(array, callback) {
-                blob = new Blob([isAppendABViewSupported() ? array : array.buffer], {
-                    type: contentType
-                });
+                var blobOptions = {};
+
+                if (contentType) {
+                    blobOptions.type = contentType;
+                }
+
+                blob = new Blob([isAppendABViewSupported() ? array : array.buffer], blobOptions);
                 callback();
             }
 
@@ -8055,6 +8060,12 @@
 
                 return res;
             }
+        },
+        "emu": {
+            "px": function (val) {
+                // 1inch = 914400 EMUs
+                return unitRatio['in'].px(val / 914400);
+            }
         }
     };
     /**
@@ -8612,11 +8623,11 @@
                 len = entries.length,
                 counter = 0,
                 results = [],
-                method = options.method || "readAsText",
+                readerMethod = options.method || "readAsText",
                 i;
 
             for (i = len - 1; i >= 0; i--) {
-                (function (entry, read, success) {
+                (function (entry, method, read, success) {
                     var reader = new FileReader(),
                         filename = entries[i].entry.filename,
                         file = entries[i].file;
@@ -8641,7 +8652,7 @@
                     }
 
                     reader[method](file);
-                }(entries[i], options.read, options.success));
+                }(entries[i], readerMethod, options.read, options.success));
             }
         },
         attributeToBoolean: function (attribute) {
@@ -11538,7 +11549,7 @@
                         if (filename.indexOf('media/') >= 0) {
                             documentData.media[filename] = {
                                 fileData: fileEntry,
-                                data: this._normalizeDataURI(result, filename)
+                                data: this.normalizeDataURI(result, filename)
                             };
                         } else {
                             xml = domParser.parseFromString(result, "application/xml");
@@ -12322,6 +12333,7 @@
                     textBoxContent,
                     styleProperties,
                     pictureNodeChildren,
+                    h,
                     k,
                     j;
 
@@ -12574,7 +12586,7 @@
                     }
                     if (horizontalPositionNode) {
                         offset = horizontalPositionNode.querySelector('posOffset');
-                        result.css.position = "absolute";
+                        result.css.position = "relative";
                         if (
                             horizontalPositionNode.attributes['relativeFrom'] &&
                             (
@@ -12582,7 +12594,8 @@
                                 horizontalPositionNode.attributes['relativeFrom'].value == 'character'
                             )
                         ) {
-                            result.options.relativeParentPosition = true;
+                            result.options.parentCss = result.options.parentCss || {};
+                            result.options.parentCss.position = "relative";
                         }
                         if (offset && offset.textContent) {
                             result.dimensionCSSRules.left = this._convertEMU(offset.textContent);
@@ -12590,7 +12603,7 @@
                     }
                     if (verticalPositionNode) {
                         offset = verticalPositionNode.querySelector('posOffset');
-                        result.css.position = "absolute";
+                        result.css.position = "relative";
                         if (
                             verticalPositionNode.attributes['relativeFrom'] &&
                             (
@@ -12598,7 +12611,8 @@
                                 verticalPositionNode.attributes['relativeFrom'].value == 'character'
                             )
                         ) {
-                            result.options.relativeParentPosition = true;
+                            result.options.parentCss = result.options.parentCss || {};
+                            result.options.parentCss.position = "relative";
                         }
                         if (offset && offset.textContent) {
                             result.dimensionCSSRules.top = this._convertEMU(offset.textContent);
@@ -12636,15 +12650,21 @@
                         ) || result.attributes.id;
                         result.attributes.name = (
                             optionsNode.attributes['name'] && optionsNode.attributes['name'].value
-                        ) || result.attributes.name;
+                        ) || result.attributes.name || '';
                         result.options.isHidden = this.attributeToBoolean(optionsNode.attributes['descr']);
                         result.attributes.alt = (
                             optionsNode.attributes['descr'] && optionsNode.attributes['descr'].value
-                        ) || result.attributes.alt;
+                        ) || result.attributes.alt || result.attributes.name;
                     }
                     if (extentNode) {
                         if (extentNode.attributes['cy'] && !isNaN(extentNode.attributes['cy'].value)) {
-                            result.dimensionCSSRules.height = this._convertEMU(extentNode.attributes['cy'].value);
+                            h = this._convertEMU(extentNode.attributes['cy'].value);
+
+                            result.options.parentDimensionCSSRules = result.options.parentDimensionCSSRules || {};
+                            result.options.parentDimensionCSSRules.height = h;
+
+                            result.options.parentCss = result.options.parentCss || {};
+                            result.options.parentCss.overflowY = 'hidden';
                         }
                         if (extentNode.attributes['cx'] && !isNaN(extentNode.attributes['cx'].value)) {
                             result.dimensionCSSRules.width = this._convertEMU(extentNode.attributes['cx'].value);
@@ -12659,33 +12679,33 @@
                                 switch (attrName) {
                                 case "l":
                                     if (!isNaN(effectExtentNode.attributes[k].value)) {
-                                        result.options.inline.effectExtent.left = {
+                                        result.dimensionCSSRules.left = {
                                             value: +effectExtentNode.attributes[k].value,
-                                            unit: "pt"
+                                            unit: "emu"
                                         };
                                     }
                                     break;
                                 case "r":
                                     if (!isNaN(effectExtentNode.attributes[k].value)) {
-                                        result.options.inline.effectExtent.right = {
+                                        result.dimensionCSSRules.right = {
                                             value: +effectExtentNode.attributes[k].value,
-                                            unit: "pt"
+                                            unit: "emu"
                                         };
                                     }
                                     break;
                                 case "b":
                                     if (!isNaN(effectExtentNode.attributes[k].value)) {
-                                        result.options.inline.effectExtent.bottom = {
+                                        result.dimensionCSSRules.bottom = {
                                             value: +effectExtentNode.attributes[k].value,
-                                            unit: "pt"
+                                            unit: "emu"
                                         };
                                     }
                                     break;
                                 case "top":
                                     if (!isNaN(effectExtentNode.attributes[k].value)) {
-                                        result.options.inline.effectExtent.bottom = {
+                                        result.dimensionCSSRules.bottom = {
                                             value: +effectExtentNode.attributes[k].value,
-                                            unit: "pt"
+                                            unit: "emu"
                                         };
                                     }
                                     break;
@@ -13378,11 +13398,19 @@
                     }
                 }
 
-                /**
-                 * Align image on center
-                 */
-                if (elementInfo.children[0] && elementInfo.children[0].options.isImage && !elementInfo.children[1] && !elementInfo.css.textAlign) {
-                    elementInfo.css.textAlign = "center";
+                if (elementInfo.children[0] && elementInfo.children[0].options.isImage) {
+                    /**
+                     * Align image on center
+                     */
+                    if (!elementInfo.children[1] && !elementInfo.css.textAlign) {
+                        elementInfo.css.textAlign = "center";
+                    }
+                    if (elementInfo.children[0].options.parentCss) {
+                        copy(elementInfo.css, elementInfo.children[0].options.parentCss);
+                    }
+                    if (elementInfo.children[0].options.parentDimensionCSSRules) {
+                        copy(elementInfo.dimensionCSSRules, elementInfo.children[0].options.parentDimensionCSSRules);
+                    }
                 }
 
                 linesCount = Math.ceil(

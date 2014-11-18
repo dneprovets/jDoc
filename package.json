@@ -1,9 +1,9 @@
 {
     "name": "jDoc",
-    "version": "0.5.1",
+    "version": "0.5.2",
     "private": true,
     "author": {
-        "name": "Denis Knyazevich",
+        "name": "Denys Kniazevych",
         "email": "webschik@gmail.com"
     },
     "devDependencies": {
