@@ -4,12 +4,12 @@ RTF.prototype._controlWordsParsers.trspdt = function (options) {
         param = options.param;
 
     parseParams.options.table.cellMarginTop = param / 20;
-    parseParams.styles.cells.dimensionCSSRules.paddingTop =
-        parseParams.styles.cells.dimensionCSSRules.paddingTop || {
+    parseParams.styles.cells.dimensionCssRules.paddingTop =
+        parseParams.styles.cells.dimensionCssRules.paddingTop || {
             value: 0,
             unit: "pt"
         };
-    parseParams.styles.cells.dimensionCSSRules.paddingTop.value += parseParams.options.table.cellMarginTop;
+    parseParams.styles.cells.dimensionCssRules.paddingTop.value += parseParams.options.table.cellMarginTop;
 
     return {
         parseParams: parseParams,

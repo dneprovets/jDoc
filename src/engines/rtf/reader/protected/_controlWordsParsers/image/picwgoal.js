@@ -4,7 +4,7 @@ RTF.prototype._controlWordsParsers.picwgoal = function (options) {
         param = options.param;
 
     if (param > 0) {
-        parseParams.currentTextElementParent.dimensionCSSRules.width = {
+        parseParams.currentTextElementParent.dimensionCssRules.width = {
             value: param / 20,
             unit: "pt"
         };

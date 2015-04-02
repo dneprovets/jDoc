@@ -4,7 +4,9 @@
  * @return {Number} - for example, 18, 10, 12
  * @private
  */
-jDoc.Engine.prototype.cropUnit = function (value) {
-    value = +(String(value).replace(/,/g, '.').replace(/[^0-9.]+/g, ''));
-    return !isNaN(value) ? value : 0;
+jDoc.Engine.prototype.cropUnit = {
+    value: function (value) {
+        value = +(String(value).replace(/,/g, '.').replace(/[^0-9.]+/g, ''));
+        return !isNaN(value) ? value : 0;
+    }
 };

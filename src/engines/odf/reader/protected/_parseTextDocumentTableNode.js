@@ -27,7 +27,7 @@ ODF.prototype._parseTextDocumentTableNode = function (params) {
             },
             children: [header, body, footer],
             attributes: {},
-            dimensionCSSRules: {},
+            dimensionCssRules: {},
             css: {}
         },
         i,

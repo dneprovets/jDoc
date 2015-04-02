@@ -1,31 +1,23 @@
 /**
  * @description Read the file
- * @param options
- * @returns {*}
+ * @returns {Promise}
  */
-jDoc.Engine.prototype.parseFromArchive = function () {
-    var errors = this.errors;
+jDoc.Engine.prototype.parseFromArchive = {
+    value: function () {
+        return new Promise(function (resolve, reject) {
+            if (!this.isValid) {
+                reject(new Error(this.errors.invalidFileType.message));
+                return;
+            }
 
-    this.trigger('parsefromarchivestart');
-
-    if (!this.validate()) {
-        this.trigger('error', errors.invalidFileType);
-        this.trigger('parsefromarchiveend');
-        return false;
+            this.readFilesFromZip().then(
+                function (fileEntries) {
+                    this.createFileData(fileEntries).then(resolve);
+                }.bind(this),
+                function () {
+                    reject(new Error(this.errors.invalidReadZipFile.message));
+                }.bind(this)
+            );
+        }.bind(this));
     }
-
-    this.readFilesFromZIP({
-        success: function (fileEntries) {
-            this.createFileData(fileEntries, function (fileData) {
-                this.trigger('parsefromarchive', fileData);
-                this.trigger('parsefromarchiveend');
-            }.bind(this));
-        }.bind(this),
-        error: function () {
-            this.trigger('error', errors.invalidReadZIPFile);
-            this.trigger('parsefromarchiveend');
-        }.bind(this)
-    });
-
-    return null;
 };

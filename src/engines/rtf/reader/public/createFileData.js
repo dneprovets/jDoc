@@ -14,24 +14,24 @@ RTF.prototype.createFileData = function (text, callback) {
             styles: {
                 cells: {
                     css: {},
-                    dimensionCSSRules: {}
+                    dimensionCssRules: {}
                 },
                 table: {
                     css: {
                         width: "100%"
                     },
-                    dimensionCSSRules: {}
+                    dimensionCssRules: {}
                 },
                 rows: {
                     css: {},
-                    dimensionCSSRules: {}
+                    dimensionCssRules: {}
                 },
                 defaults: {
                     css: {
                         borderStyle: "solid",
                         borderColor: "#000000"
                     },
-                    dimensionCSSRules: {
+                    dimensionCssRules: {
                         borderWidth: {
                             value: 0.75,
                             unit: "pt"
@@ -46,7 +46,7 @@ RTF.prototype.createFileData = function (text, callback) {
                 options: {},
                 attributes: {},
                 css: {},
-                dimensionCSSRules: {
+                dimensionCssRules: {
                     paddingBottom: {
                         unit: "pt",
                         value: 42.5
@@ -81,7 +81,7 @@ RTF.prototype.createFileData = function (text, callback) {
                 css: {
                     margin: "0"
                 },
-                dimensionCSSRules: {
+                dimensionCssRules: {
                     // default font size
                     fontSize: {
                         value: 14,
@@ -102,13 +102,13 @@ RTF.prototype.createFileData = function (text, callback) {
             braceCounter: 0
         },
         parseResult = {
-            name: this.getFileName(),
+            name: this.fileName,
             pages: [copy(parseParams.pageData, {
                 children: [copy(parseParams.paragraphData, {
                     children: [{
                         options: {},
                         css: {},
-                        dimensionCSSRules: {},
+                        dimensionCssRules: {},
                         properties: {
                             textContent: ""
                         }
@@ -138,7 +138,7 @@ RTF.prototype.createFileData = function (text, callback) {
                         parseParams.currentTextElement = {
                             options: {},
                             css: {},
-                            dimensionCSSRules: {},
+                            dimensionCssRules: {},
                             properties: {
                                 textContent: ""
                             }
@@ -179,7 +179,7 @@ RTF.prototype.createFileData = function (text, callback) {
                 parseParams.currentTextElement = {
                     options: {},
                     css: {},
-                    dimensionCSSRules: {},
+                    dimensionCssRules: {},
                     properties: {
                         textContent: ""
                     }
@@ -193,7 +193,7 @@ RTF.prototype.createFileData = function (text, callback) {
                     parseParams.currentTextElement = {
                         options: {},
                         css: {},
-                        dimensionCSSRules: {},
+                        dimensionCssRules: {},
                         properties: {
                             textContent: ""
                         }
@@ -208,7 +208,7 @@ RTF.prototype.createFileData = function (text, callback) {
                 }
                 if (text[i] === " " && text[i + 1] === " ") {
                     i += 1;
-                    textContent = this.getHalfTabAsSpaces();
+                    textContent = this.halfTabAsSpaces;
                 } else {
                     textContent = text[i];
                 }

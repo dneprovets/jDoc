@@ -48,7 +48,7 @@ function buildElement (data) {
         el = document.createElement('span');
     }
 
-    applyCSS.call(this, el, data);
+    applyCss.call(this, el, data);
     addAttributes.call(this, el, data);
     addProperties.call(this, el, data);
 

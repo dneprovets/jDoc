@@ -9,24 +9,24 @@ OOXML.prototype._parseTextDocumentContent = function (params) {
 
     var documentData = params.documentData,
         result = {
-            name: this.getFileName(),
+            name: this.fileName,
             wordsCount: (documentData.applicationInfo && documentData.applicationInfo.wordsCount) || null,
             zoom: (documentData.settings && documentData.settings.zoom) || 100,
             pages: []
         },
         pageOptions = {
             css: {},
-            dimensionCSSRules: {},
+            dimensionCssRules: {},
             options: {
                 pageIndex: 0,
                 pageNumber: null,
                 header: {
                     css: {},
-                    dimensionCSSRules: {}
+                    dimensionCssRules: {}
                 },
                 footer: {
                     css: {},
-                    dimensionCSSRules: {}
+                    dimensionCssRules: {}
                 },
                 columns: {
                     equalWidth: false,
@@ -80,68 +80,68 @@ OOXML.prototype._parseTextDocumentContent = function (params) {
             lazyLoopOptions.all = lazyLoopOptions.len;
 
             children = $.children(sectionProperties);
-            len = children.length;
+            c = children.length;
 
-            for (c = len - 1; c >= 0; c--) {
+            while (c--) {
                 switch (children[c].localName) {
                 case "pgSz":
                     if (children[c].attributes['w:w'] && !isNaN(children[c].attributes['w:w'].value)) {
-                        pageOptions.dimensionCSSRules.width = {
+                        pageOptions.dimensionCssRules.width = {
                             value: children[c].attributes['w:w'].value / 20,
                             unit: "pt"
                         };
 
                         params.documentData.styles.defaults.options.pageContentWidth.value +=
-                            pageOptions.dimensionCSSRules.width.value;
+                            pageOptions.dimensionCssRules.width.value;
                     }
 
                     if (children[c].attributes['w:h'] && !isNaN(children[c].attributes['w:h'].value)) {
-                        pageOptions.dimensionCSSRules.height = {
+                        pageOptions.dimensionCssRules.height = {
                             value: (+children[c].attributes['w:h'].value / 20),
                             unit: "pt"
                         };
 
-                        pageHeight += pageOptions.dimensionCSSRules.height.value;
+                        pageHeight += pageOptions.dimensionCssRules.height.value;
                     }
 
                     break;
                 case "pgMar":
                     if (children[c].attributes['w:top'] && !isNaN(children[c].attributes['w:top'].value)) {
-                        pageOptions.dimensionCSSRules.paddingTop = {
+                        pageOptions.dimensionCssRules.paddingTop = {
                             value: children[c].attributes['w:top'].value / 20,
                             unit: "pt"
                         };
 
-                        pageHeight -= pageOptions.dimensionCSSRules.paddingTop.value;
+                        pageHeight -= pageOptions.dimensionCssRules.paddingTop.value;
                     }
 
                     if (children[c].attributes['w:left'] && !isNaN(children[c].attributes['w:left'].value)) {
-                        pageOptions.dimensionCSSRules.paddingLeft = {
+                        pageOptions.dimensionCssRules.paddingLeft = {
                             value: children[c].attributes['w:left'].value / 20,
                             unit: "pt"
                         };
 
                         params.documentData.styles.defaults.options.pageContentWidth.value -=
-                            pageOptions.dimensionCSSRules.paddingLeft.value;
+                            pageOptions.dimensionCssRules.paddingLeft.value;
                     }
 
                     if (children[c].attributes['w:right'] && !isNaN(children[c].attributes['w:right'].value)) {
-                        pageOptions.dimensionCSSRules.paddingRight = {
+                        pageOptions.dimensionCssRules.paddingRight = {
                             value: children[c].attributes['w:right'].value / 20,
                             unit: "pt"
                         };
 
                         params.documentData.styles.defaults.options.pageContentWidth.value -=
-                            pageOptions.dimensionCSSRules.paddingRight.value;
+                            pageOptions.dimensionCssRules.paddingRight.value;
                     }
 
                     if (children[c].attributes['w:bottom'] && !isNaN(children[c].attributes['w:bottom'].value)) {
-                        pageOptions.dimensionCSSRules.paddingBottom = {
+                        pageOptions.dimensionCssRules.paddingBottom = {
                             value: children[c].attributes['w:bottom'].value / 20,
                             unit: "pt"
                         };
 
-                        pageHeight -= pageOptions.dimensionCSSRules.paddingBottom.value;
+                        pageHeight -= pageOptions.dimensionCssRules.paddingBottom.value;
                     }
 
                     if (
@@ -149,7 +149,7 @@ OOXML.prototype._parseTextDocumentContent = function (params) {
                             children[c].attributes['w:header'] &&
                             !isNaN(children[c].attributes['w:header'].value)
                     ) {
-                        pageOptions.options.header.dimensionCSSRules.height = {
+                        pageOptions.options.header.dimensionCssRules.height = {
                             value: children[c].attributes['w:header'].value / 20,
                             unit: "pt"
                         };
@@ -157,7 +157,7 @@ OOXML.prototype._parseTextDocumentContent = function (params) {
                     if (
                         children[c].attributes['w:footer'] && !isNaN(children[c].attributes['w:footer'].value)
                     ) {
-                        pageOptions.options.footer.dimensionCSSRules.height = {
+                        pageOptions.options.footer.dimensionCssRules.height = {
                             value: children[c].attributes['w:footer'].value / 20,
                             unit: "pt"
                         };
@@ -167,7 +167,7 @@ OOXML.prototype._parseTextDocumentContent = function (params) {
                         children[c].attributes['w:gutter'] &&
                             !isNaN(children[c].attributes['w:gutter'].value)
                         ) {
-                        pageOptions.dimensionCSSRules.marginTop = {
+                        pageOptions.dimensionCssRules.marginTop = {
                             value: children[c].attributes['w:gutter'].value / 20,
                             unit: "pt"
                         };
@@ -245,7 +245,7 @@ OOXML.prototype._parseTextDocumentContent = function (params) {
                                     options: {
                                         isList: true
                                     },
-                                    dimensionCSSRules: {
+                                    dimensionCssRules: {
                                         padding: {
                                             value: 0,
                                             unit: "pt"
@@ -259,14 +259,14 @@ OOXML.prototype._parseTextDocumentContent = function (params) {
                                 };
                             }
 
-                            if (lineNodeData.dimensionCSSRules.paddingLeft) {
-                                listLine.dimensionCSSRules.paddingLeft = lineNodeData.dimensionCSSRules.paddingLeft;
-                                delete lineNodeData.dimensionCSSRules.paddingLeft;
+                            if (lineNodeData.dimensionCssRules.paddingLeft) {
+                                listLine.dimensionCssRules.paddingLeft = lineNodeData.dimensionCssRules.paddingLeft;
+                                delete lineNodeData.dimensionCssRules.paddingLeft;
                             }
 
-                            if (lineNodeData.dimensionCSSRules.marginLeft) {
-                                listLine.dimensionCSSRules.marginLeft = lineNodeData.dimensionCSSRules.marginLeft;
-                                delete lineNodeData.dimensionCSSRules.marginLeft;
+                            if (lineNodeData.dimensionCssRules.marginLeft) {
+                                listLine.dimensionCssRules.marginLeft = lineNodeData.dimensionCssRules.marginLeft;
+                                delete lineNodeData.dimensionCssRules.marginLeft;
                             }
                         }
 

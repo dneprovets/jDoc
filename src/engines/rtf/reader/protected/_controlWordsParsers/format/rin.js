@@ -16,7 +16,7 @@ RTF.prototype._controlWordsParsers.rin = function (options) {
             propertyName = "paddingRight";
         }
 
-        parseParams.currentTextElementParent.dimensionCSSRules[propertyName] = {
+        parseParams.currentTextElementParent.dimensionCssRules[propertyName] = {
             value: param / 20,
             unit: "pt"
         };

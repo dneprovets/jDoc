@@ -10,7 +10,7 @@ ODF.prototype._parseTextDocumentTableCellStyles = function (node) {
         j,
         result = {
             css: {},
-            dimensionCSSRules: {},
+            dimensionCssRules: {},
             options: {}
         },
         data;
@@ -23,7 +23,7 @@ ODF.prototype._parseTextDocumentTableCellStyles = function (node) {
             ) {
                 data = this._getSize(nodes[j].attributes['fo:padding'].value);
                 if (data.unit) {
-                    result.dimensionCSSRules.padding = data;
+                    result.dimensionCssRules.padding = data;
                 }
             }
             if (
@@ -32,7 +32,7 @@ ODF.prototype._parseTextDocumentTableCellStyles = function (node) {
             ) {
                 data = this._parseBorderStyle(nodes[j].attributes['fo:border'].value);
                 result.css.borderStyle = data.style;
-                result.dimensionCSSRules.borderWidth = data.width;
+                result.dimensionCssRules.borderWidth = data.width;
                 result.css.borderColor = data.color;
             }
             if (
@@ -41,7 +41,7 @@ ODF.prototype._parseTextDocumentTableCellStyles = function (node) {
             ) {
                 data = this._parseBorderStyle(nodes[j].attributes['fo:border-left'].value);
                 result.css.borderLeftStyle = data.style;
-                result.dimensionCSSRules.borderLeftWidth = data.width;
+                result.dimensionCssRules.borderLeftWidth = data.width;
                 result.css.borderLeftColor = data.color;
             }
             if (
@@ -50,7 +50,7 @@ ODF.prototype._parseTextDocumentTableCellStyles = function (node) {
             ) {
                 data = this._parseBorderStyle(nodes[j].attributes['fo:border-right'].value);
                 result.css.borderRightStyle = data.style;
-                result.dimensionCSSRules.borderRightWidth = data.width;
+                result.dimensionCssRules.borderRightWidth = data.width;
                 result.css.borderRightColor = data.color;
             }
             if (
@@ -59,7 +59,7 @@ ODF.prototype._parseTextDocumentTableCellStyles = function (node) {
             ) {
                 data = this._parseBorderStyle(nodes[j].attributes['fo:border-top'].value);
                 result.css.borderTopStyle = data.style;
-                result.dimensionCSSRules.borderTopWidth = data.width;
+                result.dimensionCssRules.borderTopWidth = data.width;
                 result.css.borderTopColor = data.color;
             }
             if (
@@ -68,7 +68,7 @@ ODF.prototype._parseTextDocumentTableCellStyles = function (node) {
             ) {
                 data = this._parseBorderStyle(nodes[j].attributes['fo:border-bottom'].value);
                 result.css.borderBottomStyle = data.style;
-                result.dimensionCSSRules.borderBottomWidth = data.width;
+                result.dimensionCssRules.borderBottomWidth = data.width;
                 result.css.borderBottomColor = data.color;
             }
         }

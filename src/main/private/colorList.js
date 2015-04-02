@@ -2,7 +2,7 @@
  *
  * @private
  */
-var colorList = {
+const colorList = {
     "black": "#000000",
     "navy": "#000080",
     "darkblue": "#00008B",

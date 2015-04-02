@@ -2,9 +2,9 @@ RTF.prototype._controlWordsParsers.paperh = function (options) {
     var parseParams = options.parseParams,
         parseResult = options.parseResult,
         param = options.param,
-        i;
+        i = parseResult.pages.length;
 
-    parseParams.pageData.dimensionCSSRules.height = {
+    parseParams.pageData.dimensionCssRules.height = {
         value: param / 20,
         unit: "pt"
     };
@@ -12,10 +12,12 @@ RTF.prototype._controlWordsParsers.paperh = function (options) {
         parseParams.pageHeight = 0;
     }
 
-    parseParams.pageHeight += parseParams.pageData.dimensionCSSRules.height.value;
-    for (i = parseResult.pages.length - 1; i >= 0; i--) {
-        parseResult.pages[i].dimensionCSSRules.height = parseParams.pageData.dimensionCSSRules.height;
+    parseParams.pageHeight += parseParams.pageData.dimensionCssRules.height.value;
+
+    while (i--) {
+        parseResult.pages[i].dimensionCssRules.height = parseParams.pageData.dimensionCssRules.height;
     }
+
     return {
         parseParams: parseParams,
         parseResult: parseResult

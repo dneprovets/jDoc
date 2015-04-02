@@ -2,6 +2,8 @@
  *
  * @returns {boolean}
  */
-jDoc.Engine.prototype.isTextDocument = function () {
-    return !!(this.options.fileType && this.options.fileType.isTextDocument);
+jDoc.Engine.prototype.isTextDocument = {
+    get: function () {
+        return !!(this.fileType && this.fileType.isTextDocument);
+    }
 };

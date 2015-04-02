@@ -21,9 +21,9 @@ ODF.prototype._parseTextDocumentStyles = function (xml, callback) {
 
     stylesNode = xml.querySelector('master-styles');
     nodes = $.children(stylesNode);
-    len = nodes.length;
+    i = nodes.length;
 
-    for (i = len - 1; i >= 0; i--) {
+    while (i--) {
         if (nodes[i].localName === "master-page") {
             if (nodes[i].attributes['style:page-layout-name'] && nodes[i].attributes['style:page-layout-name'].value) {
                 result.pageLayout = nodes[i].attributes['style:page-layout-name'].value;
@@ -33,9 +33,9 @@ ODF.prototype._parseTextDocumentStyles = function (xml, callback) {
 
     stylesNode = xml.querySelector('automatic-styles');
     nodes = $.children(stylesNode);
-    len = nodes.length;
+    i = nodes.length;
 
-    for (i = len - 1; i >= 0; i--) {
+    while (i--) {
         if (nodes[i].localName === "page-layout") {
             if (nodes[i].attributes['style:name'] && nodes[i].attributes['style:name'].value) {
                 result.automatic.layouts[nodes[i].attributes['style:name'].value] =

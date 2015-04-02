@@ -11,13 +11,13 @@ OOXML.prototype._parseFontsInfo = function (xml) {
         self = this,
         attributesCount,
         k,
-        i,
+        i = fontInfoNodes.length,
         j,
         len,
         nameAttribute,
         children;
 
-    for (i = fontInfoNodes.length - 1; i >= 0; i--) {
+    while (i--) {
         nameAttribute = fontInfoNodes[i].attributes['w:name'];
 
         if (nameAttribute && nameAttribute.value) {

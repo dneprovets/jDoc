@@ -8,7 +8,7 @@ ODF.prototype._parseTextDocumentTableRowNode = function (params) {
     var row = {
             children: [],
             css: {},
-            dimensionCSSRules: {}
+            dimensionCssRules: {}
         },
         j,
         c,

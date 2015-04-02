@@ -8,7 +8,7 @@ ODF.prototype._createPage = function (params) {
     var data = {
         options: {},
         css: {},
-        dimensionCSSRules: {},
+        dimensionCssRules: {},
         children: []
     };
 

@@ -2,14 +2,15 @@ RTF.prototype._controlWordsParsers.gutter = function (options) {
     var parseParams = options.parseParams,
         parseResult = options.parseResult,
         param = options.param,
-        i;
+        i = parseResult.pages.length;
 
-    parseParams.pageData.dimensionCSSRules.marginTop = {
+    parseParams.pageData.dimensionCssRules.marginTop = {
         value: param / 20,
         unit: "pt"
     };
-    for (i = parseResult.pages.length - 1; i > 0; i--) {
-        parseResult.pages[i].dimensionCSSRules.marginTop = parseParams.pageData.dimensionCSSRules.marginTop;
+
+    while (i--) {
+        parseResult.pages[i].dimensionCssRules.marginTop = parseParams.pageData.dimensionCssRules.marginTop;
     }
 
     return {

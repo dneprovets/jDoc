@@ -4,7 +4,7 @@ RTF.prototype._controlWordsParsers.brdrw = function (options) {
         param = options.param,
         el = parseParams.currentTextElement || parseParams.currentTextElementParent;
 
-    el.dimensionCSSRules.borderWidth = {
+    el.dimensionCssRules.borderWidth = {
         value: param / 20,
         unit: "pt"
     };

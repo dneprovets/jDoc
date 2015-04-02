@@ -3,6 +3,6 @@
  * @returns {string}
  * @private
  */
-jDoc.Engine.prototype.getNonbreakingSpace = function () {
-    return "\u00A0";
+jDoc.Engine.prototype.nonbreakingSpace = {
+    value: "\u00A0"
 };

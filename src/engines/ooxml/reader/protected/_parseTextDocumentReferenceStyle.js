@@ -7,7 +7,7 @@
 OOXML.prototype._parseTextDocumentReferenceStyle = function (styleValue) {
     var result = {
         css: {},
-        dimensionCSSRules: {}
+        dimensionCssRules: {}
     };
 
     styleValue = styleValue ? styleValue.toLowerCase() : styleValue;

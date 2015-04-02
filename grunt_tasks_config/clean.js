@@ -7,12 +7,12 @@ module.exports = function () {
             "no-write": true
         },
         start: [
-            "src/build/**/*.js"
+            "build/**/*.js"
         ],
 
         engines: [
-            "src/build/**/*.js",
-            "!src/build/jdoc.*"
+            "build/**/*.js",
+            "!build/jdoc.*"
         ]
     };
 };

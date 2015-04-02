@@ -4,10 +4,7 @@ jDoc.Engine = function (file) {
 
     if (fileType) {
         this.file = file;
-        this.options.isValid = true;
-        this.options.fileType = fileType;
-    } else {
-        this.options.isValid = false;
+        this.fileType = fileType;
     }
 
     if (typeof this.initialize === 'function') {
@@ -15,22 +12,52 @@ jDoc.Engine = function (file) {
     }
 };
 
-jDoc.Engine.prototype = {
-    options: {
-        isValid: false,
-        fileType: ""
+Object.defineProperties(jDoc.Engine.prototype, {
+    fileType: {
+        writable: true
     },
 
-    errors: clone(errors),
+    errors: {
+        value: clone(errors)
+    },
 
-    colorList: clone(colorList),
+    colorList: {
+        value: clone(colorList)
+    },
 
-    fileTypeParsers: []
+    fileName: {
+        get: function () {
+            return (this.file && this.file.name) || "";
+        }
+    },
+
+    fileTypeParsers: {
+        writable: true,
+        value: []
+    },
+
+    emDash: {
+        value: "—"
+    },
+
+    enDash: {
+        value: "–"
+    },
+
+    isValid: {
+        enumerable: false,
+        configurable: false,
+        get: function () {
+            return !!(this.file && this.fileType);
+        }
+    },
+
+    halfTabAsSpaces: {
+        value: "\u2000\u2000"
+    }
 
     // @define prototypeProperties
-};
-
-copy(jDoc.Engine.prototype, Events);
+});
 
 /**
  * @description Extend function
@@ -54,15 +81,14 @@ jDoc.Engine.extend = function (props) {
     F.prototype = this.prototype;
     Child.prototype = new F();
     Child.prototype.constructor = Child;
+    Child.superproto = this.prototype;
 
     /**
      * Set properties
      */
     for (prop in props) {
         if (props.hasOwnProperty(prop)) {
-            if (prop === "options") {
-                Child.prototype[prop] = copy({}, Child.prototype[prop], props[prop]);
-            } else if (Array.isArray(props[prop])) {
+            if (Array.isArray(props[prop])) {
                 Child.prototype[prop] = props[prop].slice(0);
             } else {
                 Child.prototype[prop] = props[prop];

@@ -1,80 +1,83 @@
 // @namespace jDoc
-var jDoc = function () {
-    this._currentEngine = null;
-};
-jDoc.prototype = {
-    // @define prototypeProperties
-};
-copy(jDoc.prototype, Events);
-copy(jDoc, {
-    _formats: [],
-
-    _engines: {},
-
+var jDoc = Object.defineProperties({}, {
     /**
-     * @description
+     *
      */
-    clone: clone,
-
-    /**
-     * @description
-     */
-    copy: copy,
-
-    /**
-     * @description
-     */
-    getA4DimensionCSSRules: getA4DimensionCSSRules,
+    a4DimensionCssRules: {
+        configurable: false,
+        enumerable: false,
+        value: {
+            width: {
+                value: 792,
+                unit: "pt"
+            },
+            height: {
+                value: 612,
+                unit: "pt"
+            }
+        }
+    },
 
     /**
      * @description This browser support required technologies for jDoc or no.
      * @returns {boolean}
      */
-    isSupported: function () {
-        return !!(
-            localStorage &&
-            window.File &&
-            window.Blob &&
-            window.Blob.prototype.slice &&
-            window.FileReader &&
-            window.ArrayBuffer &&
-            window.Uint8Array &&
-            window.DataView
-        );
+    supported: {
+        configurable: false,
+        enumerable: false,
+        get () {
+            return !!(
+                typeof File !== 'undefined' &&
+                typeof Blob !== 'undefined' &&
+                typeof FileReader !== 'undefined' &&
+                typeof ArrayBuffer !== 'undefined' &&
+                typeof Uint8Array !== 'undefined' &&
+                typeof DataView !== 'undefined' &&
+                Blob.prototype.slice
+            );
+        }
     },
 
     /**
-     * @description
+     *
      * @param name
      * @param formats
      * @param engine
-     * @returns {*}
+     * @returns {jDoc.Engine|null}
      */
-    defineEngine: function (name, formats, engine) {
-        if (
-            name &&
-            formats &&
-            engine &&
-            typeof engine.prototype.validate === "function"
-        ) {
-            if (!Array.isArray(formats)) {
-                formats = [String(formats).toLowerCase()];
+    defineEngine: {
+        configurable: false,
+        value (name, formats, engine) {
+            if (
+                name &&
+                formats &&
+                engine &&
+                engine.superproto === jDoc.Engine.prototype
+            ) {
+                if (!Array.isArray(formats)) {
+                    formats = [String(formats).toLowerCase()];
+                }
+
+                documentFormats.push.apply(documentFormats, formats);
+                documentEngines[name] = engine;
+                return engine;
             }
 
-            this._formats = this._formats.concat(formats);
-            this._engines[name] = engine;
+            return null;
         }
-
-        return this;
     },
 
     /**
-     * @description
-     * @returns {*}
+     *
+     * @returns {Array}
      */
-    getSupportedFormats: function () {
-        return this._formats.slice(0);
+    supportedFormats: {
+        configurable: false,
+        enumerable: false,
+        get () {
+            return documentFormats.slice(0);
+        }
     }
 
-    //@define properties
-}, Events);
+    // @define properties
+});

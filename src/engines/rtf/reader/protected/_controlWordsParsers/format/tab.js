@@ -3,7 +3,7 @@ RTF.prototype._controlWordsParsers.tab = function (options) {
         parseResult = options.parseResult;
 
     if (parseParams.currentTextElement) {
-        parseParams.currentTextElement.properties.textContent += this.getTabAsSpaces();
+        parseParams.currentTextElement.properties.textContent += this.tabAsSpaces;
     }
 
     return {

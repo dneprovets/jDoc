@@ -102,7 +102,7 @@ RTF.prototype._controlWordsParsers.par = function (options) {
     parseParams.currentTextElement = {
         options: {},
         css: {},
-        dimensionCSSRules: {},
+        dimensionCssRules: {},
         properties: {
             textContent: ""
         }

@@ -1,3 +1,3 @@
-var vendorPrefixes = {
+const vendorPrefixes = {
     "boxSizing": ["moz", "o", "ms", "webkit"]
 };

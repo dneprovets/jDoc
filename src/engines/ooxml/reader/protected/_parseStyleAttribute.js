@@ -7,7 +7,7 @@
 OOXML.prototype._parseStyleAttribute = function (value, options) {
     var result = {
             css: {},
-            dimensionCSSRules: {}
+            dimensionCssRules: {}
         },
         k = 0,
         stylePartitions = String(value).split(';'),
@@ -32,7 +32,7 @@ OOXML.prototype._parseStyleAttribute = function (value, options) {
             attr = stylePartitionData[0];
 
             if (attr === "width" || attr === "height" || attr === "left" || attr === "top") {
-                result.dimensionCSSRules[attr] = {
+                result.dimensionCssRules[attr] = {
                     value: this._cropUnits(stylePartitionData[1].trim()) / options.denominator,
                     unit: "pt"
                 };

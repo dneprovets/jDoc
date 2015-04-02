@@ -5,7 +5,7 @@ RTF.prototype._controlWordsParsers.expndtw = function (options) {
         el = parseParams.currentTextElement || parseParams.currentTextElementParent;
 
     if (param > 0) {
-        el.dimensionCSSRules.letterSpacing = {
+        el.dimensionCssRules.letterSpacing = {
             value: param / 20,
             unit: "pt"
         };

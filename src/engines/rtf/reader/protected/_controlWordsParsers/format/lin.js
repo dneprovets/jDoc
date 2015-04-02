@@ -16,7 +16,7 @@ RTF.prototype._controlWordsParsers.lin = function (options) {
             propertyName = "paddingLeft";
         }
 
-        parseParams.currentTextElementParent.dimensionCSSRules[propertyName] = {
+        parseParams.currentTextElementParent.dimensionCssRules[propertyName] = {
             value: param / 20,
             unit: "pt"
         };

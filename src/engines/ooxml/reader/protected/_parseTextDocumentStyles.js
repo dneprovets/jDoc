@@ -8,7 +8,7 @@ OOXML.prototype._parseTextDocumentStyles = function (xml) {
     var result = {
             defaults: {
                 paragraph: {
-                    dimensionCSSRules: {
+                    dimensionCssRules: {
                         margin: {
                             value: 0,
                             unit: "pt"
@@ -34,7 +34,7 @@ OOXML.prototype._parseTextDocumentStyles = function (xml) {
         },
         self = this,
         childrenNodes = $.children(xml.querySelector('styles')),
-        i,
+        i = childrenNodes.length,
         name,
         data,
         propertiesNode,
@@ -47,7 +47,7 @@ OOXML.prototype._parseTextDocumentStyles = function (xml) {
         k = 0,
         j = 0;
 
-    for (i = childrenNodes.length - 1; i >= 0; i--) {
+    while (i--) {
         if (childrenNodes[i].localName === "docDefaults") {
             contentStyles = childrenNodes[i].querySelector('rPrDefault rPr');
             paragraphStyles = childrenNodes[i].querySelector('pPrDefault pPr');

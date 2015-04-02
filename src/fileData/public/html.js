@@ -18,14 +18,14 @@ jDoc.FileData.prototype.html = function (options) {
         pageEl = document.createElement('div');
         pageEl.setAttribute('class', fileDataClasses.page);
 
-        if (pages[i].dimensionCSSRules && i < pagesCount - 1 && !pages[i].dimensionCSSRules.marginBottom) {
-            pages[i].dimensionCSSRules.marginBottom = {
+        if (pages[i].dimensionCssRules && i < pagesCount - 1 && !pages[i].dimensionCssRules.marginBottom) {
+            pages[i].dimensionCssRules.marginBottom = {
                 unit: "px",
                 value: 10
             };
         }
 
-        applyCSS.call(this, pageEl, pages[i]);
+        applyCss.call(this, pageEl, pages[i]);
         addAttributes.call(this, pageEl, pages[i]);
         addProperties.call(this, pageEl, pages[i]);
         $.css(pageEl, "box-sizing", "border-box");

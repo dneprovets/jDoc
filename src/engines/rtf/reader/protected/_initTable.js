@@ -36,7 +36,7 @@ RTF.prototype._initTable = function (params) {
                 body
             ],
             attributes: clone(data.attributes),
-            dimensionCSSRules: clone(data.dimensionCSSRules),
+            dimensionCssRules: clone(data.dimensionCssRules),
             css: copy({}, data.css, {
                 borderCollapse: "collapse"
             })
@@ -58,10 +58,10 @@ RTF.prototype._initTable = function (params) {
         params.parseParams.styles.table.css
     );
 
-    table.dimensionCSSRules = copy(
+    table.dimensionCssRules = copy(
         {},
-        table.dimensionCSSRules,
-        params.parseParams.styles.table.dimensionCSSRules
+        table.dimensionCssRules,
+        params.parseParams.styles.table.dimensionCssRules
     );
 
     if (params.parseParams) {

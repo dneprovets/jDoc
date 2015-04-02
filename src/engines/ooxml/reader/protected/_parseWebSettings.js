@@ -5,14 +5,14 @@
  * @private
  */
 OOXML.prototype._parseWebSettings = function (xml) {
-    var i,
-        children = $.children(xml),
+    var children = $.children(xml),
+        i = children.length,
         result = {
             optimizeForBrowser: false,
             allowPNG: false
         };
 
-    for (i = children.length - 1; i >= 0; i--) {
+    while (i--) {
         if (children[i].localName === "optimizeForBrowser") {
             result.optimizeForBrowser = !!(
                 children[i].attributes['w:val'] &&
@@ -24,5 +24,6 @@ OOXML.prototype._parseWebSettings = function (xml) {
             );
         }
     }
+
     return result;
 };

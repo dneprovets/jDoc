@@ -7,7 +7,7 @@ RTF.prototype._controlWordsParsers.trowd = function (options) {
 
     if (row) {
         row.css = {};
-        row.dimensionCSSRules = {};
+        row.dimensionCssRules = {};
     }
 
     return {

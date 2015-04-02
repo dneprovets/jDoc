@@ -5,8 +5,8 @@ module.exports = function () {
             report:   false
         },
         js:      {
-            'src':  'src/build/jdoc.<%= version %>.js',
-            'dest': 'src/build/jdoc.<%= version %>.min.js'
+            'src':  'build/jdoc.<%= version %>.js',
+            'dest': 'build/jdoc.<%= version %>.min.js'
         }
     };
 };

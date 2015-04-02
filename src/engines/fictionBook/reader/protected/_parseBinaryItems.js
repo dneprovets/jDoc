@@ -6,9 +6,9 @@
  */
 FictionBook.prototype._parseBinaryItems = function (nodes) {
     var result = {},
-        i;
+        i = nodes.length;
 
-    for (i = nodes.length - 1; i >= 0; i--) {
+    while (i--) {
         if (
             nodes[i].attributes.id &&
                 nodes[i].attributes.id.value &&

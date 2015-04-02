@@ -3,7 +3,7 @@ RTF.prototype._controlWordsParsers.clpadb = function (options) {
         parseResult = options.parseResult,
         param = options.param;
 
-    parseParams.styles.cells.dimensionCSSRules.paddingBottom = {
+    parseParams.styles.cells.dimensionCssRules.paddingBottom = {
         value: param / 20,
         unit: "pt"
     };

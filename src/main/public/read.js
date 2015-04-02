@@ -1,53 +1,43 @@
 /**
  * @description Read the file
  * @param file
- * @param options. success, error
+ * @param options
+ * @returns {Promise}
  */
-jDoc.prototype.read = function (file, options) {
-    options = options || {};
+jDoc.read = {
+    value (file, options = {}) {
+        return new Promise((resolve, reject) => {
+            var parse,
+                currentEngine;
 
-    this.trigger('readstart');
+            if (!jDoc.supported) {
+                reject(new Error(errors.requiredTechnologies.message));
+                return;
+            }
 
-    var parse;
+            if (!(file instanceof File || file instanceof Blob)) {
+                reject(new Error(errors.invalidReadFirstArgument.message));
+                return;
+            } else {
+                currentEngine = selectEngine.call(this, file, options);
+            }
 
-    if (!jDoc.isSupported()) {
-        this.trigger('error', errors.requiredTechnologies);
-        this.trigger('readend');
+            if (!currentEngine) {
+                reject(new Error(errors.invalidFileType.message));
+                return;
+            }
 
-        return this;
+            if (currentEngine.options && currentEngine.options.parseMethod) {
+                parse = currentEngine[currentEngine.options.parseMethod];
+            } else {
+                parse = currentEngine.parse;
+            }
+
+            if (typeof parse === "function") {
+                parse.call(currentEngine).then(resolve, reject);
+            } else {
+                reject(new Error(errors.invalidParseMethods));
+            }
+        });
     }
-
-    if (!(file instanceof File || file instanceof Blob)) {
-        this.trigger('error', errors.invalidReadFirstArgument);
-        this.trigger('readend');
-    } else {
-        selectEngine.call(this, file, options);
-    }
-
-    if (!this._currentEngine) {
-        this.trigger('error', errors.invalidFileType);
-    } else {
-        if (this._currentEngine.options && this._currentEngine.options.parseMethod) {
-            parse = this._currentEngine[this._currentEngine.options.parseMethod];
-        } else {
-            parse = this._currentEngine.parse;
-        }
-
-        if (typeof parse === "function") {
-            this._currentEngine.once('parse', function (fileData) {
-                this.trigger('read', fileData);
-            }.bind(this));
-            this._currentEngine.once('error', function (error) {
-                this.trigger('error', error);
-            }.bind(this));
-            this._currentEngine.once('parseend', function () {
-                this.trigger('readend');
-            }.bind(this));
-            parse.call(this._currentEngine);
-        } else {
-            this.trigger('error', errors.invalidParseMethods);
-        }
-    }
-
-    return this;
 };

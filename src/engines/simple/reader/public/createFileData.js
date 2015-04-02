@@ -65,7 +65,7 @@ Simple.prototype.createFileData = function (text, callback) {
     if (typeof callback === 'function') {
         callback(
             new jDoc.FileData({
-                name: this.getFileName(),
+                name: this.fileName,
                 pages: [{
                     options: {},
                     css: {},

@@ -11,12 +11,12 @@ ODF.prototype._parseTextDocumentParagraphStyles = function (node) {
         result = {
             paragraph: {
                 css: {},
-                dimensionCSSRules: {},
+                dimensionCssRules: {},
                 options: {}
             },
             paragraphContent: {
                 css: {},
-                dimensionCSSRules: {},
+                dimensionCssRules: {},
                 options: {}
             }
         },
@@ -47,92 +47,92 @@ ODF.prototype._parseTextDocumentParagraphStyles = function (node) {
                 size = this._getSize(nodes[j].attributes['fo:margin'].value);
 
                 if (size.unit) {
-                    result.paragraph.dimensionCSSRules.margin = size;
+                    result.paragraph.dimensionCssRules.margin = size;
                 }
             }
             if (nodes[j].attributes['fo:margin-top'] && nodes[j].attributes['fo:margin-top'].value) {
                 size = this._getSize(nodes[j].attributes['fo:margin-top'].value);
 
                 if (size.unit) {
-                    result.paragraph.dimensionCSSRules.marginTop = size;
+                    result.paragraph.dimensionCssRules.marginTop = size;
                 }
             }
             if (nodes[j].attributes['fo:margin-bottom'] && nodes[j].attributes['fo:margin-bottom'].value) {
                 size = this._getSize(nodes[j].attributes['fo:margin-bottom'].value);
                 if (size.unit) {
-                    result.paragraph.dimensionCSSRules.marginBottom = size;
+                    result.paragraph.dimensionCssRules.marginBottom = size;
                 }
             }
             if (nodes[j].attributes['fo:margin-left'] && nodes[j].attributes['fo:margin-left'].value) {
                 size = this._getSize(nodes[j].attributes['fo:margin-left'].value);
                 if (size.unit) {
-                    result.paragraph.dimensionCSSRules.marginLeft = size;
+                    result.paragraph.dimensionCssRules.marginLeft = size;
                 }
             }
             if (nodes[j].attributes['fo:margin-right'] && nodes[j].attributes['fo:margin-right'].value) {
                 size = this._getSize(nodes[j].attributes['fo:margin-right'].value);
                 if (size.unit) {
-                    result.paragraph.dimensionCSSRules.marginLeft = size;
+                    result.paragraph.dimensionCssRules.marginLeft = size;
                 }
             }
             if (nodes[j].attributes['fo:margin'] && nodes[j].attributes['fo:margin'].value) {
                 size = this._getSize(nodes[j].attributes['fo:margin'].value);
                 if (size.unit) {
-                    result.paragraph.dimensionCSSRules.margin = size;
+                    result.paragraph.dimensionCssRules.margin = size;
                 }
             }
             if (nodes[j].attributes['fo:margin-top'] && nodes[j].attributes['fo:margin-top'].value) {
                 size = this._getSize(nodes[j].attributes['fo:margin-top'].value);
                 if (size.unit) {
-                    result.paragraph.dimensionCSSRules.marginTop = size;
+                    result.paragraph.dimensionCssRules.marginTop = size;
                 }
             }
             if (nodes[j].attributes['fo:margin-bottom'] && nodes[j].attributes['fo:margin-bottom'].value) {
                 size = this._getSize(nodes[j].attributes['fo:margin-bottom'].value);
                 if (size.unit) {
-                    result.paragraph.dimensionCSSRules.marginBottom = size;
+                    result.paragraph.dimensionCssRules.marginBottom = size;
                 }
             }
             if (nodes[j].attributes['fo:margin-left'] && nodes[j].attributes['fo:margin-left'].value) {
                 size = this._getSize(nodes[j].attributes['fo:margin-left'].value);
                 if (size.unit) {
-                    result.paragraph.dimensionCSSRules.marginLeft = size;
+                    result.paragraph.dimensionCssRules.marginLeft = size;
                 }
             }
             if (nodes[j].attributes['fo:margin-right'] && nodes[j].attributes['fo:margin-right'].value) {
                 size = this._getSize(nodes[j].attributes['fo:margin-right'].value);
                 if (size.unit) {
-                    result.paragraph.dimensionCSSRules.marginRight = size;
+                    result.paragraph.dimensionCssRules.marginRight = size;
                 }
             }
             if (nodes[j].attributes['fo:padding'] && nodes[j].attributes['fo:padding'].value) {
                 size = this._getSize(nodes[j].attributes['fo:padding'].value);
                 if (size.unit) {
-                    result.paragraph.dimensionCSSRules.padding = size;
+                    result.paragraph.dimensionCssRules.padding = size;
                 }
             }
             if (nodes[j].attributes['fo:padding-top'] && nodes[j].attributes['fo:padding-top'].value) {
                 size = this._getSize(nodes[j].attributes['fo:padding-top'].value);
                 if (size.unit) {
-                    result.paragraph.dimensionCSSRules.paddingTop = size;
+                    result.paragraph.dimensionCssRules.paddingTop = size;
                 }
             }
             if (nodes[j].attributes['fo:padding-bottom'] && nodes[j].attributes['fo:padding-bottom'].value) {
                 size = this._getSize(nodes[j].attributes['fo:padding-bottom'].value);
                 if (size.unit) {
-                    result.paragraph.dimensionCSSRules.paddingBottom = size;
+                    result.paragraph.dimensionCssRules.paddingBottom = size;
                 }
             }
             if (nodes[j].attributes['fo:padding-left'] && nodes[j].attributes['fo:padding-left'].value) {
                 size = this._getSize(nodes[j].attributes['fo:padding-left'].value);
                 if (size.unit) {
-                    result.paragraph.dimensionCSSRules.paddingLeft = size;
+                    result.paragraph.dimensionCssRules.paddingLeft = size;
                 }
             }
             if (nodes[j].attributes['fo:padding-right'] && nodes[j].attributes['fo:padding-right'].value) {
                 size = this._getSize(nodes[j].attributes['fo:padding-right'].value);
                 if (size.unit) {
-                    result.paragraph.dimensionCSSRules.paddingRight = size;
+                    result.paragraph.dimensionCssRules.paddingRight = size;
                 }
             }
         } else if (localName === "text-properties") {
@@ -161,101 +161,101 @@ ODF.prototype._parseTextDocumentParagraphStyles = function (node) {
             if (nodes[j].attributes['fo:font-size'] && nodes[j].attributes['fo:font-size'].value) {
                 size = this._getSize(nodes[j].attributes['fo:font-size'].value);
                 if (size.unit) {
-                    result.paragraphContent.dimensionCSSRules.fontSize = size;
+                    result.paragraphContent.dimensionCssRules.fontSize = size;
                 }
             }
             if (nodes[j].attributes['fo:margin'] && nodes[j].attributes['fo:margin'].value) {
                 size = this._getSize(nodes[j].attributes['fo:margin'].value);
                 if (size.unit) {
-                    result.paragraphContent.dimensionCSSRules.margin = size;
+                    result.paragraphContent.dimensionCssRules.margin = size;
                 }
             }
             if (nodes[j].attributes['fo:margin-top'] && nodes[j].attributes['fo:margin-top'].value) {
                 size = this._getSize(nodes[j].attributes['fo:margin-top'].value);
                 if (size.unit) {
-                    result.paragraphContent.dimensionCSSRules.marginTop = size;
+                    result.paragraphContent.dimensionCssRules.marginTop = size;
                 }
             }
             if (nodes[j].attributes['fo:margin-bottom'] && nodes[j].attributes['fo:margin-bottom'].value) {
                 size = this._getSize(nodes[j].attributes['fo:margin-bottom'].value);
                 if (size.unit) {
-                    result.paragraphContent.dimensionCSSRules.marginBottom = size;
+                    result.paragraphContent.dimensionCssRules.marginBottom = size;
                 }
             }
             if (nodes[j].attributes['fo:margin-left'] && nodes[j].attributes['fo:margin-left'].value) {
                 size = this._getSize(nodes[j].attributes['fo:margin-left'].value);
                 if (size.unit) {
-                    result.paragraphContent.dimensionCSSRules.marginLeft = size;
+                    result.paragraphContent.dimensionCssRules.marginLeft = size;
                 }
             }
             if (nodes[j].attributes['fo:margin-right'] && nodes[j].attributes['fo:margin-right'].value) {
                 size = this._getSize(nodes[j].attributes['fo:margin-right'].value);
                 if (size.unit) {
-                    result.paragraphContent.dimensionCSSRules.marginLeft = size;
+                    result.paragraphContent.dimensionCssRules.marginLeft = size;
                 }
             }
             if (nodes[j].attributes['fo:margin'] && nodes[j].attributes['fo:margin'].value) {
                 size = this._getSize(nodes[j].attributes['fo:margin'].value);
                 if (size.unit) {
-                    result.paragraphContent.dimensionCSSRules.margin = size;
+                    result.paragraphContent.dimensionCssRules.margin = size;
                 }
             }
             if (nodes[j].attributes['fo:margin-top'] && nodes[j].attributes['fo:margin-top'].value) {
                 size = this._getSize(nodes[j].attributes['fo:margin-top'].value);
                 if (size.unit) {
-                    result.paragraphContent.dimensionCSSRules.marginTop = size;
+                    result.paragraphContent.dimensionCssRules.marginTop = size;
                 }
             }
             if (nodes[j].attributes['fo:margin-bottom'] && nodes[j].attributes['fo:margin-bottom'].value) {
                 size = this._getSize(nodes[j].attributes['fo:margin-bottom'].value);
                 if (size.unit) {
-                    result.paragraphContent.dimensionCSSRules.marginBottom = size;
+                    result.paragraphContent.dimensionCssRules.marginBottom = size;
                 }
             }
             if (nodes[j].attributes['fo:margin-left'] && nodes[j].attributes['fo:margin-left'].value) {
                 size = this._getSize(nodes[j].attributes['fo:margin-left'].value);
                 if (size.unit) {
-                    result.paragraphContent.dimensionCSSRules.marginLeft = size;
+                    result.paragraphContent.dimensionCssRules.marginLeft = size;
                 }
             }
             if (nodes[j].attributes['fo:margin-right'] && nodes[j].attributes['fo:margin-right'].value) {
                 size = this._getSize(nodes[j].attributes['fo:margin-right'].value);
                 if (size.unit) {
-                    result.paragraphContent.dimensionCSSRules.marginRight = size;
+                    result.paragraphContent.dimensionCssRules.marginRight = size;
                 }
             }
             if (nodes[j].attributes['fo:padding'] && nodes[j].attributes['fo:padding'].value) {
                 size = this._getSize(nodes[j].attributes['fo:padding'].value);
 
                 if (size.unit) {
-                    result.paragraphContent.dimensionCSSRules.padding = size;
+                    result.paragraphContent.dimensionCssRules.padding = size;
                 }
             }
             if (nodes[j].attributes['fo:padding-top'] && nodes[j].attributes['fo:padding-top'].value) {
                 size = this._getSize(nodes[j].attributes['fo:padding-top'].value);
 
                 if (size.unit) {
-                    result.paragraphContent.dimensionCSSRules.paddingTop = size;
+                    result.paragraphContent.dimensionCssRules.paddingTop = size;
                 }
             }
             if (nodes[j].attributes['fo:padding-bottom'] && nodes[j].attributes['fo:padding-bottom'].value) {
                 size = this._getSize(nodes[j].attributes['fo:padding-bottom'].value);
                 if (size.unit) {
-                    result.paragraphContent.dimensionCSSRules.paddingBottom = size;
+                    result.paragraphContent.dimensionCssRules.paddingBottom = size;
                 }
             }
             if (nodes[j].attributes['fo:padding-left'] && nodes[j].attributes['fo:padding-left'].value) {
                 size = this._getSize(nodes[j].attributes['fo:padding-left'].value);
 
                 if (size.unit) {
-                    result.paragraphContent.dimensionCSSRules.paddingLeft = size;
+                    result.paragraphContent.dimensionCssRules.paddingLeft = size;
                 }
             }
             if (nodes[j].attributes['fo:padding-right'] && nodes[j].attributes['fo:padding-right'].value) {
                 size = this._getSize(nodes[j].attributes['fo:padding-right'].value);
 
                 if (size.unit) {
-                    result.paragraphContent.dimensionCSSRules.paddingRight = size;
+                    result.paragraphContent.dimensionCssRules.paddingRight = size;
                 }
             }
             if (nodes[j].attributes['fo:language'] && nodes[j].attributes['fo:language'].value) {

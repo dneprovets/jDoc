@@ -4,11 +4,11 @@ function buildPageNumber (el, data) {
 
     el.style.position = "relative";
     numberBlock.style.position = "absolute";
-    numberBlock.style.top = options.header.dimensionCSSRules.height ?
+    numberBlock.style.top = options.header.dimensionCssRules.height ?
         unit.convert({
-            from: options.header.dimensionCSSRules.height.unit,
+            from: options.header.dimensionCssRules.height.unit,
             to: this._htmlOptions.unit.base,
-            value: options.header.dimensionCSSRules.height.value
+            value: options.header.dimensionCssRules.height.value
         }) + this._htmlOptions.unit.base : 0;
     numberBlock.style.right = el.style.paddingRight || 0;
 

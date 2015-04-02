@@ -13,14 +13,14 @@ function buildSchema (data) {
         j,
         part;
 
-    applyCSS.call(this, el, data);
+    applyCss.call(this, el, data);
     addAttributes.call(this, el, data);
     addProperties.call(this, el, data);
 
     for (i = 0; i < len; i++) {
         part = document.createElement('div');
 
-        applyCSS.call(this, part, children[i]);
+        applyCss.call(this, part, children[i]);
         addAttributes.call(this, part, children[i]);
         addProperties.call(this, part, children[i]);
 

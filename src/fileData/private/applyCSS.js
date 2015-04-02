@@ -5,7 +5,7 @@
  * @param options
  * @private
  */
-function applyCSS (node, data, options) {
+function applyCss (node, data, options) {
     var prop,
         htmlOptions = this._htmlOptions,
         elementUnit = htmlOptions.unit,
@@ -17,7 +17,7 @@ function applyCSS (node, data, options) {
         node.style[prop] = data.css[prop];
     }
 
-    for (prop in data.dimensionCSSRules) {
+    for (prop in data.dimensionCssRules) {
         resultUnit = elementUnit.base;
 
         if (prop == "lineHeight" || prop.indexOf('font') >= 0) {
@@ -31,9 +31,9 @@ function applyCSS (node, data, options) {
         }
 
         node.style[prop] = unit.convert({
-            from: data.dimensionCSSRules[prop].unit,
+            from: data.dimensionCssRules[prop].unit,
             to: resultUnit,
-            value: data.dimensionCSSRules[prop].value
+            value: data.dimensionCssRules[prop].value
         }) + resultUnit;
     }
 }

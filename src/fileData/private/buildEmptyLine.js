@@ -7,7 +7,7 @@
 function buildEmptyLine (data) {
     var el = document.createElement('br');
 
-    applyCSS.call(this, el, data);
+    applyCss.call(this, el, data);
     addAttributes.call(this, el, data);
     addProperties.call(this, el, data);
 

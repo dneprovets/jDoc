@@ -3,10 +3,9 @@ RTF.prototype._getTableBody = function (table) {
         return null;
     }
 
-    var i,
-        len = table.children.length;
+    var i = table.children.length;
 
-    for (i = len - 1; i >= 0; i--) {
+    while (i--) {
         if (!table.children[i].options || !table.children[i].options.isHeader || !table.children[i].options.isFooter) {
             return table.children[i];
         }

@@ -4,7 +4,7 @@ RTF.prototype._controlWordsParsers.clpadfr = function (options) {
         param = options.param;
 
     if (param == 0) {
-        delete parseParams.styles.cells.dimensionCSSRules.paddingRight;
+        delete parseParams.styles.cells.dimensionCssRules.paddingRight;
     }
 
     return {

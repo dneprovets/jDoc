@@ -8,6 +8,6 @@ RTF.prototype._initRow = function () {
         children: [],
         css: {},
         options: {},
-        dimensionCSSRules: {}
+        dimensionCssRules: {}
     };
 };

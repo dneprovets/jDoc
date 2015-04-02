@@ -4,15 +4,17 @@
  * @return {Number}
  * @private
  */
-jDoc.Engine.prototype.getWordsCountInText = function (text) {
-    var words = (text || "").split(/\s+/),
-        len = words.length,
-        i,
-        wordsCount = 0;
+jDoc.Engine.prototype.getWordsCountInText = {
+    value: function (text) {
+        var words = (text || "").split(/\s+/),
+            len = words.length,
+            i,
+            wordsCount = 0;
 
-    for (i = len - 1; i >= 0; i--) {
-        wordsCount += (words[i].length > 1);
+        for (i = len - 1; i >= 0; i--) {
+            wordsCount += (words[i].length > 1);
+        }
+
+        return wordsCount;
     }
-
-    return wordsCount;
 };

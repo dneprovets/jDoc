@@ -10,7 +10,7 @@ ODF.prototype._parseTextDocumentTableColumnStyles = function (node) {
         j,
         result = {
             css: {},
-            dimensionCSSRules: {},
+            dimensionCssRules: {},
             options: {}
         },
         size = {};
@@ -23,7 +23,7 @@ ODF.prototype._parseTextDocumentTableColumnStyles = function (node) {
             ) {
                 size = this._getSize(nodes[j].attributes['style:column-width'].value);
                 if (size.unit) {
-                    result.dimensionCSSRules.width = size;
+                    result.dimensionCssRules.width = size;
                 }
             }
         }

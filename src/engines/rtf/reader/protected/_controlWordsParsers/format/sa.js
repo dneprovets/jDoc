@@ -4,7 +4,7 @@ RTF.prototype._controlWordsParsers.sa = function (options) {
         param = options.param;
 
     if (param > 0) {
-        parseParams.currentTextElementParent.dimensionCSSRules.marginBottom = {
+        parseParams.currentTextElementParent.dimensionCssRules.marginBottom = {
             value: param / 20,
             unit: "pt"
         };

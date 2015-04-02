@@ -1,3 +1,5 @@
-jDoc.Engine.prototype.isTextDocumentMasterWeb = function () {
-    return (this.options.fileType && !!this.options.fileType.isTextDocumentMasterWeb);
+jDoc.Engine.prototype.isTextDocumentMasterWeb = {
+    get: function () {
+        return (this.fileType && !!this.fileType.isTextDocumentMasterWeb);
+    }
 };

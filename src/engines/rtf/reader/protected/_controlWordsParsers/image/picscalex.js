@@ -3,9 +3,9 @@ RTF.prototype._controlWordsParsers.picscalex = function (options) {
         parseResult = options.parseResult,
         param = options.param;
 
-    if (parseParams.currentTextElementParent.dimensionCSSRules.height) {
-        parseParams.currentTextElementParent.dimensionCSSRules.height.value = Math.round(
-            parseParams.currentTextElementParent.dimensionCSSRules.height.value * param / 100
+    if (parseParams.currentTextElementParent.dimensionCssRules.height) {
+        parseParams.currentTextElementParent.dimensionCssRules.height.value = Math.round(
+            parseParams.currentTextElementParent.dimensionCssRules.height.value * param / 100
         );
     }
 

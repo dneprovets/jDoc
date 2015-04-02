@@ -2,7 +2,7 @@ ImageEngine.prototype.createFileData = function (data, callback) {
     if (typeof callback === 'function') {
         callback(
             new jDoc.FileData({
-                name: this.getFileName(),
+                name: this.fileName,
                 pages: [{
                     options: {},
                     css: {},

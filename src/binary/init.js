@@ -7,6 +7,6 @@ function Binary (blob) {
     this.size = blob.size || 0;
 }
 
-Binary.prototype = {
+Object.defineProperties(Binary.prototype, {
     // @define prototypeProperties
-};
+});

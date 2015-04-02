@@ -9,7 +9,7 @@ module.exports = function () {
                 '!src/main/private/{**/,}*.js'
             ],
 
-            dest: 'src/build/main.js'
+            dest: 'build/main.js'
         },
 
         unit: {
@@ -21,7 +21,18 @@ module.exports = function () {
                 '!src/unit/private/{**/,}*.js'
             ],
 
-            dest: 'src/build/unit.js'
+            dest: 'build/unit.js'
+        },
+
+        binary: {
+            options: {
+                initFile: 'src/binary/init.js'
+            },
+            src: [
+                'src/binary/{**/,}*.js'
+            ],
+
+            dest: 'build/engines/binary.js'
         },
 
         engine: {
@@ -33,19 +44,7 @@ module.exports = function () {
                 '!src/engine/private/{**/,}*.js'
             ],
 
-            dest: 'src/build/engine.js'
-        },
-
-        events: {
-            options: {
-                initFile: 'src/events/init.js'
-            },
-            src: [
-                'src/events/{**/,}*.js',
-                '!src/events/private/{**/,}*.js'
-            ],
-
-            dest: 'src/build/events.js'
+            dest: 'build/engine.js'
         },
 
         fileData: {
@@ -57,7 +56,7 @@ module.exports = function () {
                 '!src/fileData/private/{**/,}*.js'
             ],
 
-            dest: 'src/build/fileData.js'
+            dest: 'build/fileData.js'
         },
 
         dom: {
@@ -69,7 +68,7 @@ module.exports = function () {
                 '!src/dom/private/{**/,}*.js'
             ],
 
-            dest: 'src/build/dom.js'
+            dest: 'build/dom.js'
         },
 
         "simple-reader": {
@@ -80,7 +79,7 @@ module.exports = function () {
                 'src/engines/simple/reader/{**/,}*.js'
             ],
 
-            dest: 'src/build/engines/simple_reader.js'
+            dest: 'build/engines/simple_reader.js'
         },
 
         "dsv-reader": {
@@ -91,7 +90,7 @@ module.exports = function () {
                 'src/engines/dsv/reader/{**/,}*.js'
             ],
 
-            dest: 'src/build/engines/dsv_reader.js'
+            dest: 'build/engines/dsv_reader.js'
         },
 
         "fiction-book-reader": {
@@ -102,7 +101,7 @@ module.exports = function () {
                 'src/engines/fictionBook/reader/{**/,}*.js'
             ],
 
-            dest: 'src/build/engines/fiction_book_reader.js'
+            dest: 'build/engines/fiction_book_reader.js'
         },
 
         "rtf-reader": {
@@ -114,7 +113,7 @@ module.exports = function () {
                 '!src/engines/rtf/reader/private/{**/,}*.js'
             ],
 
-            dest: 'src/build/engines/rtf_reader.js'
+            dest: 'build/engines/rtf_reader.js'
         },
 
         "odf-reader": {
@@ -126,7 +125,7 @@ module.exports = function () {
                 '!src/engines/odf/reader/private/{**/,}*.js'
             ],
 
-            dest: 'src/build/engines/odf_reader.js'
+            dest: 'build/engines/odf_reader.js'
         },
 
         "ooxml-reader": {
@@ -138,7 +137,7 @@ module.exports = function () {
                 '!src/engines/ooxml/reader/private/{**/,}*.js'
             ],
 
-            dest: 'src/build/engines/ooxml_reader.js'
+            dest: 'build/engines/ooxml_reader.js'
         },
 
         "image-reader": {
@@ -150,7 +149,18 @@ module.exports = function () {
                 '!src/engines/image/reader/private/{**/,}*.js'
             ],
 
-            dest: 'src/build/engines/image_reader.js'
+            dest: 'build/engines/image_reader.js'
+        },
+
+        "wcbff-reader": {
+            options: {
+                initFile: 'src/engines/wcbff/init.js'
+            },
+            src: [
+                'src/engines/wcbff/{**/,}*.js'
+            ],
+
+            dest: 'build/engines/wcbff_reader.js'
         }
     }
 };

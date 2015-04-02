@@ -13,14 +13,14 @@ function buildList (data) {
         j,
         llen;
 
-    applyCSS.call(this, el, data);
+    applyCss.call(this, el, data);
     addAttributes.call(this, el, data);
     addProperties.call(this, el, data);
 
     for (i = 0; i < len; i++) {
         item = document.createElement('li');
 
-        applyCSS.call(this, item, children[i]);
+        applyCss.call(this, item, children[i]);
         addAttributes.call(this, item, children[i]);
         addProperties.call(this, item, children[i]);
 

@@ -12,7 +12,7 @@ ODF.prototype._parseTextDocumentListNode = function (params) {
             },
             attributes: {},
             css: {},
-            dimensionCSSRules: {},
+            dimensionCssRules: {},
             children: []
         },
         styleRules,
@@ -43,7 +43,7 @@ ODF.prototype._parseTextDocumentListNode = function (params) {
             options: {},
             attributes: {},
             css: {},
-            dimensionCSSRules: {},
+            dimensionCssRules: {},
             children: []
         };
 

@@ -2,15 +2,16 @@ RTF.prototype._controlWordsParsers.margb = function (options) {
     var parseParams = options.parseParams,
         parseResult = options.parseResult,
         param = options.param,
-        i;
+        i = parseResult.pages.length;
 
-    parseParams.pageData.dimensionCSSRules.paddingBottom = {
+    parseParams.pageData.dimensionCssRules.paddingBottom = {
         value: param / 20,
         unit: "pt"
     };
-    parseParams.pageHeight -= parseParams.pageData.dimensionCSSRules.paddingBottom.value;
-    for (i = parseResult.pages.length - 1; i >= 0; i--) {
-        parseResult.pages[i].dimensionCSSRules.paddingBottom = parseParams.pageData.dimensionCSSRules.paddingBottom;
+    parseParams.pageHeight -= parseParams.pageData.dimensionCssRules.paddingBottom.value;
+
+    while (i--) {
+        parseResult.pages[i].dimensionCssRules.paddingBottom = parseParams.pageData.dimensionCssRules.paddingBottom;
     }
 
     return {

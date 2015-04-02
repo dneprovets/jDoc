@@ -4,7 +4,7 @@ RTF.prototype._controlWordsParsers.ri = function (options) {
         param = options.param;
 
     if (param > 0) {
-        parseParams.currentTextElementParent.dimensionCSSRules.paddingRight = {
+        parseParams.currentTextElementParent.dimensionCssRules.paddingRight = {
             value: param / 20,
             unit: "pt"
         };

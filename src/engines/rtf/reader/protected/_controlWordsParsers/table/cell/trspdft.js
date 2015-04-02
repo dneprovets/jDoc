@@ -3,8 +3,8 @@ RTF.prototype._controlWordsParsers.trspdft = function (options) {
         parseResult = options.parseResult,
         param = options.param;
 
-    if (param === 0 && parseParams.options.table.cellMarginTop && parseParams.styles.cells.dimensionCSSRules.paddingTop) {
-        parseParams.styles.cells.dimensionCSSRules.paddingTop.value -= parseParams.options.table.cellMarginTop;
+    if (param === 0 && parseParams.options.table.cellMarginTop && parseParams.styles.cells.dimensionCssRules.paddingTop) {
+        parseParams.styles.cells.dimensionCssRules.paddingTop.value -= parseParams.options.table.cellMarginTop;
     }
 
     return {

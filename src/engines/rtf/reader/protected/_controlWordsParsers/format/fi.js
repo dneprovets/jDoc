@@ -4,7 +4,7 @@ RTF.prototype._controlWordsParsers.fi = function (options) {
         param = options.param;
 
     if (param > 0) {
-        parseParams.currentTextElementParent.dimensionCSSRules.textIndent = {
+        parseParams.currentTextElementParent.dimensionCssRules.textIndent = {
             value: param / 20,
             unit: "pt"
         };

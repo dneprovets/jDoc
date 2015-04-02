@@ -1,52 +1,29 @@
-/**
- *
- * @param options
- * @private
- */
-jDoc.Engine.prototype.readFilesFromZIP = function (options) {
-    var fileEntries = [];
+jDoc.Engine.prototype.readFilesFromZip = {
+    value: function () {
+        return new Promise(function (resolve, reject) {
+            zipEngine.read({
+                file: this.file
+            }).then(
+                function (entries) {
+                    var queue = [],
+                        entriesCount = entries.length,
+                        i;
 
-    options = options || {};
-
-    zipEngine.read({
-        file: this.file,
-        success: function (entries) {
-            var counter = 0,
-                entriesCount = entries.length,
-                i;
-
-            for (i = 0; i < entriesCount; i++) {
-                zipEngine.readEntry({
-                    entry: entries[i],
-                    type: "Blob",
-                    success: function (entryObject, file, blobURL) {
-                        if (file) {
-                            fileEntries.push({
-                                entry: entryObject,
-                                file: file,
-                                blobURL: blobURL
-                            });
-                        }
-
-                        counter++;
-
-                        // If all files was processed - run parser
-                        if (counter == entriesCount) {
-                            if (typeof options.success === 'function') {
-                                options.success(fileEntries);
-                            }
-                            return null;
-                        }
-
-                        return null;
+                    for (i = 0; i < entriesCount; i++) {
+                        queue.push(
+                            zipEngine.readEntry({
+                                entry: entries[i],
+                                type: "Blob"
+                            })
+                        );
                     }
-                });
-            }
-        },
-        error: function () {
-            if (typeof options.error === 'function') {
-                options.error();
-            }
-        }
-    });
+
+                    Promise.all(queue).then(function (list) {
+                        resolve(list);
+                    }, reject);
+                },
+                reject
+            );
+        }.bind(this));
+    }
 };

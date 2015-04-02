@@ -5,7 +5,7 @@ module.exports = function (grunt) {
             },
 
             delete_tmp_files: {
-                src: ['src/build/engines/']
+                src: ['build/engines/']
             },
 
             version: JSON.parse(grunt.file.read("package.json")).version
@@ -15,7 +15,6 @@ module.exports = function (grunt) {
         ],
         mainCoreTasks = [
             'build_test_docs_list',
-            'define_properties:events',
             'define_properties:main',
             'define_properties:unit',
             'define_properties:fileData',

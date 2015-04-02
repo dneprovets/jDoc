@@ -15,7 +15,7 @@ FictionBook.prototype._parseParagraph = function (params) {
                 isParagraph: true
             },
             css: {},
-            dimensionCSSRules: {
+            dimensionCssRules: {
                 margin: {
                     value: 0,
                     unit: "px"

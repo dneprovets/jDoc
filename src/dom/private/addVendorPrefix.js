@@ -7,10 +7,9 @@
  * @private
  */
 function addVendorPrefix (el, prop, val) {
-    var i,
-        len = (vendorPrefixes[prop] && vendorPrefixes[prop].length) || 0;
+    var i = vendorPrefixes[prop] && vendorPrefixes[prop].length;
 
-    for (i = len - 1; i >= 0; i--) {
+    while (i--) {
         el.style[vendorPrefixes[prop][i]] = val;
     }
 

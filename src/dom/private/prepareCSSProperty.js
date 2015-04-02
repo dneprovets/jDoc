@@ -4,7 +4,7 @@
  * @returns {string}
  * @private
  */
-function prepareCSSProperty (prop) {
+function prepareCssProperty (prop) {
     var mask = (/-(\w)/g),
         result = prop,
         data = mask.exec(result);

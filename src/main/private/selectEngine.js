@@ -1,29 +1,21 @@
 /**
  *
  * @param file
- * @param options
- * @private
+ * @returns {null|jDoc.Engine}
  */
-function selectEngine (file, options) {
-    options = options || {};
-
-    var engines = jDoc._engines,
-        k,
+function selectEngine (file) {
+    var engines = documentEngines,
         engineObj;
 
-    // Select engine for file
-    this._currentEngine = null;
-
-    for (k in engines) {
+    for (let k in engines) {
         if (engines.hasOwnProperty(k) && typeof engines[k] === 'function') {
             engineObj = new engines[k](file);
 
-            if (engineObj.validate()) {
-                this._currentEngine = engineObj;
-                break;
+            if (engineObj.isValid) {
+                return engineObj;
             }
         }
     }
 
-    return this;
+    return null;
 }

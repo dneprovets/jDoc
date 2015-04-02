@@ -3,21 +3,23 @@
  * @param options
  * @returns {Array}
  */
-Binary.prototype.uintArraySplit = function (options) {
-    var arr = [],
-        i,
-        j = 0,
-        len = options.data.length,
-        count = Math.ceil(options.data.length / (options.length || 1));
+Binary.prototype.uintArraySplit = {
+    value (options = {}) {
+        var arr = [],
+            j = 0,
+            {data, length} = options,
+            len = data.length,
+            i = Math.ceil(data.length / (length || 1));
 
-    for (i = count - 1; i >= 0; i--) {
-        arr[i] = this.excludeUintArray({
-            data: options.data,
-            index: j,
-            length: (options.length > (len - options.length * i) ? (len - options.length * i) : options.length) - j
-        });
-        j += options.length;
+        while (i--) {
+            arr[i] = this.excludeUintArray({
+                data: data,
+                index: j,
+                length: (length > (len - length * i) ? (len - length * i) : length) - j
+            });
+            j += length;
+        }
+
+        return arr;
     }
-
-    return arr;
 };

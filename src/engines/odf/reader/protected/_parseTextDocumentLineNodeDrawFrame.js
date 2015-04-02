@@ -12,7 +12,7 @@ ODF.prototype._parseTextDocumentParagraphNodeDrawFrame = function (options) {
                 isImage: true
             },
             css: {},
-            dimensionCSSRules: {}
+            dimensionCssRules: {}
         },
         size,
         i,
@@ -23,7 +23,7 @@ ODF.prototype._parseTextDocumentParagraphNodeDrawFrame = function (options) {
         size = this._getSize(options.node.attributes['svg:x'].value);
 
         if (size.unit) {
-            data.dimensionCSSRules.left = size;
+            data.dimensionCssRules.left = size;
             data.css.position = "absolute";
         }
     }
@@ -32,7 +32,7 @@ ODF.prototype._parseTextDocumentParagraphNodeDrawFrame = function (options) {
         size = this._getSize(options.node.attributes['svg:y'].value);
 
         if (size.unit) {
-            data.dimensionCSSRules.top = size;
+            data.dimensionCssRules.top = size;
             data.css.position = "absolute";
         }
     }
@@ -41,7 +41,7 @@ ODF.prototype._parseTextDocumentParagraphNodeDrawFrame = function (options) {
         size = this._getSize(options.node.attributes['svg:width'].value);
 
         if (size.unit) {
-            data.dimensionCSSRules.width = size;
+            data.dimensionCssRules.width = size;
         }
     }
 
@@ -49,7 +49,7 @@ ODF.prototype._parseTextDocumentParagraphNodeDrawFrame = function (options) {
         size = this._getSize(options.node.attributes['svg:height'].value);
 
         if (size.unit) {
-            data.dimensionCSSRules.height = size;
+            data.dimensionCssRules.height = size;
         }
     }
 

@@ -1,7 +1,7 @@
 /**
  * @description error objects
  */
-var errors = {
+const errors = {
     invalidReadFirstArgument: {
         message: 'First argument must be type of File or Blob'
     },
@@ -20,7 +20,7 @@ var errors = {
     invalidParseMethods: {
         message: "Not have parse method"
     },
-    invalidReadZIPFile: {
+    invalidReadZipFile: {
         message: "Can not read file"
     },
     notFoundMethodCreateFileData: {

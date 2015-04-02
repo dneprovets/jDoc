@@ -4,19 +4,21 @@
  * @param bytes
  * @returns {{buffer: ArrayBuffer, array: Uint8Array, view: DataView}}
  */
-Binary.prototype.getDataHelper = function (byteLength, bytes) {
-    var dataBuffer, dataArray;
+Binary.prototype.getDataHelper = {
+    value (byteLength, bytes) {
+        var buffer = new ArrayBuffer(byteLength),
+            array;
 
-    dataBuffer = new ArrayBuffer(byteLength);
-    dataArray = new Uint8Array(dataBuffer);
+        array = new Uint8Array(buffer);
 
-    if (bytes) {
-        dataArray.set(bytes, 0);
+        if (bytes) {
+            array.set(bytes, 0);
+        }
+
+        return {
+            buffer,
+            array,
+            view: new DataView(buffer)
+        };
     }
-
-    return {
-        buffer: dataBuffer,
-        array: dataArray,
-        view: new DataView(dataBuffer)
-    };
 };

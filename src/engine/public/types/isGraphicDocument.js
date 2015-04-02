@@ -1,7 +1,5 @@
-/**
- *
- * @returns {boolean}
- */
-jDoc.Engine.prototype.isGraphicDocument = function () {
-    return !!(this.options.fileType && this.options.fileType.isGraphicDocument);
+jDoc.Engine.prototype.isGraphicDocument = {
+    get: function () {
+        return !!(this.fileType && this.fileType.isGraphicDocument);
+    }
 };

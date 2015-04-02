@@ -18,8 +18,8 @@ OOXML.prototype._parseTextDocumentParagraphNode = function (params) {
         attributes: {},
         css:  copy({}, params.documentData.styles.defaults.paragraph.css,
             params.cssRules ? params.cssRules.css : {}),
-        dimensionCSSRules: copy({}, params.documentData.styles.defaults.paragraph.dimensionCSSRules,
-            params.cssRules ? params.cssRules.dimensionCSSRules : {}),
+        dimensionCssRules: copy({}, params.documentData.styles.defaults.paragraph.dimensionCssRules,
+            params.cssRules ? params.cssRules.dimensionCssRules : {}),
         children: []
     },
         hyperLinkChildren,
@@ -85,24 +85,24 @@ OOXML.prototype._parseTextDocumentParagraphNode = function (params) {
                  * @type {*}
                  */
                 elementInfo.css = {};
-                elementInfo.dimensionCSSRules = {};
+                elementInfo.dimensionCssRules = {};
             }
 
             copy(elementInfo.css, styleProperties.css);
-            copy(elementInfo.dimensionCSSRules, styleProperties.dimensionCSSRules);
+            copy(elementInfo.dimensionCssRules, styleProperties.dimensionCssRules);
             copy(elementInfo.attributes, styleProperties.attributes);
 
-            elementInfo.options.childrenCSSRules = styleProperties.options.childrenCSSRules;
+            elementInfo.options.childrenCssRules = styleProperties.options.childrenCssRules;
 
-            if (elementInfo.dimensionCSSRules.height) {
-                elementInfo.options.elementHeight.value = elementInfo.dimensionCSSRules.height.value;
+            if (elementInfo.dimensionCssRules.height) {
+                elementInfo.options.elementHeight.value = elementInfo.dimensionCssRules.height.value;
             }
 
             if (
-                elementInfo.dimensionCSSRules.minHeight &&
-                elementInfo.dimensionCSSRules.minHeight.value > elementInfo.options.elementHeight.value
+                elementInfo.dimensionCssRules.minHeight &&
+                elementInfo.dimensionCssRules.minHeight.value > elementInfo.options.elementHeight.value
             ) {
-                elementInfo.options.elementHeight.value = elementInfo.dimensionCSSRules.minHeight.value;
+                elementInfo.options.elementHeight.value = elementInfo.dimensionCssRules.minHeight.value;
             }
 
             break;
@@ -128,23 +128,23 @@ OOXML.prototype._parseTextDocumentParagraphNode = function (params) {
             for (k = 0; k < len; k++) {
                 hyperLinkChildrenElement = this._parseRunNode({
                     node: hyperLinkChildren[k],
-                    cssRules: elementInfo.options.childrenCSSRules,
+                    cssRules: elementInfo.options.childrenCssRules,
                     documentData: params.documentData
                 });
                 hyperLinkChildrenElement.css.color = "";
 
                 if (
-                    hyperLinkChildrenElement.dimensionCSSRules.fontSize &&
-                        hyperLinkChildrenElement.dimensionCSSRules.fontSize.value > maxFontSize
+                    hyperLinkChildrenElement.dimensionCssRules.fontSize &&
+                        hyperLinkChildrenElement.dimensionCssRules.fontSize.value > maxFontSize
                 ) {
-                    maxFontSize = hyperLinkChildrenElement.dimensionCSSRules.fontSize.value;
+                    maxFontSize = hyperLinkChildrenElement.dimensionCssRules.fontSize.value;
                 }
 
                 textContentLength += (
                     hyperLinkChildrenElement.properties.textContent ? (
                         hyperLinkChildrenElement.properties.textContent.length  * (
-                            hyperLinkChildrenElement.dimensionCSSRules.fontSize ? (
-                                hyperLinkChildrenElement.dimensionCSSRules.fontSize.value / defaultFontSize.value
+                            hyperLinkChildrenElement.dimensionCssRules.fontSize ? (
+                                hyperLinkChildrenElement.dimensionCssRules.fontSize.value / defaultFontSize.value
                             ) : 1
                         )
                     ): 0
@@ -170,14 +170,14 @@ OOXML.prototype._parseTextDocumentParagraphNode = function (params) {
         case "r":
             element = this._parseRunNode({
                 node: children[n],
-                cssRules: elementInfo.options.childrenCSSRules,
+                cssRules: elementInfo.options.childrenCssRules,
                 documentData: params.documentData
             });
 
             textContentLength += (element.properties.textContent ? (
                 element.properties.textContent.length * (
-                    element.dimensionCSSRules.fontSize ? (
-                        element.dimensionCSSRules.fontSize.value / defaultFontSize.value
+                    element.dimensionCssRules.fontSize ? (
+                        element.dimensionCssRules.fontSize.value / defaultFontSize.value
                     ) : 1
                 )
             ) : 0);
@@ -187,9 +187,9 @@ OOXML.prototype._parseTextDocumentParagraphNode = function (params) {
             }
 
             if (
-                element.dimensionCSSRules.fontSize && element.dimensionCSSRules.fontSize.value > maxFontSize
+                element.dimensionCssRules.fontSize && element.dimensionCssRules.fontSize.value > maxFontSize
             ) {
-                maxFontSize = element.dimensionCSSRules.fontSize.value;
+                maxFontSize = element.dimensionCssRules.fontSize.value;
             }
 
             elementInfo.children.push(element);
@@ -207,21 +207,21 @@ OOXML.prototype._parseTextDocumentParagraphNode = function (params) {
         if (elementInfo.children[0].options.parentCss) {
             copy(elementInfo.css, elementInfo.children[0].options.parentCss);
         }
-        if (elementInfo.children[0].options.parentDimensionCSSRules) {
-            copy(elementInfo.dimensionCSSRules, elementInfo.children[0].options.parentDimensionCSSRules);
+        if (elementInfo.children[0].options.parentDimensionCssRules) {
+            copy(elementInfo.dimensionCssRules, elementInfo.children[0].options.parentDimensionCssRules);
         }
     }
 
     linesCount = Math.ceil(
         (
             textContentLength * letterWidth.value + (
-                elementInfo.dimensionCSSRules.textIndent ? elementInfo.dimensionCSSRules.textIndent.value : 0
+                elementInfo.dimensionCssRules.textIndent ? elementInfo.dimensionCssRules.textIndent.value : 0
             )
         ) / (
             params.documentData.styles.defaults.options.pageContentWidth.value - (
-                elementInfo.dimensionCSSRules.paddingLeft ? elementInfo.dimensionCSSRules.paddingLeft.value : 0
+                elementInfo.dimensionCssRules.paddingLeft ? elementInfo.dimensionCssRules.paddingLeft.value : 0
             ) - (
-                elementInfo.dimensionCSSRules.paddingRight ? elementInfo.dimensionCSSRules.paddingRight.value : 0
+                elementInfo.dimensionCssRules.paddingRight ? elementInfo.dimensionCssRules.paddingRight.value : 0
             )
         )
     );
@@ -240,20 +240,20 @@ OOXML.prototype._parseTextDocumentParagraphNode = function (params) {
         }
     }
 
-    if (elementInfo.dimensionCSSRules.marginTop) {
-        elementInfo.options.elementHeight.value += elementInfo.dimensionCSSRules.marginTop.value;
+    if (elementInfo.dimensionCssRules.marginTop) {
+        elementInfo.options.elementHeight.value += elementInfo.dimensionCssRules.marginTop.value;
     }
 
-    if (elementInfo.dimensionCSSRules.marginBottom) {
-        elementInfo.options.elementHeight.value += elementInfo.dimensionCSSRules.marginBottom.value;
+    if (elementInfo.dimensionCssRules.marginBottom) {
+        elementInfo.options.elementHeight.value += elementInfo.dimensionCssRules.marginBottom.value;
     }
 
-    if (elementInfo.dimensionCSSRules.paddingTop) {
-        elementInfo.options.elementHeight.value += elementInfo.dimensionCSSRules.paddingTop.value;
+    if (elementInfo.dimensionCssRules.paddingTop) {
+        elementInfo.options.elementHeight.value += elementInfo.dimensionCssRules.paddingTop.value;
     }
 
-    if (elementInfo.dimensionCSSRules.paddingBottom) {
-        elementInfo.options.elementHeight.value += elementInfo.dimensionCSSRules.paddingBottom.value;
+    if (elementInfo.dimensionCssRules.paddingBottom) {
+        elementInfo.options.elementHeight.value += elementInfo.dimensionCssRules.paddingBottom.value;
     }
 
     return elementInfo;

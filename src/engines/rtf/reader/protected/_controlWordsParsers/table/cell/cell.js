@@ -28,10 +28,10 @@ RTF.prototype._controlWordsParsers.cell = function (options) {
         parseParams.styles.cells.css
     );
 
-    parseParams.currentTextElementParent.dimensionCSSRules = copy(
+    parseParams.currentTextElementParent.dimensionCssRules = copy(
         {},
-        parseParams.currentTextElementParent.dimensionCSSRules,
-        parseParams.styles.cells.dimensionCSSRules
+        parseParams.currentTextElementParent.dimensionCssRules,
+        parseParams.styles.cells.dimensionCssRules
     );
 
     row.children.push(parseParams.currentTextElementParent);
@@ -45,20 +45,20 @@ RTF.prototype._controlWordsParsers.cell = function (options) {
         table.options.cellsWidth[currentRowIndex] &&
             table.options.cellsWidth[currentRowIndex][currentCellIndex]
     ) {
-        parseParams.currentTextElementParent.dimensionCSSRules.width =
-            parseParams.currentTextElementParent.dimensionCSSRules.width ||
+        parseParams.currentTextElementParent.dimensionCssRules.width =
+            parseParams.currentTextElementParent.dimensionCssRules.width ||
                 table.options.cellsWidth[currentRowIndex][currentCellIndex];
     }
     parseParams.currentTextElementParent = {
         options: {},
         css: {},
-        dimensionCSSRules: {},
+        dimensionCssRules: {},
         children: []
     };
     parseParams.currentTextElement = {
         options: {},
         css: {},
-        dimensionCSSRules: {},
+        dimensionCssRules: {},
         properties: {
             textContent: ""
         }

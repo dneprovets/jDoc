@@ -1,11 +1,11 @@
 RTF.prototype._controlWordsParsers.widowctrl = function (options) {
     var parseParams = options.parseParams,
         parseResult = options.parseResult,
-        i;
+        i = parseResult.pages.length;
 
     parseParams.pageData.attributes.spellcheck = true;
 
-    for (i = parseResult.pages.length - 1; i >= 0; i--) {
+    while (i--) {
         parseResult.pages[i].attributes.spellcheck = parseParams.pageData.attributes.spellcheck;
     }
     return {

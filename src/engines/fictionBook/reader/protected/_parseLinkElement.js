@@ -14,7 +14,7 @@ FictionBook.prototype._parseLinkElement = function (node) {
                 textContent: ""
             },
             css: {},
-            dimensionCSSRules: {}
+            dimensionCssRules: {}
         },
         link = (
             node.attributes['l:href'] && node.attributes['l:href'].value

@@ -6,13 +6,13 @@
  */
 ODF.prototype._getStyleRules = function (params) {
     var result = {},
-        i;
+        i = params.children.length;
 
-    for (i = params.children.length - 1; i >= 0; i--) {
+    while (i--) {
         if (params.children[i]) {
             result[params.children[i]] = {
                 css: {},
-                dimensionCSSRules: {}
+                dimensionCssRules: {}
             };
 
             if (params.documentData.styles && params.documentData.styles.defaults) {
@@ -20,8 +20,8 @@ ODF.prototype._getStyleRules = function (params) {
                 if (params.documentData.styles.defaults[params.children[i]]) {
                     result[params.children[i]].css =
                         clone(params.documentData.styles.defaults[params.children[i]].css);
-                    result[params.children[i]].dimensionCSSRules =
-                        clone(params.documentData.styles.defaults[params.children[i]].dimensionCSSRules);
+                    result[params.children[i]].dimensionCssRules =
+                        clone(params.documentData.styles.defaults[params.children[i]].dimensionCssRules);
                 }
 
                 if (
@@ -34,8 +34,8 @@ ODF.prototype._getStyleRules = function (params) {
                             params.documentData.styles.defaults.named[params.styleName][params.children[i]].css
                         );
                         copy(
-                            result[params.children[i]].dimensionCSSRules,
-                            params.documentData.styles.defaults.named[params.styleName][params.children[i]].dimensionCSSRules
+                            result[params.children[i]].dimensionCssRules,
+                            params.documentData.styles.defaults.named[params.styleName][params.children[i]].dimensionCssRules
                         );
                     }
                 }
@@ -45,8 +45,8 @@ ODF.prototype._getStyleRules = function (params) {
                 if (params.styles[params.children[i]]) {
                     copy(result[params.children[i]].css, params.styles[params.children[i]].css);
                     copy(
-                        result[params.children[i]].dimensionCSSRules,
-                        params.styles[params.children[i]].dimensionCSSRules
+                        result[params.children[i]].dimensionCssRules,
+                        params.styles[params.children[i]].dimensionCssRules
                     );
                 }
 
@@ -57,8 +57,8 @@ ODF.prototype._getStyleRules = function (params) {
                             params.styles.named[params.styleName][params.children[i]].css
                         );
                         copy(
-                            result[params.children[i]].dimensionCSSRules,
-                            params.styles.named[params.styleName][params.children[i]].dimensionCSSRules
+                            result[params.children[i]].dimensionCssRules,
+                            params.styles.named[params.styleName][params.children[i]].dimensionCssRules
                         );
                     }
                 }

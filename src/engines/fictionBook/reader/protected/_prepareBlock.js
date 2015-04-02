@@ -10,7 +10,7 @@ FictionBook.prototype._prepareBlock = function (xml, documentData) {
         result = {
             options: {},
             css: {},
-            dimensionCSSRules: {},
+            dimensionCssRules: {},
             children: []
         };
 

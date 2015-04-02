@@ -8,7 +8,7 @@ RTF.prototype._createNewPage = function (options) {
     parseParams.currentTextElement = {
         options: {},
         css: {},
-        dimensionCSSRules: {},
+        dimensionCssRules: {},
         properties: {
             textContent: ""
         }

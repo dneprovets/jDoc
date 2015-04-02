@@ -6,6 +6,8 @@
  * @returns {*}
  * @private
  */
-Binary.prototype._blobSlice = function (blob, index, length) {
-    return blob.slice(index, index + length);
+Binary.prototype._blobSlice = {
+    value (blob, index, length) {
+        return blob.slice(index, index + length);
+    }
 };

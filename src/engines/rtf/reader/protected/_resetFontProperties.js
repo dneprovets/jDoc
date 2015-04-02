@@ -8,7 +8,7 @@ RTF.prototype._resetFontProperties = function (el) {
     el.css.fontVariant = "none";
     el.css.textDecoration = "none";
     el.css.fontWeight = "normal";
-    el.dimensionCSSRules.fontSize = {
+    el.dimensionCssRules.fontSize = {
         value: 12,
         unit: "pt"
     };

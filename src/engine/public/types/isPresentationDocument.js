@@ -1,7 +1,5 @@
-/**
- *
- * @returns {boolean}
- */
-jDoc.Engine.prototype.isPresentationDocument = function () {
-    return !!(this.options.fileType && this.options.fileType.isPresentationDocument);
+jDoc.Engine.prototype.isPresentationDocument = {
+    get: function () {
+        return !!(this.fileType && this.fileType.isPresentationDocument);
+    }
 };

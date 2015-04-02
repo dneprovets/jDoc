@@ -3,7 +3,7 @@ RTF.prototype._controlWordsParsers.emdash = function (options) {
         parseResult = options.parseResult;
 
     if (parseParams.currentTextElement) {
-        parseParams.currentTextElement.properties.textContent += this.getEmDash();
+        parseParams.currentTextElement.properties.textContent += this.emDash;
     }
 
     return {

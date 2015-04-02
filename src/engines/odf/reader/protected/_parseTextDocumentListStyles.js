@@ -2,7 +2,7 @@ ODF.prototype._parseTextDocumentListStyles = function (xml) {
     var result = {
             list: {
                 css: {},
-                dimensionCSSRules: {}
+                dimensionCssRules: {}
             }
         },
         i,

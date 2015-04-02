@@ -12,7 +12,7 @@ ODF.prototype._parseTextDocumentParagraphNode = function (params) {
             },
             attributes: {},
             css: {},
-            dimensionCSSRules: {
+            dimensionCssRules: {
                 margin: {
                     value: 0,
                     unit: "px"
@@ -49,7 +49,7 @@ ODF.prototype._parseTextDocumentParagraphNode = function (params) {
 
         switch (params.node.childNodes[i].localName) {
         case "tab":
-            element.properties.textContent = this.getTabAsSpaces();
+            element.properties.textContent = this.tabAsSpaces;
             result.children.push(element);
             break;
         case "soft-page-break":

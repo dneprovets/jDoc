@@ -1,34 +1,31 @@
-jDoc.Engine.prototype.parseFromSimpleFile = function () {
-    this.trigger('parsefromsimplefilestart');
-
-    if (!this.validate()) {
-        this.trigger('error', this.errors.invalidFileType);
-        this.trigger('parsefromsimplefileend');
-
-        return null;
-    }
-
-    this.readFilesEntries({
-        error: function () {
-            this.trigger('error', this.errors.invalidFileType);
-            this.trigger('parsefromsimplefileend');
-        }.bind(this),
-        entries: [{
-            file: this.file,
-            entry: {}
-        }],
-        read: function (result) {
-            if (typeof this.createFileData !== 'function') {
-                this.trigger('error', this.errors.notFoundMethodCreateFileData);
+jDoc.Engine.prototype.parseFromSimpleFile = {
+    value: function () {
+        return new Promise(function (resolve, reject) {
+            if (!this.isValid) {
+                reject(new Error(this.errors.invalidFileType.message));
                 return;
             }
 
-            this.createFileData(result, function (fileData) {
-                this.trigger('parsefromsimplefile', fileData);
-                this.trigger('parsefromsimplefileend');
-            }.bind(this));
-        }.bind(this)
-    });
+            this.readFilesEntries({
+                entries: [{
+                    file: this.file,
+                    entry: {}
+                }]
+            }).then(
+                function (result) {
+                    if (typeof this.createFileData !== 'function') {
+                        reject(new Error(this.errors.notFoundMethodCreateFileData.message));
+                        return;
+                    }
 
-    return null;
+                    this.createFileData(result, function (fileData) {
+                        resolve(fileData);
+                    });
+                }.bind(this) ,
+                function () {
+                    reject(new Error(this.errors.invalidFileType.message));
+                }.bind(this)
+            );
+        }.bind(this));
+    }
 };

@@ -6,10 +6,8 @@
  */
 FictionBook.prototype._parseDocumentInfo = function (xml, documentData) {
     var nodes = $.children(xml),
-        len = nodes.length,
-        i,
+        i = nodes.length,
         j,
-        length,
         arr,
         tmp,
         info = {
@@ -17,7 +15,7 @@ FictionBook.prototype._parseDocumentInfo = function (xml, documentData) {
             programs: []
         };
 
-    for (i = len - 1; i >= 0; i--) {
+    while (i--) {
         switch (nodes[i].localName) {
             case "author":
                 info.author = this._getPersonInfo(nodes[i]);
@@ -43,9 +41,9 @@ FictionBook.prototype._parseDocumentInfo = function (xml, documentData) {
                 break;
             case "program-used":
                 arr = (nodes[i].textContent || "").split(",");
-                length = arr.length;
+                j = arr.length;
 
-                for (j = length - 1; j >= 0; j--) {
+                while (j--) {
                     info.programs[j] = arr[j].replace(/^\s+/, '');
                 }
                 break;

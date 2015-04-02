@@ -12,7 +12,7 @@ FictionBook.prototype._prepareImage = function (options) {
                 isImage: true
             },
             css: {},
-            dimensionCSSRules: {},
+            dimensionCssRules: {},
             attributes: {
                 src: "",
                 alt: ""

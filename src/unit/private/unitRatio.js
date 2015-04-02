@@ -2,12 +2,14 @@
  *
  * @private
  */
-var unitRatio = {
+const unitRatio = {
     "pt": {
-        "px": function (val) {
+        "px": (val) => {
             var res = 0;
+
             if (!isNaN(val)) {
                 res = Math.round(val / 0.75);
+
                 if (val > 0 && res == 0) {
                     res = 1;
                 }
@@ -17,10 +19,12 @@ var unitRatio = {
         }
     },
     "cm": {
-        "px": function (val) {
+        "px": (val) => {
             var res = 0;
+
             if (!isNaN(val)) {
                 res = Math.round(val / 0.0265);
+
                 if (val > 0 && res == 0) {
                     res = 1;
                 }
@@ -30,10 +34,12 @@ var unitRatio = {
         }
     },
     "mm": {
-        "px": function (val) {
+        "px": (val) => {
             var res = 0;
+
             if (!isNaN(val)) {
                 res = Math.round((val * 1.7) / 4);
+
                 if (val > 0 && res == 0) {
                     res = 1;
                 }
@@ -43,10 +49,12 @@ var unitRatio = {
         }
     },
     "in": {
-        "px": function (val) {
+        "px": (val) => {
             var res = 0;
+
             if (!isNaN(val)) {
                 res = Math.round(val * 96);
+
                 if (val > 0 && res == 0) {
                     res = 1;
                 }
@@ -56,7 +64,7 @@ var unitRatio = {
         }
     },
     "pc": {
-        "px": function (val) {
+        "px": (val) => {
             var res = 0;
             if (!isNaN(val)) {
                 res = Math.round(val * 6);
@@ -69,7 +77,7 @@ var unitRatio = {
         }
     },
     "emu": {
-        "px": function (val) {
+        "px": (val) => {
             // 1inch = 914400 EMUs
             return unitRatio['in'].px(val / 914400);
         }

@@ -1,7 +1,5 @@
-/**
- *
- * @returns {boolean}
- */
-jDoc.Engine.prototype.isFormulaDocument = function () {
-    return !!(this.options.fileType && this.options.fileType.isFormulaDocument);
+jDoc.Engine.prototype.isFormulaDocument = {
+    get: function () {
+        return !!(this.fileType && this.fileType.isFormulaDocument);
+    }
 };

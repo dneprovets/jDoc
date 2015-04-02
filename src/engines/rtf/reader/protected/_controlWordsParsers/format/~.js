@@ -3,7 +3,7 @@ RTF.prototype._controlWordsParsers["~"] = function (options) {
         parseResult = options.parseResult;
 
     if (parseParams.currentTextElement) {
-        parseParams.currentTextElement.properties.textContent += this.getNonbreakingSpace();
+        parseParams.currentTextElement.properties.textContent += this.nonbreakingSpace;
     }
 
     return {

@@ -4,24 +4,26 @@
  * @return {String}
  * @private
  */
-jDoc.Engine.prototype.normalizeColorValue = function (value) {
-    var colorList = this.colorList,
-        defaultColor = colorList.black;
+jDoc.Engine.prototype.normalizeColorValue = {
+    value: function (value) {
+        var colorList = this.colorList,
+            defaultColor = colorList.black;
 
-    if (!value || typeof value !== 'string') {
-        return defaultColor;
+        if (!value || typeof value !== 'string') {
+            return defaultColor;
+        }
+
+        value = value.replace(/\s+/g, '');
+        if (/^#/.test(value)) {
+            return value.toUpperCase();
+        }
+
+        if (!isNaN(+("0" + "x" + value))) {
+            return "#" + value.toUpperCase();
+        }
+
+        value = value.toLowerCase();
+
+        return colorList[value] || defaultColor;
     }
-
-    value = value.replace(/\s+/g, '');
-    if (/^#/.test(value)) {
-        return value.toUpperCase();
-    }
-
-    if (!isNaN(+("0" + "x" + value))) {
-        return "#" + value.toUpperCase();
-    }
-
-    value = value.toLowerCase();
-
-    return colorList[value] || defaultColor;
 };

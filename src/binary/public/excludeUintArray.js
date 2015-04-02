@@ -3,29 +3,30 @@
  * @param options
  * @returns {*}
  */
-Binary.prototype.excludeUintArray = function (options) {
-    var dataArray,
-        arr = [],
-        i,
-        len = options.length;
+Binary.prototype.excludeUintArray = {
+    value (options = {}) {
+        var dataArray,
+            arr = [],
+            {length, index, data} = options;
 
-    if (options.data instanceof Uint16Array) {
-        dataArray = this.getUint16Array(len);
-    } else {
-        if (options.data instanceof Uint32Array) {
-            dataArray = this.getUint32Array(len);
+        if (data instanceof Uint16Array) {
+            dataArray = this.getUint16Array(length);
         } else {
-            dataArray = this.getUint8Array(len);
+            if (data instanceof Uint32Array) {
+                dataArray = this.getUint32Array(length);
+            } else {
+                dataArray = this.getUint8Array(length);
+            }
         }
+
+        length += index;
+
+        for (let i = index; i < length; i++) {
+            arr.push(data[i]);
+        }
+
+        dataArray.set(arr, 0);
+
+        return dataArray;
     }
-
-    len += options.index;
-
-    for (i = options.index; i < len; i++) {
-        arr.push(options.data[i]);
-    }
-
-    dataArray.set(arr, 0);
-
-    return dataArray;
 };

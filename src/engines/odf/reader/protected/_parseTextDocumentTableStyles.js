@@ -6,21 +6,20 @@
  */
 ODF.prototype._parseTextDocumentTableStyles = function (node) {
     var nodes = $.children(node),
-        length = nodes.length,
-        j,
+        j = nodes.length,
         result = {
             css: {},
-            dimensionCSSRules: {},
+            dimensionCssRules: {},
             options: {}
         },
         size = {};
 
-    for (j = length - 1; j >= 0; j--) {
+    while (j--) {
         if (nodes[j].localName === "table-properties") {
             if (nodes[j].attributes['style:width'] && nodes[j].attributes['style:width'].value) {
                 size = this._getSize(nodes[j].attributes['style:width'].value);
                 if (size.unit) {
-                    result.dimensionCSSRules.width = size;
+                    result.dimensionCssRules.width = size;
                 }
             }
             if (nodes[j].attributes['table:border-model'] && nodes[j].attributes['table:border-model'].value) {

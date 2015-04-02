@@ -6,8 +6,8 @@
  * @return {Object}
  */
 OOXML.prototype._parseDocumentInfo = function (xml) {
-    var i,
-        children = $.children(xml),
+    var children = $.children(xml),
+        i = children.length,
         result = {
             creator: "",
             lastModifiedBy: "",
@@ -16,7 +16,7 @@ OOXML.prototype._parseDocumentInfo = function (xml) {
             dateModified: null
         };
 
-    for (i = children.length - 1; i >= 0; i--) {
+    while (i--) {
         switch (children[i].localName) {
         case "creator":
             result.creator = children[i].textContent || '';

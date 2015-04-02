@@ -9,7 +9,7 @@ function buildParagraph (data) {
         len = data.children.length,
         l;
 
-    applyCSS.call(this, el, data);
+    applyCss.call(this, el, data);
     addAttributes.call(this, el, data);
     addProperties.call(this, el, data);
 

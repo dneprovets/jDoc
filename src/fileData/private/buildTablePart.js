@@ -32,14 +32,14 @@ function buildTablePart (data, options) {
 
     el = document.createElement(partTagName);
 
-    applyCSS.call(this, el, data);
+    applyCss.call(this, el, data);
     addAttributes.call(this, el, data);
     addProperties.call(this, el, data);
 
     for (i = 0; i < len; i++) {
         chEl = document.createElement(rowTagName);
 
-        applyCSS.call(this, chEl, children[i]);
+        applyCss.call(this, chEl, children[i]);
         addAttributes.call(this, chEl, children[i]);
         addProperties.call(this, chEl, children[i]);
 
@@ -48,7 +48,7 @@ function buildTablePart (data, options) {
         for (j = 0; j < eLen; j++) {
             elem = document.createElement(cellTagName);
 
-            applyCSS.call(this, elem, children[i].children[j]);
+            applyCss.call(this, elem, children[i].children[j]);
             addAttributes.call(this, elem, children[i].children[j]);
             addProperties.call(this, elem, children[i].children[j]);
 

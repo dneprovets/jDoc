@@ -7,14 +7,14 @@ RTF.prototype._controlWordsParsers.sl = function (options) {
     if (param > 0) {
         param /= 20;
 
-        if (!el.dimensionCSSRules.fontSize || this.getMaxFontSize(el) <= param) {
-            el.dimensionCSSRules.lineHeight = {
+        if (!el.dimensionCssRules.fontSize || this.getMaxFontSize(el) <= param) {
+            el.dimensionCssRules.lineHeight = {
                 value: param,
                 unit: "pt"
             };
         }
     } else if (param < 0) {
-        el.dimensionCSSRules.lineHeight = {
+        el.dimensionCssRules.lineHeight = {
             value: Math.abs(param) / 20,
             unit: "pt"
         };

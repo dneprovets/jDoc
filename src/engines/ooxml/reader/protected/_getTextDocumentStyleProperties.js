@@ -10,7 +10,7 @@ OOXML.prototype._getTextDocumentStyleProperties = function (params) {
             classList: []
         },
         css: {},
-        dimensionCSSRules: {}
+        dimensionCssRules: {}
     },
         headingInfo,
         numIdNode,
@@ -22,9 +22,9 @@ OOXML.prototype._getTextDocumentStyleProperties = function (params) {
         cellBorderRight,
         children = $.children(params.node),
         textShadow = "0 0 1px 0 rgba(0,0,0,0.5)",
-        i;
+        i = children.length;
 
-    for (i = children.length - 1; i >= 0; i--) {
+    while (i--) {
         switch (children[i].localName) {
         case "pStyle":
             if (
@@ -34,14 +34,14 @@ OOXML.prototype._getTextDocumentStyleProperties = function (params) {
                     params.documentData &&
                         params.documentData.styles.preferencedStyles[children[i].attributes['w:val'].value]
                 ) {
-                    preferencedStyle = this._getCSSRulesFromPreferencedStyle(
+                    preferencedStyle = this._getCssRulesFromPreferencedStyle(
                         params.documentData.styles.preferencedStyles[children[i].attributes['w:val'].value]
                     );
 
-                    copy(result, preferencedStyle.elementCSSRules);
+                    copy(result, preferencedStyle.elementCssRules);
 
-                    result.options.childrenCSSRules = copy(
-                        result.options.childrenCSSRules, preferencedStyle.childrenCSSRules
+                    result.options.childrenCssRules = copy(
+                        result.options.childrenCssRules, preferencedStyle.childrenCssRules
                     );
 
                     headingInfo = (/Heading\s*([0-9]+)/i).exec(
@@ -78,19 +78,19 @@ OOXML.prototype._getTextDocumentStyleProperties = function (params) {
             break;
         case "ind":
             if (children[i].attributes['w:left'] && !isNaN(children[i].attributes['w:left'].value)) {
-                result.dimensionCSSRules.paddingLeft = {
+                result.dimensionCssRules.paddingLeft = {
                     unit: "pt",
                     value: children[i].attributes['w:left'].value / 20
                 };
             }
             if (children[i].attributes['w:right'] && !isNaN(children[i].attributes['w:right'].value)) {
-                result.dimensionCSSRules.paddingRight = {
+                result.dimensionCssRules.paddingRight = {
                     unit: "pt",
                     value: children[i].attributes['w:right'].value / 20
                 };
             }
             if (children[i].attributes['w:firstLine'] && !isNaN(children[i].attributes['w:firstLine'].value)) {
-                result.dimensionCSSRules.textIndent = {
+                result.dimensionCssRules.textIndent = {
                     unit: "pt",
                     value: children[i].attributes['w:firstLine'].value / 20
                 };
@@ -156,7 +156,7 @@ OOXML.prototype._getTextDocumentStyleProperties = function (params) {
             break;
         case "sz":
             if (children[i] && children[i].attributes['w:val'] && !isNaN(children[i].attributes['w:val'].value)) {
-                result.dimensionCSSRules.fontSize = {
+                result.dimensionCssRules.fontSize = {
                     unit: "pt",
                     value: children[i].attributes['w:val'].value / 2
                 };
@@ -164,9 +164,9 @@ OOXML.prototype._getTextDocumentStyleProperties = function (params) {
             break;
         case "szCs":
             if (
-                !result.dimensionCSSRules.fontSize && children[i] && children[i].attributes['w:val'] && !isNaN(children[i].attributes['w:val'].value)
+                !result.dimensionCssRules.fontSize && children[i] && children[i].attributes['w:val'] && !isNaN(children[i].attributes['w:val'].value)
             ) {
-                result.dimensionCSSRules.fontSize = {
+                result.dimensionCssRules.fontSize = {
                     value: children[i].attributes['w:val'].value / 2,
                     unit: "pt"
                 };
@@ -271,19 +271,19 @@ OOXML.prototype._getTextDocumentStyleProperties = function (params) {
                  * @description Fix for empty container
                  * @type {String}
                  */
-                result.dimensionCSSRules.minHeight = {
+                result.dimensionCssRules.minHeight = {
                     value: children[i].attributes['w:line'].value / 20,
                     unit: "pt"
                 };
             }
             if (children[i].attributes['w:before'] && !isNaN(children[i].attributes['w:before'].value)) {
-                result.dimensionCSSRules.marginTop = {
+                result.dimensionCssRules.marginTop = {
                     value: children[i].attributes['w:before'].value / 20,
                     unit: "pt"
                 };
             }
             if (children[i].attributes['w:after'] && !isNaN(children[i].attributes['w:after'].value)) {
-                result.dimensionCSSRules.marginBottom = {
+                result.dimensionCssRules.marginBottom = {
                     value: children[i].attributes['w:after'].value / 20,
                     unit: "pt"
                 };
@@ -291,7 +291,7 @@ OOXML.prototype._getTextDocumentStyleProperties = function (params) {
             break;
         case "kern":
             if (children[i] && !isNaN(children[i].attributes['w:val'])) {
-                result.dimensionCSSRules.letterSpacing = {
+                result.dimensionCssRules.letterSpacing = {
                     value: children[i].attributes['w:val'].value / 20,
                     unit: "pt"
                 };

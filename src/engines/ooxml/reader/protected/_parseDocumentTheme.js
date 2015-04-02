@@ -16,8 +16,9 @@ OOXML.prototype._parseDocumentTheme = function (xml) {
 
     if (themeElementsNode) {
         themeElements = $.children(themeElementsNode);
+        i = themeElements.length;
 
-        for (i = themeElements.length - 1; i >= 0; i--) {
+        while (i--) {
             if (themeElements[i].localName == "fontScheme") {
                 fontNode = themeElements[i].querySelector('minorFont');
                 font = fontNode.querySelector('latin');

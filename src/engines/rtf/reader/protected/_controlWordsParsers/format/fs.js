@@ -5,7 +5,7 @@ RTF.prototype._controlWordsParsers.fs = function (options) {
         el = parseParams.currentTextElement || parseParams.currentTextElementParent;
 
     if (param !== -1) {
-        el.dimensionCSSRules.fontSize = {
+        el.dimensionCssRules.fontSize = {
             value: param / 2,
             unit: "pt"
         };

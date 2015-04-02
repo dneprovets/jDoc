@@ -1,4 +1,4 @@
-var mimeTypesByExtension = {
+const mimeTypesByExtension = {
     "png": "image/png",
     "jpg": "image/jpeg",
     "jpeg": "image/jpeg",

@@ -5,8 +5,8 @@
  */
 Simple.prototype.fileTypeParsers = [
     {
-        extension: ['txt', ''],
-        mime: ['text/plain', ''],
+        extension: ['txt'],
+        mime: ['text/plain'],
         isTextDocument: true
     }
 ];

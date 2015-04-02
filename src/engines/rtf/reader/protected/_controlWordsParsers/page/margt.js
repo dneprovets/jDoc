@@ -2,15 +2,16 @@ RTF.prototype._controlWordsParsers.margt = function (options) {
     var parseParams = options.parseParams,
         parseResult = options.parseResult,
         param = options.param,
-        i;
+        i = parseResult.pages.length;
 
-    parseParams.pageData.dimensionCSSRules.paddingTop = {
+    parseParams.pageData.dimensionCssRules.paddingTop = {
         value: param / 20,
         unit: "pt"
     };
-    parseParams.pageHeight -= parseParams.pageData.dimensionCSSRules.paddingTop.value;
-    for (i = parseResult.pages.length - 1; i >= 0; i--) {
-        parseResult.pages[i].dimensionCSSRules.paddingTop = parseParams.pageData.dimensionCSSRules.paddingTop;
+    parseParams.pageHeight -= parseParams.pageData.dimensionCssRules.paddingTop.value;
+
+    while (i--) {
+        parseResult.pages[i].dimensionCssRules.paddingTop = parseParams.pageData.dimensionCssRules.paddingTop;
     }
 
     return {

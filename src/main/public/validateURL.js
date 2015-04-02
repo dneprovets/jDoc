@@ -3,6 +3,6 @@
  * @param val
  * @returns {*}
  */
-jDoc.validateURL = function (val) {
+function validateURL (val) {
     return validators.url.test(val);
-};
+}

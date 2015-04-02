@@ -25,7 +25,7 @@ OOXML.prototype._parseTextDocumentTableNode = function (data, callback) {
             },
             children: [header, body, footer],
             attributes: {},
-            dimensionCSSRules: {},
+            dimensionCssRules: {},
             css: {}
         },
         tablePreferenceStyle,
@@ -62,7 +62,7 @@ OOXML.prototype._parseTextDocumentTableNode = function (data, callback) {
                 options: {
                     colsWidth: []
                 },
-                dimensionCSSRules: {}
+                dimensionCssRules: {}
             };
             length = parentNodeChildren.length;
 
@@ -71,7 +71,7 @@ OOXML.prototype._parseTextDocumentTableNode = function (data, callback) {
                 if (parentNodeChildren[j].localName === "tc") {
                     cell = {
                         css: {},
-                        dimensionCSSRules: {},
+                        dimensionCssRules: {},
                         options: {},
                         children: []
                     };
@@ -87,13 +87,13 @@ OOXML.prototype._parseTextDocumentTableNode = function (data, callback) {
                     }
 
                     if (cellBorderRight) {
-                        cell.dimensionCSSRules.borderRightWidth = cellBorderRight.width;
+                        cell.dimensionCssRules.borderRightWidth = cellBorderRight.width;
                         cell.css.borderRightColor = cellBorderRight.color;
                         cell.css.borderRightStyle = cellBorderRight.style;
                     }
 
                     if (cellBorderBottom) {
-                        cell.dimensionCSSRules.borderBottomWidth = cellBorderBottom.width;
+                        cell.dimensionCssRules.borderBottomWidth = cellBorderBottom.width;
                         cell.css.borderBottomColor = cellBorderBottom.color;
                         cell.css.borderBottomStyle = cellBorderBottom.style;
                     }
@@ -104,7 +104,7 @@ OOXML.prototype._parseTextDocumentTableNode = function (data, callback) {
                             cellShading = contentChildren[c].querySelector('shd');
 
                             if (cellWidth) {
-                                cell.dimensionCSSRules.width = this._parseTableElementWidth(cellWidth);
+                                cell.dimensionCssRules.width = this._parseTableElementWidth(cellWidth);
                             }
 
                             if (cellShading) {
@@ -135,7 +135,7 @@ OOXML.prototype._parseTextDocumentTableNode = function (data, callback) {
                                 contentChildren[c].attributes['w:val'] &&
                                     !isNaN(contentChildren[c].attributes['w:val'].value)
                             ) {
-                                row.dimensionCSSRules.height = {
+                                row.dimensionCssRules.height = {
                                     value: contentChildren[c].attributes['w:val'].value / 20,
                                     unit: "pt"
                                 };
@@ -179,7 +179,7 @@ OOXML.prototype._parseTextDocumentTableNode = function (data, callback) {
 
             var tableBorders = children[i].querySelector('tblBorders');
             if (tableWidth) {
-                result.dimensionCSSRules.width = this._parseTableElementWidth(tableWidth);
+                result.dimensionCssRules.width = this._parseTableElementWidth(tableWidth);
             }
             if (tableBorders) {
                 copy(result, this._parseTableBorderStyle({
@@ -198,7 +198,7 @@ OOXML.prototype._parseTextDocumentTableNode = function (data, callback) {
     if (row) {
         len = row.children.length;
         for (j = 0; j < len; j++) {
-            row.children[j].dimensionCSSRules.borderBottomWidth = "";
+            row.children[j].dimensionCssRules.borderBottomWidth = "";
             row.children[j].css.borderBottomStyle = "";
             row.children[j].css.borderBottomColor = "";
         }
@@ -208,7 +208,7 @@ OOXML.prototype._parseTextDocumentTableNode = function (data, callback) {
         len = body.children[j].children.length;
         cell = body.children[j].children[len - 1];
         if (cell) {
-            cell.dimensionCSSRules.borderRightWidth = "";
+            cell.dimensionCssRules.borderRightWidth = "";
             cell.css.borderRightStyle = "";
             cell.css.borderRightColor = "";
         }

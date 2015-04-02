@@ -4,7 +4,7 @@ RTF.prototype._controlWordsParsers.pichgoal = function (options) {
         param = options.param;
 
     if (param > 0) {
-        parseParams.currentTextElementParent.dimensionCSSRules.height = {
+        parseParams.currentTextElementParent.dimensionCssRules.height = {
             value: param / 20,
             unit: "pt"
         };

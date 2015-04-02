@@ -10,7 +10,7 @@ function buildTable (data) {
         children = data.children,
         len = children.length;
 
-    applyCSS.call(this, table, data);
+    applyCss.call(this, table, data);
     addAttributes.call(this, table, data);
     addProperties.call(this, table, data);
 

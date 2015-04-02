@@ -8,12 +8,12 @@
 OOXML.prototype._parseRelations = function (xml) {
     var relationsNodes = xml.childNodes[0] ? $.children(xml.childNodes[0]) : [],
         result = {},
-        i,
+        i = relationsNodes.length,
         idAttribute,
         typeAttribute,
         targetAttribute;
 
-    for (i = relationsNodes.length - 1; i >= 0; i--) {
+    while (i--) {
         if (relationsNodes[i].attributes) {
             idAttribute = relationsNodes[i].attributes.Id;
             typeAttribute = relationsNodes[i].attributes.Type;

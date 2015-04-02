@@ -4,10 +4,7 @@ jDoc
 > Edit documents with JavaScript in browser
 
 ## Overview
-This library depends on [zip.js](http://gildas-lormeau.github.io/zip.js/) library and these APIs optionally:
-* [Web workers](https://developer.mozilla.org/en-US/docs/Web/Guide/Performance/Using_web_workers)
-* [File API](https://developer.mozilla.org/en-US/docs/Trash/File_APIs)
-* [Blob](https://developer.mozilla.org/en-US/docs/Web/API/Blob)
+This library depends on [zip.js](http://gildas-lormeau.github.io/zip.js/) library
 
 ## Supported formats
 * `docx`
@@ -49,24 +46,6 @@ Example:
 
 ```js
 
-var jd = new jDoc();
-
-jd.on('readstart', function () {
-    console.log("START ", arguments);
-});
-
-jd.on('readend', function () {
-    console.log("END ", arguments);
-});
-
-jd.on('read', function (fileData) {
-    console.log("READ ", arguments);
-});
-
-jd.on('error', function (error) {
-    console.log("ERROR ", arguments);
-});
-
 jD.read(file);
 
 ```
@@ -107,12 +86,8 @@ And we will one argument in the handler of this event - error object.
 
 ## Static methods
 
-#### jDoc.clone(obj)
-Return clone of `obj`
-#### jDoc.copy(obj1, obj2)
-The deep copying `obj2` to `obj1`. Return extended `obj1`
-#### jDoc.getA4DimensionCSSRules()
-Return css rules for A4 format of sheets in dimensions.
+#### jDoc.a4DimensionCssRules
+Css rules for A4 format of sheets in dimensions.
 For example:
 ```js
 {
@@ -126,11 +101,11 @@ For example:
     }
 }
 ```
-#### jDoc.isSupported()
+#### jDoc.supported
 This browser support required technologies for jDoc or no.
-Return true/false;
-#### jDoc.getSupportedFormats()
-Return Array with supported document formats.
+This property contains true/false;
+#### jDoc.supportedFormats
+Array with supported document formats.
 #### jDoc.defineEngine(name, formats, engine)
 * `name` - custom name of engine. F.e. "ODF" for ODF document format
 * `formats` - array with supported document formats as MIME types. F.e. ['text/csv', 'text/tab-separated-values']

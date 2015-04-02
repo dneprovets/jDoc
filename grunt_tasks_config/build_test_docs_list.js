@@ -3,7 +3,7 @@ module.exports = function () {
         test_docs: {
             options: {
                 name: "testDocsList",
-                prefix: "http://localhost:9000/"
+                prefix: "../"
             },
             src: ['tests/docs/**/**.**'],
             dest: 'tests/testDocsList.js'

@@ -7,10 +7,9 @@
 FictionBook.prototype._parseFileInfo = function (xml, documentData) {
     var info = {},
         nodes = $.children(xml),
-        len = nodes.length,
-        i;
+        i = nodes.length;
 
-    for (i = len - 1; i >= 0; i--) {
+    while (i--) {
         switch (nodes[i].localName) {
             case "genre":
                 info.genre = nodes[i].textContent || "";

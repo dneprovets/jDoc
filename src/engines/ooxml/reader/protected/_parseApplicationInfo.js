@@ -6,8 +6,7 @@
  * @return {Object}
  */
 OOXML.prototype._parseApplicationInfo = function (xml) {
-    var i,
-        result = {
+    var result = {
             template: "",
             totalTime: 0,
             pagesCount: 0,
@@ -24,9 +23,10 @@ OOXML.prototype._parseApplicationInfo = function (xml) {
             version: '',
             isShared: false
         },
-        children = $.children($.children(xml)[0]);
+        children = $.children($.children(xml)[0]),
+        i = children.length;
 
-    for (i = children.length - 1; i >= 0; i--) {
+    while (i--) {
         switch (children[i].localName) {
         case "Template":
             result.template = children[i].textContent || '';

@@ -2,6 +2,8 @@
  *
  * @returns {boolean}
  */
-jDoc.Engine.prototype.isTemplate = function () {
-    return !!(this.options.fileType && this.options.fileType.isTemplate);
+jDoc.Engine.prototype.isTemplate = {
+    get: function () {
+        return !!(this.fileType && this.fileType.isTemplate);
+    }
 };

@@ -8,12 +8,12 @@
 RTF.prototype._getElementHeight = function (element, options) {
     options = options || {};
 
-    var height = (element.dimensionCSSRules.height && element.dimensionCSSRules.height.value) || 0,
+    var height = (element.dimensionCssRules.height && element.dimensionCssRules.height.value) || 0,
         i,
         textContent,
         fontSize,
         elementsHeight = 0,
-        lineHeight = (element.dimensionCSSRules.lineHeight && element.dimensionCSSRules.lineHeight.value) || 0,
+        lineHeight = (element.dimensionCssRules.lineHeight && element.dimensionCssRules.lineHeight.value) || 0,
         width = options.width || 0,
         len;
 
@@ -21,16 +21,16 @@ RTF.prototype._getElementHeight = function (element, options) {
         height = lineHeight;
     }
 
-    height += (element.dimensionCSSRules.marginTop && element.dimensionCSSRules.marginTop.value) || 0;
-    height += (element.dimensionCSSRules.marginBottom && element.dimensionCSSRules.marginBottom.value) || 0;
-    height += (element.dimensionCSSRules.paddingTop && element.dimensionCSSRules.paddingTop.value) || 0;
-    height += (element.dimensionCSSRules.paddingBottom && element.dimensionCSSRules.paddingBottom.value) || 0;
+    height += (element.dimensionCssRules.marginTop && element.dimensionCssRules.marginTop.value) || 0;
+    height += (element.dimensionCssRules.marginBottom && element.dimensionCssRules.marginBottom.value) || 0;
+    height += (element.dimensionCssRules.paddingTop && element.dimensionCssRules.paddingTop.value) || 0;
+    height += (element.dimensionCssRules.paddingBottom && element.dimensionCssRules.paddingBottom.value) || 0;
 
     if (width) {
-        width -= (element.dimensionCSSRules.paddingLeft && element.dimensionCSSRules.paddingLeft.value) || 0;
-        width -= (element.dimensionCSSRules.paddingRight && element.dimensionCSSRules.paddingRight.value) || 0;
-        width -= (element.dimensionCSSRules.marginLeft && element.dimensionCSSRules.marginLeft.value) || 0;
-        width -= (element.dimensionCSSRules.marginRight && element.dimensionCSSRules.marginRight.value) || 0;
+        width -= (element.dimensionCssRules.paddingLeft && element.dimensionCssRules.paddingLeft.value) || 0;
+        width -= (element.dimensionCssRules.paddingRight && element.dimensionCssRules.paddingRight.value) || 0;
+        width -= (element.dimensionCssRules.marginLeft && element.dimensionCssRules.marginLeft.value) || 0;
+        width -= (element.dimensionCssRules.marginRight && element.dimensionCssRules.marginRight.value) || 0;
     }
 
     if (element.options.isParagraph) {
@@ -44,12 +44,12 @@ RTF.prototype._getElementHeight = function (element, options) {
 
             if (!fontSize && element.children[i].properties.textContent[0]) {
                 fontSize = (
-                    element.children[i].dimensionCSSRules.fontSize && element.children[i].dimensionCSSRules.fontSize.value
+                    element.children[i].dimensionCssRules.fontSize && element.children[i].dimensionCssRules.fontSize.value
                 ) || 0;
             }
 
-            if (element.children[i].dimensionCSSRules.lineHeight && element.children[i].dimensionCSSRules.lineHeight.value) {
-                lineHeight = element.children[i].dimensionCSSRules.lineHeight.value;
+            if (element.children[i].dimensionCssRules.lineHeight && element.children[i].dimensionCssRules.lineHeight.value) {
+                lineHeight = element.children[i].dimensionCssRules.lineHeight.value;
             }
         }
 
@@ -60,7 +60,7 @@ RTF.prototype._getElementHeight = function (element, options) {
                 },
                 lineHeight: lineHeight / fontSize,
                 width: width,
-                parentFontSize: (element.dimensionCSSRules.fontSize && element.dimensionCSSRules.fontSize.value),
+                parentFontSize: (element.dimensionCssRules.fontSize && element.dimensionCssRules.fontSize.value),
                 fontSize: fontSize
             });
         }

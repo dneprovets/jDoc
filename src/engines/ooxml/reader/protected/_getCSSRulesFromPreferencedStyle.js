@@ -4,15 +4,15 @@
  * @returns {*}
  * @private
  */
-OOXML.prototype._getCSSRulesFromPreferencedStyle = function (style) {
+OOXML.prototype._getCssRulesFromPreferencedStyle = function (style) {
     return {
-        elementCSSRules: {
+        elementCssRules: {
             css: style.lineStyle.css || {},
-            dimensionCSSRules: style.lineStyle.dimensionCSSRules || {}
+            dimensionCssRules: style.lineStyle.dimensionCssRules || {}
         },
-        childrenCSSRules: {
+        childrenCssRules: {
             css: style.contentProperties.css || {},
-            dimensionCSSRules: style.contentProperties.dimensionCSSRules || {}
+            dimensionCssRules: style.contentProperties.dimensionCssRules || {}
         }
     };
 };

@@ -19,14 +19,13 @@ OOXML.prototype._parseTextDocumentSettings = function (xml) {
         },
         colorSchemeMapping: {}
     },
-        i,
         nodes,
         compatSettingNodes,
         cachedArrayLength = 0,
         self = this,
         idMapNode,
         children = $.children(xml),
-        len = children.length,
+        i = children.length,
         nameAttr,
         uriAttr,
         spidMaxAttr,
@@ -39,7 +38,7 @@ OOXML.prototype._parseTextDocumentSettings = function (xml) {
         layoutNode,
         extAttr = null;
 
-    for (i = len - 1; i >= 0; i--) {
+    while (i--) {
         switch (children[i].localName) {
         case "zoom":
             result.zoom = (

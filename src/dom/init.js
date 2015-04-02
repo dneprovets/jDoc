@@ -2,6 +2,6 @@
  * @namespace $
  * @type {{}}
  */
-var $ = {
+var $ = Object.defineProperties({}, {
     // @define properties
-};
+});

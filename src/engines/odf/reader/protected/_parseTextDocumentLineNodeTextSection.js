@@ -11,7 +11,7 @@ ODF.prototype._parseTextDocumentParagraphNodeTextSection = function (params) {
         styleRules,
         result = {
             css: {},
-            dimensionCSSRules: {},
+            dimensionCssRules: {},
             attributes: {},
             properties: {
                 textContent: ""

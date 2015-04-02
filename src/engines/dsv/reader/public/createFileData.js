@@ -18,7 +18,7 @@ DSV.prototype.createFileData = function (text, callback) {
             },
             children: [],
             attributes: {},
-            dimensionCSSRules: {},
+            dimensionCssRules: {},
             css: {}
         },
         el,
@@ -65,7 +65,7 @@ DSV.prototype.createFileData = function (text, callback) {
     for (i = 0; i < len; i++) {
         el.children[0].children[i] = {
             css: {},
-            dimensionCSSRules: {},
+            dimensionCssRules: {},
             options: {},
             children: [{
                 options: {},
@@ -93,13 +93,13 @@ DSV.prototype.createFileData = function (text, callback) {
             children: [],
             css: {},
             options: {},
-            dimensionCSSRules: {}
+            dimensionCssRules: {}
         };
 
         for (i = 0; i < len; i++) {
             el.children[j - 1].children[i] = {
                 css: {},
-                dimensionCSSRules: {},
+                dimensionCssRules: {},
                 options: {},
                 children: [{
                     options: {},
@@ -115,7 +115,7 @@ DSV.prototype.createFileData = function (text, callback) {
         callback.call(
             this,
             new jDoc.FileData({
-                name: this.getFileName(),
+                name: this.fileName,
                 pages: [{
                     options: {},
                     css: {},

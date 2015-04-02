@@ -9,7 +9,7 @@ function buildLink (data) {
         len = data.children ? data.children.length : 0,
         i;
 
-    applyCSS.call(this, el, data);
+    applyCss.call(this, el, data);
     addAttributes.call(this, el, data);
     addProperties.call(this, el, data);
 

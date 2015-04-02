@@ -4,16 +4,18 @@
  * @return {String}
  * @private
  */
-jDoc.Engine.prototype.normalizeVerticalAlign = function (value) {
-    var result = "baseline";
+jDoc.Engine.prototype.normalizeVerticalAlign = {
+    value: function (value) {
+        var result = "baseline";
 
-    value = String(value).toLowerCase();
+        value = String(value).toLowerCase();
 
-    if (value == "superscript") {
-        result = "top";
-    } else if (value == "subscript") {
-        result = "bottom";
+        if (value == "superscript") {
+            result = "top";
+        } else if (value == "subscript") {
+            result = "bottom";
+        }
+
+        return result;
     }
-
-    return result;
 };

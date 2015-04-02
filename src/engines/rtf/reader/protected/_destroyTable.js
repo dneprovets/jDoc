@@ -7,15 +7,15 @@
 RTF.prototype._destroyTable = function (parseParams) {
     parseParams.styles.cells = {
         css: {},
-        dimensionCSSRules: {}
+        dimensionCssRules: {}
     };
     parseParams.styles.rows = {
         css: {},
-        dimensionCSSRules: {}
+        dimensionCssRules: {}
     };
     parseParams.styles.table = {
         css: {},
-        dimensionCSSRules: {}
+        dimensionCssRules: {}
     };
     parseParams.options.table = {};
 

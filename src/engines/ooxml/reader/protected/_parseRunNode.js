@@ -7,7 +7,7 @@
 OOXML.prototype._parseRunNode = function (data) {
     var result = copy({}, {
         css:  jDoc.clone(data.documentData.styles.defaults.paragraphContent.css),
-        dimensionCSSRules: jDoc.clone(data.documentData.styles.defaults.paragraphContent.dimensionCSSRules),
+        dimensionCssRules: jDoc.clone(data.documentData.styles.defaults.paragraphContent.dimensionCssRules),
         options: {
             elementHeight: {
                 value: 0,
@@ -61,7 +61,7 @@ OOXML.prototype._parseRunNode = function (data) {
             documentData: data.documentData
         });
         copy(result.css, styleProperties.css);
-        copy(result.dimensionCSSRules, styleProperties.dimensionCSSRules);
+        copy(result.dimensionCssRules, styleProperties.dimensionCssRules);
     }
 
     if (pictureNode) {
@@ -70,7 +70,7 @@ OOXML.prototype._parseRunNode = function (data) {
         if (pictureGroup) {
             copy(result, {
                 css: {},
-                dimensionCSSRules: {},
+                dimensionCssRules: {},
                 parts: [],
                 options: {
                     isSchema: true
@@ -80,7 +80,7 @@ OOXML.prototype._parseRunNode = function (data) {
             if (pictureGroup.attributes.style && pictureGroup.attributes.style.value) {
                 copy(result, this._parseStyleAttribute(pictureGroup.attributes.style.value));
 
-                delete result.dimensionCSSRules.margin;
+                delete result.dimensionCssRules.margin;
             }
 
             result.css.margin = "auto";
@@ -88,8 +88,8 @@ OOXML.prototype._parseRunNode = function (data) {
             result.css.overflow = "hidden";
             result.css.textIndent = 0;
 
-            if (result.dimensionCSSRules.height) {
-                result.options.elementHeight.value = result.dimensionCSSRules.height.value;
+            if (result.dimensionCssRules.height) {
+                result.options.elementHeight.value = result.dimensionCssRules.height.value;
             }
 
             partInfo = {};
@@ -100,7 +100,7 @@ OOXML.prototype._parseRunNode = function (data) {
             for (k = 0; k < len; k++) {
                 partInfo = {
                     css: {},
-                    dimensionCSSRules: {},
+                    dimensionCssRules: {},
                     attributes: {},
                     children: [],
                     options: {
@@ -128,18 +128,18 @@ OOXML.prototype._parseRunNode = function (data) {
                             pictureNodeChildren[k].attributes.strokeweight.value
                     ) {
                         partInfo.css.borderStyle = "solid";
-                        partInfo.dimensionCSSRules.borderWidth = {
+                        partInfo.dimensionCssRules.borderWidth = {
                             value: 1,
                             unit: "px"
                         };
                         partInfo.css.borderColor = "#000000";
 
                         // in pt
-                        if (partInfo.dimensionCSSRules.height) {
-                            partInfo.dimensionCSSRules.height.value -= 1.45;
+                        if (partInfo.dimensionCssRules.height) {
+                            partInfo.dimensionCssRules.height.value -= 1.45;
                         }
-                        if (partInfo.dimensionCSSRules.width) {
-                            partInfo.dimensionCSSRules.width.value -= 1.45;
+                        if (partInfo.dimensionCssRules.width) {
+                            partInfo.dimensionCssRules.width.value -= 1.45;
                         }
                     }
                     imageData = pictureNodeChildren[k].querySelector('imagedata');
@@ -186,7 +186,7 @@ OOXML.prototype._parseRunNode = function (data) {
                     if (pictureNodeChildren[k].attributes.strokeweight &&
                         pictureNodeChildren[k].attributes.strokeweight.value) {
                         partInfo.css.borderStyle = "solid";
-                        partInfo.dimensionCSSRules.borderWidth = {
+                        partInfo.dimensionCssRules.borderWidth = {
                             value: 1,
                             unit: "px"
                         };
@@ -195,11 +195,11 @@ OOXML.prototype._parseRunNode = function (data) {
                         /**
                          * in pt
                          */
-                        if (partInfo.dimensionCSSRules.height) {
-                            partInfo.dimensionCSSRules.height.value -= 1.45;
+                        if (partInfo.dimensionCssRules.height) {
+                            partInfo.dimensionCssRules.height.value -= 1.45;
                         }
-                        if (partInfo.dimensionCSSRules.width) {
-                            partInfo.dimensionCSSRules.width.value -= 1.45;
+                        if (partInfo.dimensionCssRules.width) {
+                            partInfo.dimensionCssRules.width.value -= 1.45;
                         }
                     }
 
@@ -270,7 +270,7 @@ OOXML.prototype._parseRunNode = function (data) {
 
         if (geometryNode) {
             result.options.shapeType =
-                geometryNode.attributes['prst'] ? this._prepareShapeType(geometryNode.attributes['prst']) : "";
+                geometryNode.attributes.prst ? this._prepareShapeType(geometryNode.attributes.prst) : "";
         }
         if (blipNode && blipNode.attributes['r:embed'] && blipNode.attributes['r:embed'].value) {
             mediaData = this._getMediaFromRelation({
@@ -283,16 +283,16 @@ OOXML.prototype._parseRunNode = function (data) {
             }
         }
         if (offsetNode) {
-            if (!isNaN(offsetNode.attributes['y'])) {
+            if (!isNaN(offsetNode.attributes.y)) {
                 result.options.offset.top = {
-                    value: +offsetNode.attributes['y'],
+                    value: +offsetNode.attributes.y,
                     unit: "pt"
                 };
             }
 
-            if (!isNaN(offsetNode.attributes['x'])) {
+            if (!isNaN(offsetNode.attributes.x)) {
                 result.options.offset.left = {
-                    value: +offsetNode.attributes['x'],
+                    value: +offsetNode.attributes.x,
                     unit: "pt"
                 };
             }
@@ -301,49 +301,45 @@ OOXML.prototype._parseRunNode = function (data) {
             offset = horizontalPositionNode.querySelector('posOffset');
             result.css.position = "relative";
             if (
-                horizontalPositionNode.attributes['relativeFrom'] &&
-                    (
-                        horizontalPositionNode.attributes['relativeFrom'].value == 'column' ||
-                            horizontalPositionNode.attributes['relativeFrom'].value == 'character'
-                        )
+                horizontalPositionNode.attributes.relativeFrom && (
+                    horizontalPositionNode.attributes.relativeFrom.value === 'column' ||
+                    horizontalPositionNode.attributes.relativeFrom.value === 'character'
                 )
-            {
+            ) {
                 result.options.parentCss = result.options.parentCss || {};
                 result.options.parentCss.position = "relative";
             }
             if (offset && offset.textContent) {
-                result.dimensionCSSRules.left = this._convertEMU(offset.textContent);
+                result.dimensionCssRules.left = this._convertEMU(offset.textContent);
             }
         }
         if (verticalPositionNode) {
             offset = verticalPositionNode.querySelector('posOffset');
             result.css.position = "relative";
             if (
-                verticalPositionNode.attributes['relativeFrom'] &&
-                    (
-                        verticalPositionNode.attributes['relativeFrom'].value == 'column' ||
-                            verticalPositionNode.attributes['relativeFrom'].value == 'character'
-                        )
+                verticalPositionNode.attributes.relativeFrom && (
+                    verticalPositionNode.attributes.relativeFrom.value === 'column' ||
+                    verticalPositionNode.attributes.relativeFrom.value === 'character'
                 )
-            {
+            ) {
                 result.options.parentCss = result.options.parentCss || {};
                 result.options.parentCss.position = "relative";
             }
             if (offset && offset.textContent) {
-                result.dimensionCSSRules.top = this._convertEMU(offset.textContent);
+                result.dimensionCssRules.top = this._convertEMU(offset.textContent);
             }
         }
         if (extentsNode) {
-            if (!isNaN(extentsNode.attributes['y'])) {
+            if (!isNaN(extentsNode.attributes.y)) {
                 result.options.extents.top = {
-                    value: +extentsNode.attributes['y'],
+                    value: +extentsNode.attributes.y,
                     unit: "pt"
                 };
             }
 
-            if (!isNaN(extentsNode.attributes['x'])) {
+            if (!isNaN(extentsNode.attributes.x)) {
                 result.options.extents.left = {
-                    value: +extentsNode.attributes['x'],
+                    value: +extentsNode.attributes.x,
                     unit: "pt"
                 };
             }
@@ -362,28 +358,28 @@ OOXML.prototype._parseRunNode = function (data) {
         }
         if (optionsNode) {
             result.attributes.id = (
-                optionsNode.attributes['id'] && optionsNode.attributes['id'].value
+                optionsNode.attributes.id && optionsNode.attributes.id.value
             ) || result.attributes.id;
             result.attributes.name = (
-                optionsNode.attributes['name'] && optionsNode.attributes['name'].value
+                optionsNode.attributes.name && optionsNode.attributes.name.value
             ) || result.attributes.name || '';
-            result.options.isHidden = this.attributeToBoolean(optionsNode.attributes['descr']);
+            result.options.isHidden = this.attributeToBoolean(optionsNode.attributes.descr);
             result.attributes.alt = (
-                optionsNode.attributes['descr'] && optionsNode.attributes['descr'].value
+                optionsNode.attributes.descr && optionsNode.attributes.descr.value
             ) || result.attributes.alt || result.attributes.name;
         }
         if (extentNode) {
-            if (extentNode.attributes['cy'] && !isNaN(extentNode.attributes['cy'].value)) {
-                h = this._convertEMU(extentNode.attributes['cy'].value);
+            if (extentNode.attributes.cy && !isNaN(extentNode.attributes.cy.value)) {
+                h = this._convertEMU(extentNode.attributes.cy.value);
 
-                result.options.parentDimensionCSSRules = result.options.parentDimensionCSSRules || {};
-                result.options.parentDimensionCSSRules.height = h;
+                result.options.parentDimensionCssRules = result.options.parentDimensionCssRules || {};
+                result.options.parentDimensionCssRules.height = h;
 
                 result.options.parentCss = result.options.parentCss || {};
                 result.options.parentCss.overflowY = 'hidden';
             }
-            if (extentNode.attributes['cx'] && !isNaN(extentNode.attributes['cx'].value)) {
-                result.dimensionCSSRules.width = this._convertEMU(extentNode.attributes['cx'].value);
+            if (extentNode.attributes.cx && !isNaN(extentNode.attributes.cx.value)) {
+                result.dimensionCssRules.width = this._convertEMU(extentNode.attributes.cx.value);
             }
         }
         if (effectExtentNode) {
@@ -395,7 +391,7 @@ OOXML.prototype._parseRunNode = function (data) {
                     switch (attrName) {
                         case "l":
                             if (!isNaN(effectExtentNode.attributes[k].value)) {
-                                result.dimensionCSSRules.left = {
+                                result.dimensionCssRules.left = {
                                     value: +effectExtentNode.attributes[k].value,
                                     unit: "emu"
                                 };
@@ -403,7 +399,7 @@ OOXML.prototype._parseRunNode = function (data) {
                             break;
                         case "r":
                             if (!isNaN(effectExtentNode.attributes[k].value)) {
-                                result.dimensionCSSRules.right = {
+                                result.dimensionCssRules.right = {
                                     value: +effectExtentNode.attributes[k].value,
                                     unit: "emu"
                                 };
@@ -411,7 +407,7 @@ OOXML.prototype._parseRunNode = function (data) {
                             break;
                         case "b":
                             if (!isNaN(effectExtentNode.attributes[k].value)) {
-                                result.dimensionCSSRules.bottom = {
+                                result.dimensionCssRules.bottom = {
                                     value: +effectExtentNode.attributes[k].value,
                                     unit: "emu"
                                 };
@@ -419,7 +415,7 @@ OOXML.prototype._parseRunNode = function (data) {
                             break;
                         case "top":
                             if (!isNaN(effectExtentNode.attributes[k].value)) {
-                                result.dimensionCSSRules.bottom = {
+                                result.dimensionCssRules.bottom = {
                                     value: +effectExtentNode.attributes[k].value,
                                     unit: "emu"
                                 };
@@ -432,8 +428,8 @@ OOXML.prototype._parseRunNode = function (data) {
             }
         }
 
-        if (result.dimensionCSSRules.height) {
-            result.options.elementHeight.value = result.dimensionCSSRules.height.value;
+        if (result.dimensionCssRules.height) {
+            result.options.elementHeight.value = result.dimensionCssRules.height.value;
         }
     } else {
         paragraphContentText = data.node.querySelector('t');

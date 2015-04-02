@@ -14,7 +14,7 @@ RTF.prototype._initImage = function (params) {
         properties: {},
         attributes: {},
         css: {},
-        dimensionCSSRules: {}
+        dimensionCssRules: {}
     });
 
     delete image.options.isParagraph;

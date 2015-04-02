@@ -7,7 +7,7 @@
 ODF.prototype._parseTextDocumentContent = function (params, callback) {
     var documentData = params.documentData,
         result = {
-            name: this.getFileName(),
+            name: this.fileName,
             wordsCount: (documentData.documentInfo && documentData.documentInfo.wordsCount) || null,
             pages: []
         },
