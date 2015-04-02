@@ -5,7 +5,7 @@
  * @private
  */
 jDoc.Engine.prototype.normalizeDate = {
-    value: function (str) {
+    value (str) {
         var date = "",
             data;
 

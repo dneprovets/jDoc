@@ -1,5 +1,5 @@
 jDoc.Engine.prototype.isGraphicDocument = {
-    get: function () {
+    get () {
         return !!(this.fileType && this.fileType.isGraphicDocument);
     }
 };

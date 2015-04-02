@@ -1,16 +1,13 @@
 jDoc.Engine.prototype.parseFromSimpleFile = {
-    value: function () {
+    value () {
         return new Promise(function (resolve, reject) {
             if (!this.isValid) {
                 reject(new Error(this.errors.invalidFileType.message));
                 return;
             }
 
-            this.readFilesEntries({
-                entries: [{
-                    file: this.file,
-                    entry: {}
-                }]
+            this.readFileEntry({
+                file: this.file
             }).then(
                 function (result) {
                     if (typeof this.createFileData !== 'function') {

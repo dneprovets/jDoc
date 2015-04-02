@@ -3,45 +3,41 @@
  * @param options
  * @returns {DocumentFragment}
  */
-jDoc.FileData.prototype.html = function (options) {
-    var doc = document.createDocumentFragment(),
-        pages = this._data.pages,
-        pagesCount = pages.length,
-        elementsCount,
-        i,
-        p,
-        pageEl;
+jDoc.FileData.prototype.html = {
+    value (options = {}) {
+        var doc = document.createDocumentFragment(),
+            pages = this._data.pages,
+            pagesCount = pages.length;
 
-    setHTMLOptions.call(this, options);
+        setHTMLOptions.call(this, options);
+        
+        pages.forEach(function (page, i) {
+            var pageEl = document.createElement('div');
+            pageEl.setAttribute('class', fileDataClasses.page);
 
-    for (i = 0; i < pagesCount; i++) {
-        pageEl = document.createElement('div');
-        pageEl.setAttribute('class', fileDataClasses.page);
+            if (page.dimensionCssRules && i < pagesCount - 1 && !page.dimensionCssRules.marginBottom) {
+                page.dimensionCssRules.marginBottom = {
+                    unit: "px",
+                    value: 10
+                };
+            }
 
-        if (pages[i].dimensionCssRules && i < pagesCount - 1 && !pages[i].dimensionCssRules.marginBottom) {
-            pages[i].dimensionCssRules.marginBottom = {
-                unit: "px",
-                value: 10
-            };
-        }
+            applyCss.call(this, pageEl, page);
+            addAttributes.call(this, pageEl, page);
+            addProperties.call(this, pageEl, page);
+            $.css(pageEl, "box-sizing", "border-box");
 
-        applyCss.call(this, pageEl, pages[i]);
-        addAttributes.call(this, pageEl, pages[i]);
-        addProperties.call(this, pageEl, pages[i]);
-        $.css(pageEl, "box-sizing", "border-box");
+            if (page.options && page.options.pageNumber) {
+                buildPageNumber.call(this, pageEl, page);
+            }
 
-        if (pages[i].options && pages[i].options.pageNumber) {
-            buildPageNumber.call(this, pageEl, pages[i]);
-        }
+            page.children.forEach(function (el) {
+                pageEl.appendChild(buildElement.call(this, el));
+            }.bind(this));
 
-        elementsCount = pages[i].children.length;
+            doc.appendChild(pageEl);    
+        }.bind(this));
 
-        for (p = 0; p < elementsCount; p++) {
-            pageEl.appendChild(buildElement.call(this, pages[i].children[p]));
-        }
-
-        doc.appendChild(pageEl);
+        return doc;
     }
-
-    return doc;
 };

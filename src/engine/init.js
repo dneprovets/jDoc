@@ -26,7 +26,7 @@ Object.defineProperties(jDoc.Engine.prototype, {
     },
 
     fileName: {
-        get: function () {
+        get () {
             return (this.file && this.file.name) || "";
         }
     },
@@ -46,8 +46,7 @@ Object.defineProperties(jDoc.Engine.prototype, {
 
     isValid: {
         enumerable: false,
-        configurable: false,
-        get: function () {
+        get () {
             return !!(this.file && this.fileType);
         }
     },
@@ -65,9 +64,8 @@ Object.defineProperties(jDoc.Engine.prototype, {
  * @return {Object}
  */
 jDoc.Engine.extend = function (props) {
-    var Child = function () {},
-        F = function () {},
-        prop,
+    var Child = () => {},
+        F = () => {},
         self = this;
 
     if (this && this.hasOwnProperty('constructor')) {
@@ -86,7 +84,7 @@ jDoc.Engine.extend = function (props) {
     /**
      * Set properties
      */
-    for (prop in props) {
+    for (let prop in props) {
         if (props.hasOwnProperty(prop)) {
             if (Array.isArray(props[prop])) {
                 Child.prototype[prop] = props[prop].slice(0);

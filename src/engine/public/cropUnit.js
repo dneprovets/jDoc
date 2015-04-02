@@ -5,7 +5,7 @@
  * @private
  */
 jDoc.Engine.prototype.cropUnit = {
-    value: function (value) {
+    value (value) {
         value = +(String(value).replace(/,/g, '.').replace(/[^0-9.]+/g, ''));
         return !isNaN(value) ? value : 0;
     }

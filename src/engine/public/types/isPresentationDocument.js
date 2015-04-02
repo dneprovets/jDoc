@@ -1,5 +1,5 @@
 jDoc.Engine.prototype.isPresentationDocument = {
-    get: function () {
+    get () {
         return !!(this.fileType && this.fileType.isPresentationDocument);
     }
 };

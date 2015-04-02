@@ -1,5 +1,5 @@
 jDoc.Engine.prototype.isSpreadsheetDocument = {
-    get: function () {
+    get () {
         return !!(this.fileType && this.fileType.isSpreadsheetDocument);
     }
 };

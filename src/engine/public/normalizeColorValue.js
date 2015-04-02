@@ -5,7 +5,7 @@
  * @private
  */
 jDoc.Engine.prototype.normalizeColorValue = {
-    value: function (value) {
+    value (value) {
         var colorList = this.colorList,
             defaultColor = colorList.black;
 
@@ -14,6 +14,7 @@ jDoc.Engine.prototype.normalizeColorValue = {
         }
 
         value = value.replace(/\s+/g, '');
+
         if (/^#/.test(value)) {
             return value.toUpperCase();
         }

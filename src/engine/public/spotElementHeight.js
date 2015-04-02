@@ -5,19 +5,10 @@
  * @private
  */
 jDoc.Engine.prototype.spotElementHeight = {
-    value: function (options) {
-        options = options || {};
-
-        var lineHeight = options.lineHeight || 1,
-            parentFontSize = options.parentFontSize || 1,
+    value (options = {}) {
+        var {lineHeight = 1, parentFontSize = 1, fontSize, width} = options,
             len = options.el.textContent ? options.el.textContent.length : 0,
-            height = (
-                (len * options.fontSize) / options.width
-                ) * (
-                (
-                    options.fontSize > parentFontSize ? options.fontSize : parentFontSize
-                ) * lineHeight
-                );
+            height = (len * fontSize / width) * (fontSize > parentFontSize ? fontSize : parentFontSize) * lineHeight;
 
         return isNaN(height) ? 0 : Math.round(height);
     }

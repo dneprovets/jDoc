@@ -6,7 +6,7 @@
  * @private
  */
 jDoc.Engine.prototype.normalizeDataURI = {
-    value: function (dataURI, filename) {
+    value (dataURI, filename) {
         return dataURI.replace(/data:[^;]*;/, 'data:' + getMimeTypeByName(filename) + ';');
     }
 };

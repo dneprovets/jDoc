@@ -1,5 +1,5 @@
 jDoc.Engine.prototype.isFormulaDocument = {
-    get: function () {
+    get () {
         return !!(this.fileType && this.fileType.isFormulaDocument);
     }
 };

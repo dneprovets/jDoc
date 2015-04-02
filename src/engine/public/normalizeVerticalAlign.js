@@ -5,14 +5,14 @@
  * @private
  */
 jDoc.Engine.prototype.normalizeVerticalAlign = {
-    value: function (value) {
+    value (value) {
         var result = "baseline";
 
         value = String(value).toLowerCase();
 
-        if (value == "superscript") {
+        if (value === "superscript") {
             result = "top";
-        } else if (value == "subscript") {
+        } else if (value === "subscript") {
             result = "bottom";
         }
 

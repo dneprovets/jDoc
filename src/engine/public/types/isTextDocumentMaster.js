@@ -1,5 +1,5 @@
 jDoc.Engine.prototype.isTextDocumentMaster = {
-    get: function () {
+    get () {
         return (this.fileType && !!this.fileType.isTextDocumentMaster);
     }
 };

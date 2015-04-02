@@ -3,7 +3,7 @@
  * @returns {Promise}
  */
 jDoc.Engine.prototype.parseFromArchive = {
-    value: function () {
+    value () {
         return new Promise(function (resolve, reject) {
             if (!this.isValid) {
                 reject(new Error(this.errors.invalidFileType.message));

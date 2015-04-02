@@ -3,7 +3,7 @@
  * @returns {boolean}
  */
 jDoc.Engine.prototype.isTextDocument = {
-    get: function () {
+    get () {
         return !!(this.fileType && this.fileType.isTextDocument);
     }
 };

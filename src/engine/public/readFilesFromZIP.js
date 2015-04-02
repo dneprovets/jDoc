@@ -1,26 +1,18 @@
 jDoc.Engine.prototype.readFilesFromZip = {
-    value: function () {
+    value () {
         return new Promise(function (resolve, reject) {
             zipEngine.read({
                 file: this.file
             }).then(
                 function (entries) {
-                    var queue = [],
-                        entriesCount = entries.length,
-                        i;
+                    var queue = entries.map(entry => {
+                        return zipEngine.readEntry({
+                            entry,
+                            type: "Blob"
+                        });
+                    });
 
-                    for (i = 0; i < entriesCount; i++) {
-                        queue.push(
-                            zipEngine.readEntry({
-                                entry: entries[i],
-                                type: "Blob"
-                            })
-                        );
-                    }
-
-                    Promise.all(queue).then(function (list) {
-                        resolve(list);
-                    }, reject);
+                    Promise.all(queue).then(resolve, reject);
                 },
                 reject
             );

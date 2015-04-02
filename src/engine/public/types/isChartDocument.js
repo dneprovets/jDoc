@@ -1,5 +1,5 @@
 jDoc.Engine.prototype.isChartDocument = {
-    get: function () {
+    get () {
         return !!(this.fileType && this.fileType.isChartDocument);
     }
 };

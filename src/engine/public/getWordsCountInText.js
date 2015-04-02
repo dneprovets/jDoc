@@ -5,13 +5,12 @@
  * @private
  */
 jDoc.Engine.prototype.getWordsCountInText = {
-    value: function (text) {
+    value (text) {
         var words = (text || "").split(/\s+/),
-            len = words.length,
-            i,
+            i = words.length,
             wordsCount = 0;
 
-        for (i = len - 1; i >= 0; i--) {
+        while (i--) {
             wordsCount += (words[i].length > 1);
         }
 

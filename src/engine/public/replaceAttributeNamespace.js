@@ -5,7 +5,7 @@
  * @private
  */
 jDoc.Engine.prototype.replaceAttributeNamespace = {
-    value: function (attributeName) {
+    value (attributeName) {
         return attributeName ? attributeName.replace(/^[0-9a-zA-Z-_]+:/, '') : "";
     }
 };

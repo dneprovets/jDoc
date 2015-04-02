@@ -6,7 +6,7 @@
  * @private
  */
 jDoc.Engine.prototype.attributeToBoolean = {
-    value: function (attribute) {
+    value (attribute) {
         return (!!attribute && (attribute.value == 'true' || attribute.value == '1' || attribute.value == 'on'));
     }
 };

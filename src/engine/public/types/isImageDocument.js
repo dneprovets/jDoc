@@ -1,5 +1,5 @@
 jDoc.Engine.prototype.isImageDocument = {
-    get: function () {
+    get () {
         return !!(this.fileType && this.fileType.isImageDocument);
     }
 };

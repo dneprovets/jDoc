@@ -2,9 +2,7 @@
  * @namespace jDoc.FileData
  * @param attrs
  */
-jDoc.FileData = function (attrs) {
-    attrs = attrs || {};
-
+jDoc.FileData = function (attrs = {}) {
     this._data = copy({
         name: "",
         language: "",
@@ -17,6 +15,47 @@ jDoc.FileData = function (attrs) {
     this._htmlOptions = {};
 };
 
-jDoc.FileData.prototype = {
+Object.defineProperties(jDoc.FileData.prototype, {
+    data: {
+        get () {
+            return this._clonedData;
+        }
+    },
+    language: {
+        get () {
+            return this._data.language;
+        }
+    },
+    name: {
+        get () {
+            return this._data.name;
+        }
+    },
+    wordsCount: {
+        get () {
+            return this._data.wordsCount;
+        }
+    },
+    length: {
+        get() {
+            return this._data.pages.length;
+        }
+    },
+    zoom: {
+        get () {
+            return this._data.zoom;
+        }
+    },
+    empty: {
+        get () {
+            return !(this._data.pages && this._data.pages.length);
+        }
+    },
+    isTextDocument: {
+        get () {
+            return !!this._data.isTextDocument;
+        }
+    }
+
     // @define prototypeProperties
-};
+});

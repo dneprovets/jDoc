@@ -3,7 +3,7 @@
  * @returns {boolean}
  */
 jDoc.Engine.prototype.isTemplate = {
-    get: function () {
+    get () {
         return !!(this.fileType && this.fileType.isTemplate);
     }
 };
