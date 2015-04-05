@@ -10,23 +10,23 @@ module.exports = function (grunt) {
 
             version: JSON.parse(grunt.file.read("package.json")).version
         },
-        startCoreTasks = [
-            'clean:start'
-        ],
-        mainCoreTasks = [
-            'build_test_docs_list',
+        mainTasks = [
+            'clean:start',
+            'babel:core',
+            'webpack:app',
+            'concat:app'
+            //'jsbeautifier',
+            //'uglify'
+
+            /*'build_test_docs_list',
             'define_properties:main',
             'define_properties:unit',
             'define_properties:fileData',
             'define_properties:engine',
-            'define_properties:dom'
+            'define_properties:dom'*/
         ],
-        endCoreTasks = [
-            'concat:app',
-            'clean:engines',
-            'jsbeautifier',
-            'uglify',
-            'delete_tmp_files'
+        endTasks = [
+            'clean:end'
         ];
 
     grunt.initConfig(config);
@@ -47,7 +47,9 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-connect');
     grunt.loadNpmTasks('grunt-jsbeautifier');
-    grunt.loadNpmTasks('grunt-define-properties');
+    grunt.loadNpmTasks('grunt-babel');
+    grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-webpack');
 
     grunt.registerMultiTask('build_test_docs_list', ' ', function() {
         var options = this.options({
@@ -76,25 +78,6 @@ module.exports = function (grunt) {
         });
     });
 
-    grunt.registerMultiTask('delete_tmp_files', ' ', function() {
-        var options = this.options({});
-
-        this.files.forEach(function(f) {
-            f.src.filter(function(filepath) {
-                // Warn on and remove invalid source files (if nonull was set).
-                if (!grunt.file.exists(filepath)) {
-                    grunt.log.warn('Source file "' + filepath + '" not found.');
-                    return false;
-                }
-
-                return true;
-            }).forEach(function (filepath) {
-                grunt.file.delete(filepath, options);
-            });
-        });
-    });
-
-    grunt.registerTask('core', startCoreTasks.concat(mainCoreTasks).concat(endCoreTasks));
     grunt.registerTask('default', function () {
         concatEngines({
             isReaders: true,
@@ -142,6 +125,6 @@ module.exports = function (grunt) {
             }
         }
 
-        grunt.task.run(startCoreTasks.concat(mainCoreTasks).concat(tasksList).concat(endCoreTasks));
+        grunt.task.run(mainTasks.concat(endTasks));
     }
 };

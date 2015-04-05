@@ -1,12 +1,9 @@
-/**
- *
- * @type {Array}
- * @private
- */
-Simple.prototype.fileTypeParsers = [
-    {
-        extension: ['txt'],
-        mime: ['text/plain'],
-        isTextDocument: true
-    }
-];
+export default {
+    value: [
+        {
+            extension: ['txt'],
+            mime: ['text/plain'],
+            isTextDocument: true
+        }
+    ]
+};

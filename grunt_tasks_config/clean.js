@@ -9,9 +9,9 @@ module.exports = function () {
         start: [
             "build/**/*.js"
         ],
-
-        engines: [
+        end: [
             "build/**/*.js",
+            "build/partials/**/*.js",
             "!build/jdoc.*"
         ]
     };

@@ -1,6 +1,4 @@
 module.exports = function () {
-    var basePath = 'build/';
-
     return {
         app: {
             options: {
@@ -9,26 +7,19 @@ module.exports = function () {
                     "var localStorage = window.localStorage || window.mozLocalStorage || window.webkitLocalStorage,\n" +
                     "requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem || window.mozRequestFileSystem,\n" +
                     "URL = window.URL || window.webkitURL || window.mozURL,\n" +
-                    "Blob = window.Blob || window.webkitBlob || window.mozBlob;",
-                footer: 'if (typeof define === "function" && define.amd ) {' +
-                            'define( "jDoc", [], function() {return jDoc;});' +
-                        '} else {\n' +
-                            'window.jDoc = jDoc;\n' +
-                        '}\n' +
-                        "}(window, document, navigator));"
+                    "Blob = window.Blob || window.webkitBlob || window.mozBlob,\n" +
+                    "documentEngines = {},\n" +
+                    "documentFormats = [],\n" +
+                    "copy,\n" +
+                    "libsRoot = {},\n" +
+                    "clone = function (obj) {\n" +
+                    "return copy({}, obj);\n" +
+                    "};\n",
+                footer: "\ncopy = Object.assign;" +
+                    "\n}(window, document, navigator));"
             },
             src: [
-                'src/libs/polyfills/**/*.js',
-                'src/var.js',
-                'src/libs/**/*.js',
-                'src/*/private/**/*.js',
-                basePath + 'dom.js',
-                basePath + 'events.js',
-                basePath + 'main.js',
-                basePath + 'unit.js',
-                basePath + 'fileData.js',
-                basePath + 'engine.js',
-                basePath + 'engines/*.js'
+                'build/partials/core.js'
             ],
             dest: 'build/jdoc.<%= version %>.js'
         }

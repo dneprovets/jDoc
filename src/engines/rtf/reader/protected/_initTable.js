@@ -4,69 +4,69 @@
  * @returns {*}
  * @private
  */
-RTF.prototype._initTable = function (params) {
-    params = params || {};
-
-    var data = params.params || {},
-        body = {
-            children: []
-        },
-        table = {
-            options: copy(data.options, {
-                isTable: true,
-                elementHeight: {
-                    value: 0,
-                    unit: "pt"
-                },
-                cellsWidth: []
-            }),
-            children: [
-                {
-                    options: {
-                        isHeader: true
+RTF.prototype._initTable = {
+    value (params = {}) {
+        var data = params.params || {},
+            body = {
+                children: []
+            },
+            table = {
+                options: copy(data.options, {
+                    isTable: true,
+                    elementHeight: {
+                        value: 0,
+                        unit: "pt"
                     },
-                    children: []
-                },
-                {
-                    options: {
-                        isFooter: true
+                    cellsWidth: []
+                }),
+                children: [
+                    {
+                        options: {
+                            isHeader: true
+                        },
+                        children: []
                     },
-                    children: []
-                },
-                body
-            ],
-            attributes: clone(data.attributes),
-            dimensionCssRules: clone(data.dimensionCssRules),
-            css: copy({}, data.css, {
-                borderCollapse: "collapse"
-            })
-        };
+                    {
+                        options: {
+                            isFooter: true
+                        },
+                        children: []
+                    },
+                    body
+                ],
+                attributes: clone(data.attributes),
+                dimensionCssRules: clone(data.dimensionCssRules),
+                css: copy({}, data.css, {
+                    borderCollapse: "collapse"
+                })
+            };
 
-    delete table.options.isParagraph;
+        delete table.options.isParagraph;
 
-    if (params.row) {
-        body.children.push(params.row);
+        if (params.row) {
+            body.children.push(params.row);
+        }
+
+        if (params.parentElementsList) {
+            params.parentElementsList[params.parentElementsIndex || 0] = table;
+        }
+
+        table.css = copy(
+            {},
+            table.css,
+            params.parseParams.styles.table.css
+        );
+
+        table.dimensionCssRules = copy(
+            {},
+            table.dimensionCssRules,
+            params.parseParams.styles.table.dimensionCssRules
+        );
+
+        if (params.parseParams) {
+            params.parseParams.table = table;
+        }
+
+        return table;
     }
-
-    if (params.parentElementsList) {
-        params.parentElementsList[params.parentElementsIndex || 0] = table;
-    }
-
-    table.css = copy(
-        {},
-        table.css,
-        params.parseParams.styles.table.css
-    );
-
-    table.dimensionCssRules = copy(
-        {},
-        table.dimensionCssRules,
-        params.parseParams.styles.table.dimensionCssRules
-    );
-
-    if (params.parseParams) {
-        params.parseParams.table = table;
-    }
-
-    return table;
 };

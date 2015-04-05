@@ -4,20 +4,20 @@
  * @returns {*}
  * @private
  */
-RTF.prototype._initImage = function (params) {
-    params = params || {};
+RTF.prototype._initImage = {
+    value (params = {}) {
+        var image = copy(params.data || {}, {
+            options: {
+                isImage: true
+            },
+            properties: {},
+            attributes: {},
+            css: {},
+            dimensionCssRules: {}
+        });
 
-    var image = copy(params.data || {}, {
-        options: {
-            isImage: true
-        },
-        properties: {},
-        attributes: {},
-        css: {},
-        dimensionCssRules: {}
-    });
+        delete image.options.isParagraph;
 
-    delete image.options.isParagraph;
-
-    return image;
+        return image;
+    }
 };

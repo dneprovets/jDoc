@@ -41,9 +41,9 @@ window.onload = function () {
 
         jDoc.read(file).then(function (fileData) {
             console.log("READ ", arguments);
-            console.log("File name -", fileData.getName());
-            console.log("Words count -", fileData.getWordsCount());
-            console.log("Pages count -", fileData.getPagesCount());
+            console.log("File name -", fileData.name);
+            console.log("Words count -", fileData.wordsCount);
+            console.log("Pages count -", fileData.length);
             canvas.appendChild(fileData.html());
 
             Array.prototype.forEach.call(document.querySelectorAll('.pages-container > div'), function (page) {

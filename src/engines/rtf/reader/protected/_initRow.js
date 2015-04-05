@@ -3,11 +3,13 @@
  * @returns {*}
  * @private
  */
-RTF.prototype._initRow = function () {
-    return {
-        children: [],
-        css: {},
-        options: {},
-        dimensionCssRules: {}
-    };
+RTF.prototype._initRow = {
+    value () {
+        return {
+            children: [],
+            css: {},
+            options: {},
+            dimensionCssRules: {}
+        };
+    }
 };

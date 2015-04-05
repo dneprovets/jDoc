@@ -1,71 +1,61 @@
-/**
- *
- * @param text {String}
- * @param callback {function}
- * @private
- */
-Simple.prototype.createFileData = function (text, callback) {
-    var textContent,
-        i,
-        j,
-        l,
-        len,
-        textLines,
-        textSections,
-        breaks,
-        element,
-        isLink = false,
-        children = [];
+export default {
+    value (text) {
+        return new Promise((resolve) => {
+            var textContent,
+                textLines,
+                breaks,
+                element,
+                len,
+                isLink = false,
+                children = [];
 
-    textLines = text.split(/\n/);
-    l = textLines.length;
+            textLines = text.split(/\n/);
+            len = textLines.length;
 
-    for (j = 0; j < l; j++) {
-        textSections = textLines[j].split(/\s/);
-        len = textSections.length;
+            textLines.forEach((tl, i) => {
+                var textSections = tl.split(/\s/);
 
-        for (i = 0; i < len; i++) {
-            if (textSections[i]) {
-                isLink = jDoc.validateURL(textSections[i]);
+                textSections.forEach((ts) => {
+                    if (ts) {
+                        isLink = jDoc.validateURL(ts);
 
-                element = {
-                    options: {},
-                    css: {},
-                    attributes: {},
-                    properties: {
-                        textContent: textSections[i] + " "
-                    }
-                };
+                        element = {
+                            options: {},
+                            css: {},
+                            attributes: {},
+                            properties: {
+                                textContent: ts + " "
+                            }
+                        };
 
-                if (isLink) {
-                    breaks = textSections[i].replace(/\S+/g, '') + " ";
-                    textContent = textSections[i].replace(/\s+/, '');
-                    element.isLink = true;
-                    element.href = textContent;
-                    element.properties.textContent = textContent;
-                    element.after = breaks;
+                        if (isLink) {
+                            breaks = ts.replace(/\S+/g, '') + " ";
+                            textContent = ts.replace(/\s+/, '');
+                            element.isLink = true;
+                            element.href = textContent;
+                            element.properties.textContent = textContent;
+                            element.after = breaks;
+                        }
+
+                        children.push(element);
+                    }    
+                });
+
+                if (i < len - 1) {
+                    children.push(element = {
+                        options: {
+                            isEmptyLine: true
+                        },
+                        css: {},
+                        attributes: {},
+                        properties: {}
+                    });
                 }
-
-                children.push(element);
-            }
-        }
-
-        if (j < l - 1) {
-            children.push(element = {
-                options: {
-                    isEmptyLine: true
-                },
-                css: {},
-                attributes: {},
-                properties: {}
             });
-        }
-    }
 
-    if (typeof callback === 'function') {
-        callback(
-            new jDoc.FileData({
+            resolve(new jDoc.FileData({
                 name: this.fileName,
+                wordsCount: text.split(/\s+/).length,
                 pages: [{
                     options: {},
                     css: {},
@@ -81,7 +71,8 @@ Simple.prototype.createFileData = function (text, callback) {
                         }]
                     }]
                 }]
-            })
-        );
+            }));
+
+        });
     }
 };
