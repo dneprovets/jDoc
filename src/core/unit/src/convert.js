@@ -1,4 +1,4 @@
-import unitRatio from '../helpers/unitRatio.js';
+import unitRatio from './../helpers/unitRatio.js';
 
 export default {
     /**

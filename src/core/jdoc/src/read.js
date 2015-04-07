@@ -1,5 +1,5 @@
-import errors from '../helpers/errors';
-import selectEngine from '../helpers/selectEngine';
+import errors from './../helpers/errors';
+import selectEngine from './../helpers/selectEngine';
 
 /**
  * @description Read the file

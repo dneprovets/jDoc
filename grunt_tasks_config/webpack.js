@@ -1,10 +1,10 @@
 module.exports = function () {
     return {
         app: {
-            entry: "./build/partials/core/jdoc/index.js",
+            entry: "./build/partials/index.js",
             output: {
-                path: "build/partials/",
-                filename: "core.js"
+                path: "build/",
+                filename: "jdoc.<%= version %>.js"
             },
 
             stats: {

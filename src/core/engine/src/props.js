@@ -1,26 +1,26 @@
 import tabAsSpaces from './tabAsSpaces';
-import getNonbreakingSpace from 'getNonbreakingSpace';
-import readFilesFromZip from 'readFilesFromZip';
-import spotElementHeight from 'spotElementHeight';
-import normalizeDataURI from 'normalizeDataUri';
-import getFileType from 'getFileType';
-import replaceAttributeNamespace from 'replaceAttributeNamespace';
-import getWordsCountInText from 'getWordsCountInText';
-import cropUnit from 'cropUnit';
-import readFileEntry from 'readFileEntry';
-import parseFromSimpleFile from 'parseFromSimpleFile';
-import normalizeColorValue from 'normalizeColorValue';
-import normalizeDate from 'normalizeDate';
-import getCharFromHex from 'getCharFromHex';
-import normalizeEncodingValue from 'normalizeEncodingValue';
-import calculateElementHeight from 'calculateElementHeight';
-import replaceSpaces from 'replaceSpaces';
-import attributeToBoolean from 'attributeToBoolean';
-import parseFromArchive from 'parseFromArchive';
-import normalizeVerticalAlign from 'normalizeVerticalAlign';
-import getMaxFontSize from 'getMaxFontSize';
-import colorList from '../../jdoc/helpers/colorList';
-import errors from '../../jdoc/helpers/errors';
+import getNonbreakingSpace from './getNonbreakingSpace';
+import readFilesFromZip from './readFilesFromZip';
+import spotElementHeight from './spotElementHeight';
+import normalizeDataURI from './normalizeDataUri';
+import getFileType from './getFileType';
+import replaceAttributeNamespace from './replaceAttributeNamespace';
+import getWordsCountInText from './getWordsCountInText';
+import cropUnit from './cropUnit';
+import readFileEntry from './readFileEntry';
+import parseFromSimpleFile from './parseFromSimpleFile';
+import normalizeColorValue from './normalizeColorValue';
+import normalizeDate from './normalizeDate';
+import getCharFromHex from './getCharFromHex';
+import normalizeEncodingValue from './normalizeEncodingValue';
+import calculateElementHeight from './calculateElementHeight';
+import replaceSpaces from './replaceSpaces';
+import attributeToBoolean from './attributeToBoolean';
+import parseFromArchive from './parseFromArchive';
+import normalizeVerticalAlign from './normalizeVerticalAlign';
+import getMaxFontSize from './getMaxFontSize';
+import colorList from './../../jdoc/helpers/colorList';
+import errors from './../../jdoc/helpers/errors';
 
 export default {
     fileType: {
@@ -65,5 +65,25 @@ export default {
         value: "\u2000\u2000"
     },
 
-    tabAsSpaces
+    tabAsSpaces,
+    getNonbreakingSpace,
+    readFilesFromZip,
+    spotElementHeight,
+    normalizeDataURI,
+    getFileType,
+    replaceAttributeNamespace,
+    getWordsCountInText,
+    cropUnit,
+    readFileEntry,
+    parseFromSimpleFile,
+    normalizeColorValue,
+    normalizeDate,
+    getCharFromHex,
+    normalizeEncodingValue,
+    calculateElementHeight,
+    replaceSpaces,
+    attributeToBoolean,
+    parseFromArchive,
+    normalizeVerticalAlign,
+    getMaxFontSize
 };

@@ -1,4 +1,4 @@
-import props from 'src/props.js';
+import props from './src/props';
 
 function Engine (file) {
     var fileType = this.getFileType(file);
@@ -21,31 +21,13 @@ Object.defineProperties(Engine.prototype, props);
  * @return {Object}
  */
 Engine.extend = function (props) {
-    var Child = () => {},
-        F = () => {},
-        self = this;
+    var Child = function () {
+        Engine.apply(this, arguments);
+    };
 
-    if (this && this.hasOwnProperty('constructor')) {
-        Child = this.constructor;
-    } else {
-        Child = function () {
-            self.apply(this, arguments);
-        };
-    }
-
-    F.prototype = this.prototype;
-    Child.prototype = new F();
+    Child.prototype = Object.create(this.prototype, props);
     Child.prototype.constructor = Child;
-    Child.superproto = this.prototype;
 
-    /**
-     * Set properties
-     */
-    for (let prop in props) {
-        if (props.hasOwnProperty(prop)) {
-            Object.defineProperty(Child.prototype, prop, props[prop]);
-        }
-    }
     return Child;
 };
 

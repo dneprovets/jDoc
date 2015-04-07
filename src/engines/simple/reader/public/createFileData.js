@@ -1,3 +1,5 @@
+import jDoc from './../../../../core/jdoc/index.js';
+
 export default {
     value (text) {
         return new Promise((resolve) => {
@@ -17,7 +19,7 @@ export default {
 
                 textSections.forEach((ts) => {
                     if (ts) {
-                        isLink = jDoc.validateURL(ts);
+                        isLink = jDoc.validateUrl(ts);
 
                         element = {
                             options: {},

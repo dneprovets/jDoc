@@ -1,8 +1,23 @@
 import jDoc from './../../core/jdoc/index';
+import readerProps from './reader/props';
 
-/**
- * @type {Object}
- */
-jDoc.defineEngine('Simple', ['text/plain'], jDoc.Engine.extend({
-
-}));
+export default {
+    name: 'Simple',
+    formats: ['text/plain'],
+    value: jDoc.Engine.extend(copy({
+        options: {
+            value: {
+                parseMethod: "parseFromSimpleFile"
+            }
+        },
+        fileTypeParsers: {
+            value: [
+                {
+                    extension: ['txt'],
+                    mime: ['text/plain'],
+                    isTextDocument: true
+                }
+            ]
+        }
+    }, readerProps))
+}

@@ -1,0 +1,1 @@
+window.jDoc = require('./core/jdoc/index')["default"];

@@ -1,4 +1,4 @@
-import blobSlice from '../helpers/blobSlice';
+import blobSlice from './../helpers/blobSlice';
 
 /**
  *

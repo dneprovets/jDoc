@@ -1,4 +1,4 @@
-import validators from '../helpers/validators';
+import validators from './../helpers/validators';
 
 /**
  *

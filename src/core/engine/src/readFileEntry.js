@@ -1,4 +1,4 @@
-import createWorker from '../helpers/createWorker';
+import createWorker from './../helpers/createWorker';
 
 export default {
     value (fileEntry = {}) {
